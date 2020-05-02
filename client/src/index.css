@@ -1,0 +1,38 @@
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+.App {
+  background: #404040;
+  min-height: 100vh;
+}
+
+.App a:link {
+  font-size: 12px;
+  text-decoration: none;
+  color: #484848;
+}
+
+.App a:visited {
+  font-size: 12px;
+  text-decoration: none;
+  color: #484848;
+}
+
+.report-problem {
+  display: none !important;
+}
+
+.MuiListItem-button:hover .report-problem {
+  display: inherit !important;
+}
