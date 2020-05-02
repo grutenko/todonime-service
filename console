@@ -4,6 +4,7 @@ require __DIR__.'/vendor/autoload.php';
 Dotenv\Dotenv::createImmutable(__DIR__)->load();
 
 use App\Console\Anime\Get;
+use App\Console\Anime\Ongoing\WhenEpisode;
 use App\Console\Anime\Status\Update;
 use DI\Container;
 use Symfony\Component\Console\Application;
@@ -15,6 +16,7 @@ require __DIR__ . '/src/dependencies.php';
 
 $application->add( new Get($container) );
 $application->add( new Update($container) );
+$application->add( new WhenEpisode($container));
 
 $application->add( new \App\Console\Video\Get($container) );
 
