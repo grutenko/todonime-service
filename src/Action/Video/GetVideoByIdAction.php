@@ -37,16 +37,43 @@ class GetVideoByIdAction extends Action
                 ]
             ],
             [
-                '$unset' => 'anime_id'
-            ],
-            [
-                '$unwind' => '$anime'
-            ],
-            [
-                '$addFields' => [
-                    'anime' => '$anime',
+                '$lookup' => [
+                    'from' => 'episodes',
+                    'let' => [
+                        'anime_id' => '$anime_id',
+                        'episode' => '$episode'
+                    ],
+                    'pipeline' => [
+                        [
+                            '$match'=> [
+                                '$expr' => [
+                                    '$and' => [
+                                        ['$eq' => ['$_id.anime_id', '$$anime_id' ]],
+                                        ['$eq' => ['$_id.episode', '$$episode' ]]
+                                    ]
+                                ]
+                            ]
+                        ]
+                    ],
+                    'as' => 'videos_ids'
                 ]
-            ]
+            ],
+            ['$unset' => 'anime_id'],
+            ['$unwind' => '$anime'],
+            ['$unwind' => '$videos_ids'],
+            ['$addFields' => [
+                'anime' => '$anime',
+                'videos_ids' => '$videos_ids.videos'
+            ]],
+            [
+                '$lookup' => [
+                    'from' => 'videos',
+                    'localField' => 'videos_ids',
+                    'foreignField' => '_id',
+                    'as' => 'videos'
+                ]
+            ],
+            ['$unset' => 'videos_ids']
         ])->toArray();
 
         if (count($video) == 0) {

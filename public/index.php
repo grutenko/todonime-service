@@ -2,6 +2,7 @@
 
 use Slim\Factory\AppFactory;
 use DI\Container;
+use Slim\Psr7\Response;
 
 require __DIR__. '/../vendor/autoload.php';
 Dotenv\Dotenv::createImmutable(__DIR__ . '/../')->load();
@@ -53,6 +54,12 @@ foreach(require __DIR__ . '/../config/handler.php' as $key => $handler) {
 
 $app->group($_ENV['API_BASE'] ?: '/api', function($group) {
     require __DIR__ . '/../routes/video.php';
+    require __DIR__ . '/../routes/anime.php';
+
+    $group->options('[{path:.*}]', function($request, $response) {
+        /** @var Response $response */
+        return $response->withHeader('Access-Control-Allow-Origin', '*');
+    });
 });
 
 $app->run();

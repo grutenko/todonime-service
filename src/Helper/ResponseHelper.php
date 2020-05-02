@@ -38,7 +38,8 @@ class ResponseHelper
         ]);
         return $response
             ->withStatus($httpStatus)
-            ->withAddedHeader('Content-Type', 'application/json')
+            ->withHeader('Content-Type', 'application/json')
+            ->withHeader('Access-Control-Allow-Origin', '*')
             ->withBody(Psr7\stream_for($body));
     }
 
@@ -54,7 +55,8 @@ class ResponseHelper
             'data' => $data
         ]);
         return $response
-            ->withAddedHeader('Content-Type', 'application/json')
+            ->withHeader('Content-Type', 'application/json')
+            ->withHeader('Access-Control-Allow-Origin', '*')
             ->withBody(Psr7\stream_for($body));
     }
 }
