@@ -1,7 +1,7 @@
 <?php
 
 
-namespace App\Console;
+namespace App\Console\Anime;
 
 
 use Exception;
@@ -12,7 +12,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class GetAnimes extends Command
+class Get extends Command
 {
     /**
      * @var string
@@ -90,13 +90,14 @@ class GetAnimes extends Command
             $this->db->animes->insertMany(array_map(function ($anime) {
                 return [
                     'shikimori_id' => $anime->id,
+                    'status' => $anime->status,
                     'name_en' => $anime->name,
                     'name_ru' => $anime->russian
                 ];
             }, $items->toArray()));
         }
 
-        $output->writeln('\nDone.');
+        $output->writeln("\nDone.");
 
         return 0;
     }

@@ -1,7 +1,7 @@
 <?php
 
 
-namespace App\Console;
+namespace App\Console\Video;
 
 
 use App\Lib\PartnerVideo\Getter;
@@ -15,7 +15,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class GetVideos extends Command
+class Get extends Command
 {
     /**
      * @var string
