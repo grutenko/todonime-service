@@ -1,6 +1,7 @@
 <?php
 
 use Grutenko\Shikimori\Sdk;
+use League\Flysystem\Adapter\Local;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
 use phpFastCache\Helper\Psr16Adapter;
@@ -43,4 +44,13 @@ $container->set('cache', function () {
         'password' => $_ENV['MONGO_PASSWORD'] ?: 'todonime',
         'timeout' => $_ENV['MONGO_TIMEOUT'] ?: 1
     ]);
+});
+
+$container->set('storage', function () {
+    return new League\Flysystem\Filesystem(
+        new Local(
+            $_ENV['PUBLIC_STORAGE_DIR'] ?: __DIR__ . '/../storage/public',
+            LOCK_EX
+        )
+    );
 });
