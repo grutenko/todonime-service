@@ -8,12 +8,14 @@ import {IconButton, withStyles} from "@material-ui/core";
 import ViewListIcon from "@material-ui/icons/ViewList";
 import KeyboardArrowLeftIcon from "@material-ui/icons/KeyboardArrowLeft";
 import KeyboardArrowRightIcon from "@material-ui/icons/KeyboardArrowRight";
+import FormatListNumberedIcon from "@material-ui/icons/FormatListNumbered";
 import CheckIcon from "@material-ui/icons/Check";
 import ArtTrackIcon from "@material-ui/icons/ArtTrack";
 import {drawerWidth} from "../Menu";
 import clsx from "clsx";
 import VideosList from "./VideosList";
 import AnimeInfo from "../Anime/AnimeInfo";
+import {Link, Redirect} from "react-router-dom";
 
 class VideoPlayer extends React.Component {
 
@@ -76,45 +78,71 @@ class VideoPlayer extends React.Component {
 
     }
 
+    renderRightToolbar () {
+
+        const {data} = this.state,
+            {menuOpen} = this.props;
+
+        return <div
+            className={clsx(
+                this.props.classes.fixedToolBox,
+                {
+                    [this.props.classes.fixedToolBoxShift]: menuOpen
+                }
+            )}
+        >
+            <IconButton
+                onClick={this.onOpenTranslationsList.bind(this)}
+            >
+                <ViewListIcon />
+            </IconButton><br/>
+            <IconButton
+                onClick={this.onOpenAnimeInfo.bind(this)}
+            >
+                <ArtTrackIcon />
+            </IconButton><br/>
+            <IconButton>
+                <FormatListNumberedIcon/>
+            </IconButton><br/>
+            <IconButton>
+                {data.prev_episode !== null
+                    ? <Link to={`/v/${data.prev_episode.video_id}`}>
+                        <KeyboardArrowLeftIcon />
+                    </Link>
+                    : <KeyboardArrowLeftIcon />
+                }
+            </IconButton><br/>
+            <IconButton>
+                <CheckIcon color="primary" />
+            </IconButton><br/>
+            <IconButton>
+                {data.next_episode != null
+                    ? data.next_episode.next_episode_at
+                        ? <KeyboardArrowRightIcon/>
+                        : <Link to={`/v/${data.next_episode.video_id}`}>
+                            <KeyboardArrowRightIcon/>
+                        </Link>
+
+                    : <KeyboardArrowRightIcon/>
+                }
+            </IconButton>
+        </div>;
+
+    }
+
     // eslint-disable-next-line class-methods-use-this
     render () {
 
-        const {loaded, data} = this.state,
-            {menuOpen} = this.props;
+        const {loaded, data} = this.state;
 
         // eslint-disable-next-line no-ternary
         return <>
             {loaded
-                ? <VideoPlayerIframe url={data.url}/>
+                ? <>
+                    <VideoPlayerIframe url={data.url}/>
+                    {this.renderRightToolbar()}
+                </>
                 : <Loader/>}
-            <div
-                className={clsx(
-                    this.props.classes.fixedToolBox,
-                    {
-                        [this.props.classes.fixedToolBoxShift]: menuOpen
-                    }
-                )}
-            >
-                <IconButton
-                    onClick={this.onOpenTranslationsList.bind(this)}
-                >
-                    <ViewListIcon />
-                </IconButton><br/>
-                <IconButton
-                    onClick={this.onOpenAnimeInfo.bind(this)}
-                >
-                    <ArtTrackIcon />
-                </IconButton><br/>
-                <IconButton>
-                    <KeyboardArrowLeftIcon />
-                </IconButton><br/>
-                <IconButton>
-                    <CheckIcon color="primary" />
-                </IconButton><br/>
-                <IconButton>
-                    <KeyboardArrowRightIcon />
-                </IconButton>
-            </div>
         </>;
 
     }

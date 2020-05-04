@@ -7,6 +7,7 @@ namespace App\Action\Video;
 use App\Action\Action;
 use App\Helper\ResponseHelper;
 use MongoDB\BSON\ObjectId;
+use MongoDB\BSON\Regex;
 use Slim\Psr7\Request;
 use Slim\Psr7\Response;
 
@@ -80,6 +81,102 @@ class GetVideoByIdAction extends Action
             return ResponseHelper::notFound($response, 'Video ' . $args['id'] . ' not found.');
         }
 
-        return ResponseHelper::success($response, $video[0]);
+        $responseVideo = $video[0];
+        $responseVideo['next_episode'] = $this->suggestNextEpisode($responseVideo);
+        $responseVideo['prev_episode'] = $this->suggestPrevVideo($responseVideo);
+
+        return ResponseHelper::success($response, $responseVideo);
+    }
+
+    /**
+     * @param array $video
+     * @return array
+     */
+    private function suggestPrevVideo(array $video): ?array
+    {
+        if($video['episode'] == 1) {
+            return null;
+        }
+
+        return $this->suggest($video, $video['episode'] - 1);
+    }
+
+    private function suggestNextEpisode(array $video): ?array
+    {
+        if($video['episode'] >= $video['anime']['last_episode']) {
+            if($video['anime']['status'] == 'released') {
+                return null;
+            } else
+            {
+                return ['next_episode_at' => $anime['next_episode_at']];
+            }
+        }
+
+        return $this->suggest($video, $video['episode'] + 1);
+    }
+
+    /**
+     * @param array $video
+     * @param int   $episode
+     * @return array
+     */
+    private function suggest(array $video, int $episode): ?array
+    {
+        $videos = $this->mongodb->todonime->videos->find([
+            'anime_id' => $video['anime']['shikimori_id'],
+            'episode'  => $episode
+        ])->toArray();
+
+        if(count($videos) == 0) {
+            return null;
+        }
+
+        $ls = -1;
+        $similarAuthor = null;
+        foreach($videos as $suggest) {
+            if($similarAuthor == null) {
+                $similarAuthor = $suggest;
+                $ls = levenshtein($suggest['author'], $video['author']);
+                continue;
+            }
+
+            $tmpLs = levenshtein($suggest['author'], $video['author']);
+            if( $tmpLs < $ls ) {
+                $tmpLs = $ls;
+                $similarAuthor = $suggest;
+            }
+        }
+
+        if($similarAuthor['kind'] == $video['kind'] && $similarAuthor['language'] == $video['language']) {
+            return [
+                'video_id' => $similarAuthor['_id']->__toString()
+            ];
+        }
+
+        foreach($videos as $suggest) {
+            if( isset($suggest['project']) ) {
+                return [
+                    'video_id' => $suggest['_id']->__toString()
+                ];
+            }
+        }
+
+        foreach($videos as $suggest) {
+            if( $suggest['kind'] == $video['kind'] && $suggest['domain'] == $video['domain']) {
+                return [
+                    'video_id' => $suggest['_id']->__toString()
+                ];
+            }
+        }
+
+        foreach($videos as $suggest) {
+            if( $suggest['kind'] == $video['kind']) {
+                return [
+                    'video_id' => $suggest['_id']->__toString()
+                ];
+            }
+        }
+
+        return $videos[0];
     }
 }
