@@ -37,6 +37,7 @@
         "symfony/console": "^5.0",
         "php-di/php-di": "^6.1",
         "ext-mongodb": "*",
-        "league/flysystem": "^1.0"
+        "league/flysystem": "^1.0",
+        "quazardous/php-bump-version": "^1.0"
     }
 }
