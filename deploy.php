@@ -14,7 +14,9 @@ host('todonime.ru')
     ->set('branch', 'master')
     ->set('deploy_path', '/var/www/todonime.ru')
     ->set('shared_files', [
-        '.env'
+        '.env',
+        'composer-lock.json',
+        'client/package-lock.json'
     ])
     ->set('shared_dirs', [
         'storage',
@@ -23,7 +25,7 @@ host('todonime.ru')
     ]);
 
 task('deploy:install-composer', 'cd {{release_path}} && composer install --no-dev');
-task('deploy:install-npm', 'cd {{release_path}} && npm ci && npm run build');
+task('deploy:install-npm', 'cd {{release_path}}/client && npm i && npm run build');
 
 task('deploy', [
     'deploy:info',
