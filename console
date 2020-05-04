@@ -17,6 +17,7 @@ require __DIR__ . '/src/dependencies.php';
 $application->add( new Get($container) );
 $application->add( new Update($container) );
 $application->add( new WhenEpisode($container));
+$application->add( new \App\Console\Anime\Poster\Get($container));
 
 $application->add( new \App\Console\Video\Get($container) );
 
