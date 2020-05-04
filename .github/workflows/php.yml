@@ -3,7 +3,7 @@ name: PHP Composer
 on:
   push:
     branches:
-      - 'releases/*'
+      - 'master'
 
 jobs:
   build:
@@ -15,16 +15,13 @@ jobs:
 
     - name: Validate composer.json and composer.lock
       run: composer validate
-
-    - name: Install dependencies
-      run: composer install --prefer-dist --no-progress --no-suggest
     
     - name: Checkout
       uses: actions/checkout@v1
     - name: Deploy
       uses: musps/action-deployer-php@master
       with:
-        args: deploy prod
+        args: deploy prod --parallel --limit 2
       env:
         SSH_PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
 
