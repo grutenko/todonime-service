@@ -15,6 +15,7 @@ host('todonime.ru')
     ->set('deploy_path', '/var/www/todonime.ru')
     ->set('shared_files', [
         '.env',
+        'client/.env',
         'composer-lock.json',
         'client/package-lock.json'
     ])
