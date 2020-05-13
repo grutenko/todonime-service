@@ -91,8 +91,8 @@ class GetVideoByIdAction extends Action
                 'original' => 1
             ];
 
-            return (($cmp[$v2['language']] ?: 3) + (int)$v2['completed'])
-                - (($cmp[$v1['language']] ?: 3) + (int)$v1['completed']);
+            return (($cmp[$v2['language']] ?: 3) + (int)@$v2['completed'])
+                - (($cmp[$v1['language']] ?: 3) + (int)@$v1['completed']);
         });
 
         if( isset($responseVideo['project_id']) ) {
