@@ -89,10 +89,12 @@ class Get extends Command
 
             $this->db->animes->insertMany(array_map(function ($anime) {
                 return [
-                    'shikimori_id' => $anime->id,
-                    'status' => $anime->status,
-                    'name_en' => $anime->name,
-                    'name_ru' => $anime->russian
+                    'shikimori_id'  => $anime->id,
+                    'status'        => $anime->status,
+                    'kind'          => $anime->kind,
+                    'url'           => $anime->url,
+                    'name_en'       => $anime->name,
+                    'name_ru'       => $anime->russian
                 ];
             }, $items->toArray()));
         }

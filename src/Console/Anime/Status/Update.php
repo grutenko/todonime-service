@@ -60,10 +60,11 @@ class Update extends Command
                 "Список ID аниме для которых нужно обновить статус."
             )
             ->addOption(
-                'for-status',
+                'for',
                 null,
                 InputOption::VALUE_OPTIONAL,
-                'обновлчет статусы для аниме с этим статусами.'
+                'обновлчет статусы для аниме с этим статусами.',
+                'all'
             );
     }
 
@@ -73,7 +74,7 @@ class Update extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $animesIds = $input->getArgument('animes');
-        $statuses = explode(',', $input->getOption('for-status'));
+        $statuses = explode(',', $input->getOption('for'));
 
         $this->output = $output;
 
@@ -155,7 +156,7 @@ class Update extends Command
     private function chunkGetStatuses(array $ids): Generator
     {
         foreach(array_chunk($ids, 50) as $chunk) {
-            usleep(500000);
+            usleep(300000);
             $animes = $this->sdk->anime()->list(['ids' => $chunk, 'limit' => 50]);
 
             yield array_map(function($anime) {

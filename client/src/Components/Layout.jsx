@@ -10,6 +10,8 @@ import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
 import useTheme from "@material-ui/core/styles/useTheme";
 import Container from "@material-ui/core/Container";
+
+import UserInfo from './User/UserInfo';
 /* eslint-enable */
 
 const drawerWidth = 350,
@@ -89,7 +91,7 @@ const drawerWidth = 350,
 /* eslint-enable */
 
 // eslint-disable-next-line max-lines-per-function
-export default function Layout ({setMenu, menuOpen, children}) {
+export default function Layout ({title, setMenu, menuOpen, children}) {
 
     const classes = useStyles(),
         theme = useTheme();
@@ -106,18 +108,18 @@ export default function Layout ({setMenu, menuOpen, children}) {
         >
             <Toolbar variant="dense" className={classes.toolbar}>
                 <Typography
-                    variant="h6"
+                    variant="div"
                     color="inherit"
                     className={classes.title}
                 >
-                    Todonime
+                    {title}
                 </Typography>
                 <IconButton
                     edge="end"
                     className={classes.menuButton}
                     color="inherit"
                     aria-label="menu"
-                    onClick={() => setMenu(<a>Меню пользователя</a>)}
+                    onClick={() => setMenu(<UserInfo/>)}
                 >
                     <AccountCircle />
                 </IconButton>

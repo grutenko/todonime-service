@@ -51,36 +51,14 @@ class Getter
     }
 
     /**
-     * @param $animeId
-     * @param $videoIds
-     */
-    private function updateEpisodesList($animeId, $videoIds)
-    {
-        $episodes = [];
-        foreach($videoIds as $episode => $partnerIds) {
-            foreach($partnerIds as $id) {
-                $video = $this->db->videos
-                    ->findOne(['partner_video_id' => $id]);
-                $this->db->episodes
-                    ->updateOne(
-                        ['_id.anime_id' => $animeId, '_id.episode' => $episode],
-                        [
-                            '$ddToSet' => [
-                                'videos' => [ '_id' => $video->_id, 'author' => $video->author]
-                            ]
-                        ]
-                    );
-            }
-        }
-    }
-
-    /**
      * Запускает получение видео из $this->getters
      */
     public function run()
     {
         $lastEpisodes = [];
-        $partnerVideoIds = [];
+        $insertedIds = [];
+        $skipped = 0;
+        $writed = 0;
 
         /** @var GetterInterface $getter */
         foreach ($this->getters as $getter) {
@@ -89,14 +67,21 @@ class Getter
             $lastId = $getter->getLastId();
 
             foreach ($getter->videoGenerator($this->db) as $chunk) {
-                $this->db->videos->insertMany($chunk);
-
-                if (null != $this->output) {
-                    $lastVideoId = array_pop($chunk)['partner_video_id'];
-                    $this->output->write("\r{$lastVideoId}/{$lastId}");
-                }
-
                 foreach($chunk as $video) {
+                    if (null != $this->output) {
+                        $this->output->write("\r{$video['partner_video_id']}/{$lastId} writed: {$writed}, skipped:{$skipped}");
+                    }
+
+                    try {
+                        $this->db->videos->insertOne($video);
+                    } catch(\Exception $e)
+                    {
+                        $skipped ++;
+                        continue;
+                    }
+
+                    $writed++;
+
                     if(!isset( $lastEpisodes[ $video['anime_id'] ]) ) {
                         $lastEpisodes[ $video['anime_id'] ] = 0;
                     }
@@ -104,21 +89,13 @@ class Getter
                         $lastEpisodes[ $video['anime_id'] ] = $video['episode'];
                     }
 
-                    if( !isset($partnerVideoIds[ $video['anime_id'] ])) {
-                        $partnerVideoIds[ $video['anime_id'] ] = [];
-                    }
-                    $partnerVideoIds[ $video['anime_id'] ][ $video['episode'] ][] = $video['partner_video_id'];
+                    @$insertedIds[ $video['anime_id'] ][ $video['episode'] ][] = $video['partner_video_id'];
                 }
             }
 
             $this->output->writeln("\nОбновляю данные о последних сериях аниме...");
             foreach($lastEpisodes as $animeId => $lastEpisode) {
                 $this->saveNewLastEpisode($animeId, $lastEpisode);
-            }
-
-            $this->output->writeln("Обновляю данные о списке доступных видео для серии..");
-            foreach($partnerVideoIds as $animeId => $partnerIds) {
-                $this->updateEpisodesList($animeId, $partnerIds);
             }
 
             $this->output->writeln("\ndone.");

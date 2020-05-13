@@ -12,6 +12,7 @@ use MongoDB\BSON\UTCDateTime;
 use MongoDB\Database;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\ArrayInput;
+use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -54,6 +55,11 @@ class WhenEpisode extends Command
     {
         $this
             ->setDescription('Обновляет информацию о следующей серии оногоинга.')
+            ->addArgument(
+                'animes',
+                InputArgument::IS_ARRAY | InputArgument::OPTIONAL,
+                "Список ID аниме для которых нужно обновить дату следующей серии."
+            )
             ->addOption(
                 'skip-status-update',
                 null,
@@ -76,16 +82,40 @@ class WhenEpisode extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $isSkip = $input->getOption('skip-status-update');
+        $ids = $input->getArgument('animes');
         $skip = $input->getOption('skip');
 
+        if(count($ids) == 0) {
+            $animes = $this->db->animes->find(
+                [
+                    'status' => 'ongoing',
+                    '$or' => [
+                        ['next_episode_at' => ['$exists' => false]],
+                        ['next_episode_at' => null],
+                        ['next_episode_at' => ['$gt' => new UTCDateTime()]]
+                    ]
+                ])->toArray();
+            $ids = array_column($animes, 'shikimori_id');
+        }
+
         if( $isSkip == 'n' ) {
+            if(count($ids) == 0) {
+                $params = [
+                    'command' => 'anime:status.update',
+                    '--for' => 'anons,ongoing'
+                ];
+            } else
+            {
+                $params = [
+                    'command' => 'anime:status.update',
+                    'animes' => $ids
+                ];
+            }
+
             $code = $this
                 ->getApplication()
                 ->find('anime:status.update')
-                ->run(new ArrayInput([
-                    'command' => 'anime:status.update',
-                    '--for-status' => 'anons,ongoing'
-                ]), $output);
+                ->run(new ArrayInput($params), $output);
 
             if($code != 0) {
                 return $code;
@@ -95,7 +125,10 @@ class WhenEpisode extends Command
         $count = 0;
         $skipped = 0;
         $updated = 0;
-        $ids = $this->getAnimeIdsForOngoings();
+
+        if(count($ids) == 0) {
+            $ids = $this->getAnimeIdsForOngoings();
+        }
 
         $size = count($ids);
         if($skip > 0) {
@@ -114,8 +147,12 @@ class WhenEpisode extends Command
                 throw $e;
             }
 
+            if($anime == null) {
+                continue;
+            }
+
             $count++;
-            $output->write("\rОбновляю даты следующих серий для всех онгоингов: {$count}/".$size. ' '
+            $output->write("\rОбновляю даты следующих серий для всех онгоингов: {$count}/".$size. ' skipped: '. $skipped . ' '
                 . str_pad(
                     substr( $anime->name, 0, 50),
                     50,

@@ -2,20 +2,25 @@ import React from "react";
 
 import Loader from "../Misc/Loader";
 
+import moment from "moment";
+import "moment/locale/ru";
 import {fetch as __fetch} from "../../lib/api";
 import VideoPlayerIframe from "./VideoPlayerIframe";
 import {IconButton, withStyles} from "@material-ui/core";
 import ViewListIcon from "@material-ui/icons/ViewList";
 import KeyboardArrowLeftIcon from "@material-ui/icons/KeyboardArrowLeft";
 import KeyboardArrowRightIcon from "@material-ui/icons/KeyboardArrowRight";
-import FormatListNumberedIcon from "@material-ui/icons/FormatListNumbered";
-import CheckIcon from "@material-ui/icons/Check";
-import ArtTrackIcon from "@material-ui/icons/ArtTrack";
+import Popper from "@material-ui/core/Popper";
 import {drawerWidth} from "../Menu";
 import clsx from "clsx";
 import VideosList from "./VideosList";
 import AnimeInfo from "../Anime/AnimeInfo";
 import {Link, Redirect} from "react-router-dom";
+import Button from "@material-ui/core/Button";
+import ButtonPopper from "../Misc/ButtonPopper";
+import BeenhereIcon from "@material-ui/icons/Beenhere";
+
+moment.locale("ru");
 
 class VideoPlayer extends React.Component {
 
@@ -57,16 +62,51 @@ class VideoPlayer extends React.Component {
         this.setState({"loaded": false});
 
         __fetch(`video/${this.props.match.params.id}`)
-            .then((result) => this.setState({"loaded": true,
-                // eslint-disable-next-line sort-keys
-                "data": result.data}));
+            .then((result) => {
+
+                this.setState({
+                    "loaded": true,
+                    // eslint-disable-next-line sort-keys
+                    "data": result.data
+                });
+
+                const kind = {
+                    "dub": "озвучка",
+                    "sub": "субтитры",
+                    "org": "оригинал"
+                }[result.data.kind] || "озвучка";
+
+                this.props.setTitle(<>
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        onClick={() => window.open(`https://shikimori.one${result.data.anime.url}`)}
+                    >
+                        {result.data.anime.name_ru || result.data.anime.name_en}
+                    </Button>
+                    <Button
+                        variant="contained"
+                        color={result.data.project ? "secondary" : "disabled"}
+                        onClick={() => window.open(`https://shikimori.one${result.data.anime.url}`)}
+                    >
+                        {result.data.author.substr(
+                            0,
+                            10
+                        )}
+                    </Button>
+                    <span style={{"margin": "auto 5px"}}>{result.data.episode} серия</span>
+                </>);
+
+            });
 
     }
 
     onOpenTranslationsList () {
 
         this.props.setMenu(<VideosList
+            setMenu={this.props.setMenu}
             currentId={this.props.match.params.id}
+            currentKind={this.state.data.kind}
             videos={this.state.data.videos}
         />);
 
@@ -75,6 +115,27 @@ class VideoPlayer extends React.Component {
     onOpenAnimeInfo () {
 
         this.props.setMenu(<AnimeInfo anime={this.state.data.anime} />);
+
+    }
+
+    bumpEpisode () {
+
+        if (this.state.data.user) {
+
+            __fetch(
+                "user/episode/watched",
+                {
+                    "anime_id": this.state.data.anime._id.$oid,
+                    "episode": this.state.data.episode
+                },
+                "PUT"
+            ).then((data) => {
+
+                this.props.history.push(`/v/${this.state.data.next_episode.video_id}`);
+
+            });
+
+        }
 
     }
 
@@ -96,36 +157,42 @@ class VideoPlayer extends React.Component {
             >
                 <ViewListIcon />
             </IconButton><br/>
-            <IconButton
-                onClick={this.onOpenAnimeInfo.bind(this)}
-            >
-                <ArtTrackIcon />
-            </IconButton><br/>
-            <IconButton>
-                <FormatListNumberedIcon/>
-            </IconButton><br/>
             <IconButton>
                 {data.prev_episode !== null
-                    ? <Link to={`/v/${data.prev_episode.video_id}`}>
+                    ? <Link onClick={() => {
+
+                        this.props.setMenu(null);
+
+                    }} to={`/v/${data.prev_episode.video_id}`}>
                         <KeyboardArrowLeftIcon />
                     </Link>
                     : <KeyboardArrowLeftIcon />
                 }
             </IconButton><br/>
             <IconButton>
-                <CheckIcon color="primary" />
+                <BeenhereIcon
+                    color={this.state.data.user ? "secondary" : "disabled"}
+                    onClick={this.bumpEpisode.bind(this)}
+                />
             </IconButton><br/>
-            <IconButton>
-                {data.next_episode != null
-                    ? data.next_episode.next_episode_at
-                        ? <KeyboardArrowRightIcon/>
-                        : <Link to={`/v/${data.next_episode.video_id}`}>
-                            <KeyboardArrowRightIcon/>
-                        </Link>
+            {data.next_episode !== null
+                ? data.next_episode.video_id != null
+                    ? <IconButton><Link onClick={() => {
 
-                    : <KeyboardArrowRightIcon/>
-                }
-            </IconButton>
+                        this.props.setMenu(null);
+
+                    }} to={`/v/${data.next_episode.video_id}`}>
+                        <KeyboardArrowRightIcon />
+                    </Link></IconButton>
+                    : data.next_episode.next_episode_at != null
+                        ? <ButtonPopper
+                            text={`${data.episode + 1} серия через ${moment(parseInt(data.next_episode.next_episode_at)).fromNow(true)}`}
+                        >
+                            <KeyboardArrowRightIcon />
+                        </ButtonPopper>
+                        : <IconButton><KeyboardArrowRightIcon /></IconButton>
+                : <IconButton><KeyboardArrowRightIcon /></IconButton>
+            }
         </div>;
 
     }
@@ -133,12 +200,16 @@ class VideoPlayer extends React.Component {
     // eslint-disable-next-line class-methods-use-this
     render () {
 
-        const {loaded, data} = this.state;
+        const {loaded, data, redirectToNext} = this.state;
 
         // eslint-disable-next-line no-ternary
         return <>
             {loaded
                 ? <>
+                    {redirectToNext
+                        ? <Redirect to={`/v/${data.next_episode.video_id}`}/>
+                        : null
+                    }
                     <VideoPlayerIframe url={data.url}/>
                     {this.renderRightToolbar()}
                 </>
@@ -152,7 +223,7 @@ class VideoPlayer extends React.Component {
 const styles = (theme) => ({
     "fixedToolBox": {
         "background": "white",
-        "margin": "11px",
+        "margin": "13px 11px",
         "position": "fixed",
         "zIndex": 2500,
         "right": 0,

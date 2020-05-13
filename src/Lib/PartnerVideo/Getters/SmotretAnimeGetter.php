@@ -55,7 +55,7 @@ class SmotretAnimeGetter implements GetterInterface
             $translations = $this->api->send('/translations', [
                 'feed' => 'id',
                 'afterId' => $lastVideoId,
-                'limit' => 1000
+                'limit' => 5000
             ]);
 
             if (count($translations['data']) == 0) {
@@ -63,12 +63,22 @@ class SmotretAnimeGetter implements GetterInterface
             }
 
             yield array_map(function ($video) {
+                if($video['typeKind'] == 'voice') {
+                    $kind = 'dub';
+                } elseif($video['typeKind'] == 'subtitles')
+                {
+                    $kind = 'sub';
+                } else
+                {
+                    $kind = 'org';
+                }
+
                 return [
                     'url' => $video['embedUrl'],
                     'anime_id' => $video['series']['myAnimeListId'],
                     'episode' => $video['episode']['episodeInt'],
                     'language' => $video['typeLang'],
-                    'king' => $video['typeKind'] == 'raw' ? 'org' : $video['typeKind'],
+                    'kind' => $kind,
                     'author' => $video['authorsSummary'],
                     'domain' => 'smotret-anime.online',
                     'partner_video_id' => $video['id']

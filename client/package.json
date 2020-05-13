@@ -11,6 +11,7 @@
     "@testing-library/user-event": "^7.2.1",
     "clsx": "^1.1.0",
     "http-build-query": "^0.7.0",
+    "moment": "^2.25.3",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-flags": "^0.1.18",

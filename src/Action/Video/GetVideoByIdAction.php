@@ -39,7 +39,7 @@ class GetVideoByIdAction extends Action
             ],
             [
                 '$lookup' => [
-                    'from' => 'episodes',
+                    'from' => 'videos',
                     'let' => [
                         'anime_id' => '$anime_id',
                         'episode' => '$episode'
@@ -49,32 +49,21 @@ class GetVideoByIdAction extends Action
                             '$match'=> [
                                 '$expr' => [
                                     '$and' => [
-                                        ['$eq' => ['$_id.anime_id', '$$anime_id' ]],
-                                        ['$eq' => ['$_id.episode', '$$episode' ]]
+                                        ['$eq' => ['$anime_id', '$$anime_id' ]],
+                                        ['$eq' => ['$episode', '$$episode' ]]
                                     ]
                                 ]
                             ]
                         ]
                     ],
-                    'as' => 'videos_ids'
+                    'as' => 'videos'
                 ]
             ],
             ['$unset' => 'anime_id'],
             ['$unwind' => '$anime'],
-            ['$unwind' => '$videos_ids'],
             ['$addFields' => [
                 'anime' => '$anime',
-                'videos_ids' => '$videos_ids.videos'
-            ]],
-            [
-                '$lookup' => [
-                    'from' => 'videos',
-                    'localField' => 'videos_ids',
-                    'foreignField' => '_id',
-                    'as' => 'videos'
-                ]
-            ],
-            ['$unset' => 'videos_ids']
+            ]]
         ])->toArray();
 
         if (count($video) == 0) {
@@ -84,6 +73,37 @@ class GetVideoByIdAction extends Action
         $responseVideo = $video[0];
         $responseVideo['next_episode'] = $this->suggestNextEpisode($responseVideo);
         $responseVideo['prev_episode'] = $this->suggestPrevVideo($responseVideo);
+
+        $user = $request->getAttribute('user');
+        if($user != null) {
+            unset($user['token'], $user['auth_code']);
+            $responseVideo['user'] = $user;
+        }
+
+        usort($responseVideo['videos'], function($v1, $v2) {
+            $cmp = [
+                'ru' => 3,
+                'russian' => 3,
+                'en' => 2,
+                'english' => 2,
+                'ja' => 1,
+                'japan' => 1,
+                'original' => 1
+            ];
+
+            return (($cmp[$v2['language']] ?: 3) + (int)$v2['completed'])
+                - (($cmp[$v1['language']] ?: 3) + (int)$v1['completed']);
+        });
+
+        if( isset($responseVideo['project_id']) ) {
+            $responseVideo['project'] = $this->mongodb->todonime->projects->findOne(
+                ['_id' => $responseVideo['project_id']],
+                [
+                    'completed' => 0
+                ]
+            );
+            unset($responseVideo['project_id']);
+        }
 
         return ResponseHelper::success($response, $responseVideo);
     }
@@ -104,11 +124,11 @@ class GetVideoByIdAction extends Action
     private function suggestNextEpisode(array $video): ?array
     {
         if($video['episode'] >= $video['anime']['last_episode']) {
-            if($video['anime']['status'] == 'released') {
-                return null;
+            if( $video['anime']['status'] != 'released' && null != $video['anime']['next_episode_at']) {
+                return ['next_episode_at' => $video['anime']['next_episode_at']->__toString()];
             } else
             {
-                return ['next_episode_at' => $anime['next_episode_at']];
+                return null;
             }
         }
 
@@ -122,61 +142,86 @@ class GetVideoByIdAction extends Action
      */
     private function suggest(array $video, int $episode): ?array
     {
+        if( isset($video['project_id']) ) {
+            $suggestVideo = $this->mongodb->todonime->videos->findOne([
+                'anime_id' => (int)$video['anime']['shikimori_id'],
+                'episode' =>(int) $episode,
+                'kind' => $video['kind'],
+                'domain' => $video['domain'],
+                'project_id' => $video['project_id']
+            ]);
+
+            if($suggestVideo != null) {
+                return [
+                    'video_id' => $suggestVideo['_id']->__toString()
+                ];
+            } else
+            {
+                $suggestVideo = $this->mongodb->todonime->videos->findOne([
+                    'anime_id' => (int)$video['anime']['shikimori_id'],
+                    'episode' =>(int) $episode,
+                    'kind' => $video['kind'],
+                    'project_id' => $video['project_id']
+                ]);
+
+                if($suggestVideo != null) {
+                    return [
+                        'video_id' => $suggestVideo['_id']->__toString()
+                    ];
+                }
+            }
+        }
+
         $videos = $this->mongodb->todonime->videos->find([
-            'anime_id' => $video['anime']['shikimori_id'],
-            'episode'  => $episode
+           'anime_id' => (int)$video['anime']['shikimori_id'],
+           'kind' => $video['kind'],
+           'episode' => (int)$episode
         ])->toArray();
 
-        if(count($videos) == 0) {
-            return null;
-        }
-
-        $ls = -1;
-        $similarAuthor = null;
-        foreach($videos as $suggest) {
-            if($similarAuthor == null) {
-                $similarAuthor = $suggest;
-                $ls = levenshtein($suggest['author'], $video['author']);
-                continue;
-            }
-
-            $tmpLs = levenshtein($suggest['author'], $video['author']);
-            if( $tmpLs < $ls ) {
-                $tmpLs = $ls;
-                $similarAuthor = $suggest;
-            }
-        }
-
-        if($similarAuthor['kind'] == $video['kind'] && $similarAuthor['language'] == $video['language']) {
+        if( count($videos) > 0 ) {
             return [
-                'video_id' => $similarAuthor['_id']->__toString()
+                'video_id' => $this->minLevensteinId($video['author'], $videos)->__toString()
             ];
         }
 
-        foreach($videos as $suggest) {
-            if( isset($suggest['project']) ) {
-                return [
-                    'video_id' => $suggest['_id']->__toString()
-                ];
+        $video = $this->mongodb->todonime->videos->findOne([
+            'anime_id' => (int)$video['anime']['shikimori_id'],
+            'episode' => (int)$episode
+        ]);
+
+        if($video == null) {
+            return null;
+        } else {
+            return $video['_id']->__toString();
+        }
+    }
+
+    /**
+     * @param $authorName
+     * @param $videos
+     * @return mixed
+     */
+    private function minLevensteinId($authorName, $videos)
+    {
+        $currentVideo = null;
+        $ln = null;
+
+        foreach($videos as $video)
+        {
+            $currentLn = levenshtein(
+                substr($authorName, 0, 64),
+                substr($video['author'], 0, 64)
+            );
+            if($ln == null || $ln > $currentLn) {
+                $currentVideo = $video;
+                $ln = $currentLn;
+            }
+
+            if($ln == 0) {
+                return $currentVideo['_id'];
             }
         }
 
-        foreach($videos as $suggest) {
-            if( $suggest['kind'] == $video['kind'] && $suggest['domain'] == $video['domain']) {
-                return [
-                    'video_id' => $suggest['_id']->__toString()
-                ];
-            }
-        }
-
-        foreach($videos as $suggest) {
-            if( $suggest['kind'] == $video['kind']) {
-                return [
-                    'video_id' => $suggest['_id']->__toString()
-                ];
-            }
-        }
-
-        return $videos[0];
+        return $currentVideo['_id'];
     }
 }

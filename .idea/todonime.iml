@@ -9,7 +9,6 @@
       <excludeFolder url="file://$MODULE_DIR$/vendor/cartalyst/collections" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/composer" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/fig/http-message-util" />
-      <excludeFolder url="file://$MODULE_DIR$/vendor/grutenko/shikimori-api" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/guzzlehttp/psr7" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/http-interop/http-factory-guzzle" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/jeremeamia/superclosure" />
