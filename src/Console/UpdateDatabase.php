@@ -65,7 +65,7 @@ class UpdateDatabase extends \Symfony\Component\Console\Command\Command
             $code = $this
                 ->getApplication()
                 ->find($command[0])
-                ->run(new ArrayInput($command[1]), $output);
+                ->run(new ArrayInput(@$command[1] ?: []), $output);
 
             if($code != 0 || $code != null) {
                 return $code;
