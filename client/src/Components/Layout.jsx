@@ -22,7 +22,7 @@ const drawerWidth = 350,
             "flexGrow": 1
         },
         "main": {
-            "marginTop": 15
+            "width": "calc(100vw - 100px)"
         },
         "appBarShift": {
             "marginRight": drawerWidth,
@@ -125,7 +125,7 @@ export default function Layout ({title, setMenu, menuOpen, children}) {
                 </IconButton>
             </Toolbar>
         </AppBar>
-        <Container maxWidth="lg" className={classes.main}>
+        <Container maxWidth={false} className={classes.main}>
             {children}
         </Container>
     </div>;
