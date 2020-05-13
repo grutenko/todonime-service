@@ -46,6 +46,11 @@ export default function App () {
                         path="/s/:animeId/:episode"
                         component={SuggestVideo}
                     />
+                    <Route
+                        exact
+                        path="/video/:animeId/:episode"
+                        component={SuggestVideo}
+                    />
                 </Switch>
             </Layout>
             {/* eslint-disable-next-line no-eq-null */}
