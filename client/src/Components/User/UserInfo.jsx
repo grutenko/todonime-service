@@ -20,7 +20,12 @@ export default function UserInfo () {
             setUser(!data.error ? data.data.user : null);
             setLoad(true);
 
-        });
+        })
+            .catch((data) => {
+
+                setUser(null); setLoad(true);
+
+            });
 
     }
 
