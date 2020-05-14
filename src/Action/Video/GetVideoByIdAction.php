@@ -7,7 +7,6 @@ namespace App\Action\Video;
 use App\Action\Action;
 use App\Helper\ResponseHelper;
 use MongoDB\BSON\ObjectId;
-use MongoDB\BSON\Regex;
 use Slim\Psr7\Request;
 use Slim\Psr7\Response;
 
@@ -192,7 +191,9 @@ class GetVideoByIdAction extends Action
         if($video == null) {
             return null;
         } else {
-            return $video['_id']->__toString();
+            return [
+                'video_id' => $video['_id']->__toString()
+            ];
         }
     }
 
