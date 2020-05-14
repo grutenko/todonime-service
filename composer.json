@@ -37,7 +37,7 @@
         "guzzlehttp/psr7": "^1.6",
         "http-interop/http-factory-guzzle": "^1.0",
         "laminas/laminas-diactoros": "^2.2",
-        "grutenko/shikimori-api": "@dev",
+        "grutenko/shikimori-api": "dev-master",
         "mongodb/mongodb": "^1.6",
         "vlucas/phpdotenv": "^4.1",
         "symfony/console": "^5.0",
