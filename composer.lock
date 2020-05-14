@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "b3e61da2a511d76316aa7c629dffc2e4",
+    "content-hash": "abdb56d83cd6e0775ff5938b0ae8ebb8",
     "packages": [
         {
             "name": "awurth/slim-validation",
@@ -177,11 +177,11 @@
         },
         {
             "name": "grutenko/shikimori-api",
-            "version": "9999999-dev",
+            "version": "0.4.0",
             "dist": {
                 "type": "path",
                 "url": "./lib/shikimori-api",
-                "reference": "5b6d875ef19b09308143aa450499129ee2846089",
+                "reference": "ff1efed4f6a2958a15d5a2ba67b09bbb364c0692",
                 "shasum": null
             },
             "require": {
@@ -2562,9 +2562,7 @@
     "packages-dev": [],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "grutenko/shikimori-api": 20
-    },
+    "stability-flags": [],
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
