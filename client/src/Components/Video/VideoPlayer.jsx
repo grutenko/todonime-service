@@ -10,6 +10,7 @@ import {IconButton, withStyles} from "@material-ui/core";
 import ViewListIcon from "@material-ui/icons/ViewList";
 import KeyboardArrowLeftIcon from "@material-ui/icons/KeyboardArrowLeft";
 import KeyboardArrowRightIcon from "@material-ui/icons/KeyboardArrowRight";
+import TheatersIcon from "@material-ui/icons/Theaters";
 import Popper from "@material-ui/core/Popper";
 import {drawerWidth} from "../Menu";
 import clsx from "clsx";
@@ -156,6 +157,9 @@ class VideoPlayer extends React.Component {
                 onClick={this.onOpenTranslationsList.bind(this)}
             >
                 <ViewListIcon />
+            </IconButton><br/>
+            <IconButton>
+                <TheatersIcon onClick={this.onOpenAnimeInfo.bind(this)} />
             </IconButton><br/>
             <IconButton>
                 {data.prev_episode !== null
