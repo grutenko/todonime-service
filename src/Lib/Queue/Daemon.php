@@ -31,20 +31,6 @@ class Daemon
     }
 
     /**
-     * @param $config
-     * @return bool
-     */
-    private function checkConfig($config): bool
-    {
-        $required = [
-            'mongodb',
-            'db_collection',
-            'workers'
-        ];
-        return array_intersect($required, array_keys($config)) != count($required);
-    }
-
-    /**
      *
      */
     public function run()

@@ -24,11 +24,13 @@ class Client
     }
 
     /**
+     * @param string $workerName
      * @param array $params
-     * @return ObjectId
+     * @return void
      */
-    public function add(array $params)
+    public function add(string $workerName, array $params)
     {
+        $params['worker'] = $workerName;
         $this->collection->insertOne($params);
     }
 }

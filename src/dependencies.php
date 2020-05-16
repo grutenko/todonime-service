@@ -46,7 +46,7 @@ $container->set('cache', function () {
     ]);
 });
 
-$container->set('storage', function () {
+$container->set('cdn', function () {
     return new League\Flysystem\Filesystem(
         new Local(
             $_ENV['PUBLIC_STORAGE_DIR'] ?: __DIR__ . '/../storage/public',

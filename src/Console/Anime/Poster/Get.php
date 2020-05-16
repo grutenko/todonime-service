@@ -43,7 +43,7 @@ class Get extends Command
     {
         $this->db = $container->get('mongodb')->todonime;
         $this->sdk = $container->get('shikimori_sdk');
-        $this->storage = $container->get('storage');
+        $this->cdn = $container->get('cdn');
 
         parent::__construct();
     }
@@ -69,33 +69,43 @@ class Get extends Command
         $count = 0;
         $ids = array_column($animes, 'shikimori_id');
 
-        $ids = array_filter($ids, function($id) {
-            return !$this->storage->has("/anime/{$id}/poster_original");
-        });
-
         $output->writeln("Сохраняю постеры...");
 
         foreach($ids as $id) {
-            $anime = $this->sdk->anime()->findOrFail($id);
+           $anime = $this->sdk->anime()->findOrFail($id);
 
             $output->write(
                 "\r". ($count++) . '/' . count($ids) . ' '
                 . str_pad(
-                    substr( $anime->name, 0, 50),
+                    $id,
                     50,
                     ' ',
                     STR_PAD_LEFT
                 )
             );
 
-            $success = $this->storage->writeStream(
-                "/anime/{$id}/poster_original",
+            /*$success = $this->cdn->writeStream(
+                "/public/anime/{$id}/poster_original",
                 $anime->getPoster()->detach()
-            );
+            );*/
 
-            if(!$success) {
+            /*if(!$success) {
                 throw new RuntimeException('Error writing poster');
-            }
+            }*/
+
+            $this->db->animes->updateOne(
+                [
+                    'shikimori_id' => $id
+                ], [
+                    '$set' => [
+                        'poster' => [
+                            'original' => "/anime/{$id}/poster_original"
+                        ]
+                    ]
+                ]
+            );
         }
+
+        return 0;
     }
 }

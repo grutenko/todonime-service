@@ -32,8 +32,7 @@ class BumpEpisode extends Action
 
         $queue = new Client($this->mongodb->todonime->queue);
 
-        $queue->add([
-            'worker' => 'bump_episode',
+        $queue->add('bump_episode', [
             'anime_id' => $params['anime_id'],
             'user_id' => $user['_id']->__toString(),
             'episode' => $params['episode']

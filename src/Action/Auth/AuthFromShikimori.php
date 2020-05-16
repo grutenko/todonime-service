@@ -80,7 +80,7 @@ class AuthFromShikimori extends Action
 
         return $response
             ->withStatus(302)
-            ->withHeader('Location', $cookie['auth_back_url'] ?: '/')
+            ->withHeader('Location', @$cookie['auth_back_url'] ?: '/')
             ->withHeader('Set-Cookie', "auth={$code}; HttpOnly; Path=/; Max-Age=31536000");
     }
 }

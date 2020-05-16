@@ -23,6 +23,7 @@
     "minimum-stability": "stable",
     "require": {
         "awurth/slim-validation": "^2",
+        "ext-intl": "*",
         "ext-curl": "*",
         "ext-iconv": "*",
         "ext-json": "*",
@@ -38,12 +39,13 @@
         "http-interop/http-factory-guzzle": "^1.0",
         "laminas/laminas-diactoros": "^2.2",
         "grutenko/shikimori-api": "0.*",
-        "mongodb/mongodb": "^1.6",
         "vlucas/phpdotenv": "^4.1",
         "symfony/console": "^5.0",
         "php-di/php-di": "^6.1",
         "ext-mongodb": "*",
         "league/flysystem": "^1.0",
-        "quazardous/php-bump-version": "^1.0"
+        "quazardous/php-bump-version": "^1.0",
+        "league/flysystem-aws-s3-v3": "^1.0",
+        "guzzlehttp/guzzle": "^6.5"
     }
 }

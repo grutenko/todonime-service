@@ -63,6 +63,8 @@ class BumpEpisodeWorker implements WorkerInterface
             return false;
         }
 
+        echo "{$user['nickname']} {$anime->name} {$job['episode']}\r\n";
+
         if($anime->user_rate == null) {
             $rate = $this->sdk->user()->createRate([
                 'user_id' => $user['shikimori_id'],
@@ -76,8 +78,6 @@ class BumpEpisodeWorker implements WorkerInterface
             $rate = $this->sdk->user()
                 ->bumpEpisode($anime->user_rate['id'], $job['episode']);
         }
-
-        echo $anime->name. " " .$job['episode'] . "\r\n";
 
         return $rate != null;
     }
