@@ -27,6 +27,7 @@ host('todonime.ru')
 
 task('deploy:install-composer', 'cd {{release_path}} && composer install --no-dev');
 task('deploy:install-npm', 'cd {{release_path}}/client && npm i && npm run build');
+task('deploy:fpm-restart', 'sudo /etc/init.d/php7.2-fpm restart');
 
 task('deploy', [
     'deploy:info',
@@ -42,7 +43,8 @@ task('deploy', [
     'deploy:install-npm',
     'deploy:unlock',
     'cleanup',
-    'success'
+    'success',
+    'deploy:fpm-restart'
 ]);
 
 after('deploy:failed', 'deploy:unlock');
