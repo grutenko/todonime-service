@@ -8,7 +8,7 @@ foreach(require __DIR__ . '/../config/middleware.php' as $middleware) {
     $app->add($middleware);
 }
 
-$app->group($_ENV['API_BASE'] ?: '/api', function($group) use ($container) {
+$app->group('', function($group) use ($container) {
     require __DIR__ . '/../routes/video.php';
     require __DIR__ . '/../routes/anime.php';
     require __DIR__ . '/../routes/user.php';
@@ -17,10 +17,6 @@ $app->group($_ENV['API_BASE'] ?: '/api', function($group) use ($container) {
         /** @var Response $response */
         return $response->withHeader('Access-Control-Allow-Origin', '*');
     });
-});
-
-$app->group('/auth', function($group) use ($container) {
-   require __DIR__ . '/../routes/auth.php';
 });
 
 $app->run();
