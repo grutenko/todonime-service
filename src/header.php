@@ -30,10 +30,3 @@ $app->addRoutingMiddleware();
 
 $container = $app->getContainer();
 require __DIR__ . '/dependencies.php';
-
-/**
- * Подключаем обработчики системных событий.
- */
-foreach(require __DIR__ . '/../config/handler.php' as $key => $handler) {
-    $container[$key] = $handler;
-}
