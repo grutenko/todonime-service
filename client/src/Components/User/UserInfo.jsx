@@ -37,7 +37,7 @@ export default function UserInfo () {
                     <Button
                         variant="contained"
                         color="primary"
-                        href={`/auth?back_url=${window.location}`}
+                        href={`${process.env.REACT_APP_AUTH_BASE}?back_url=${window.location}`}
                     >
                         Авторизация через shikimori.one
                     </Button>

@@ -3,9 +3,9 @@
 
 use App\Action\Auth\AuthFromShikimori;
 
-$group->get('',  function(\Slim\Psr7\Request $request, $response) use($container) {
+$group->get('/',  function(\Slim\Psr7\Request $request, $response) use($container) {
     $url = $container->get('shikimori_sdk')->auth()
-        ->generateAuthUrl('https://todonime.ru/auth/complete');
+        ->generateAuthUrl('https://auth.todonime.ru/complete');
 
     $params = $request->getQueryParams();
 

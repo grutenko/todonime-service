@@ -34,7 +34,7 @@ class AuthFromShikimori extends Action
         }
 
         $tokenData = $this->shikimori_sdk->auth()
-            ->getAccessToken($params['code'], 'https://todonime.ru/auth/complete');
+            ->getAccessToken($params['code'], 'https://auth.todonime.ru/complete');
 
         if(isset($tokenData['error'])) {
             return $response
