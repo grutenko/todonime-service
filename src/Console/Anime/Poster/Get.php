@@ -84,14 +84,14 @@ class Get extends Command
                 )
             );
 
-            /*$success = $this->cdn->writeStream(
-                "/public/anime/{$id}/poster_original",
+            $success = $this->cdn->writeStream(
+                "/public/anime/{$id}/poster/original",
                 $anime->getPoster()->detach()
-            );*/
+            );
 
-            /*if(!$success) {
+            if(!$success) {
                 throw new RuntimeException('Error writing poster');
-            }*/
+            }
 
             $this->db->animes->updateOne(
                 [
@@ -99,7 +99,7 @@ class Get extends Command
                 ], [
                     '$set' => [
                         'poster' => [
-                            'original' => "/anime/{$id}/poster_original"
+                            'original' => "/anime/{$id}/poster/original"
                         ]
                     ]
                 ]
