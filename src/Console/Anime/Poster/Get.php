@@ -63,7 +63,7 @@ class Get extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $animes = $this->db->animes
-            ->find()
+            ->find(['poster' => ['$exists' => false]])
             ->toArray();
 
         $count = 0;
