@@ -10,6 +10,7 @@ use DI\NotFoundException;
 use MongoDB\Database;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class UpdateDatabase extends \Symfony\Component\Console\Command\Command
@@ -41,7 +42,14 @@ class UpdateDatabase extends \Symfony\Component\Console\Command\Command
      */
     protected function configure()
     {
-        $this->setDescription('Запускает все необходимые коносольные команды для обновления базы.');
+        $this
+            ->setDescription('Запускает все необходимые коносольные команды для обновления базы.')
+            ->addOption(
+                'skip',
+                null,
+                InputOption::VALUE_IS_ARRAY | InputOption::VALUE_REQUIRED,
+                'Пропускает стадии'
+            );
     }
 
     /**
@@ -49,6 +57,8 @@ class UpdateDatabase extends \Symfony\Component\Console\Command\Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $skip = $input->getOption('skip');
+
         $commands = [
             ['video:get'],
             ['video:project.find'],
@@ -57,6 +67,10 @@ class UpdateDatabase extends \Symfony\Component\Console\Command\Command
             ['anime:status.update', ['--for' => 'ongoing,anons']],
             ['video:fully-translated.update']
         ];
+
+        $commands = array_filter($commands, function($command) use($skip) {
+            return !in_array($command[0], $skip);
+        });
 
         foreach($commands as $command)
         {
