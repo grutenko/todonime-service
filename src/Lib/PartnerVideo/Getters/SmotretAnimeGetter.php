@@ -75,13 +75,13 @@ class SmotretAnimeGetter implements GetterInterface
 
                 return [
                     'url' => $video['embedUrl'],
-                    'anime_id' => $video['series']['myAnimeListId'],
-                    'episode' => $video['episode']['episodeInt'],
+                    'anime_id' => (int)$video['series']['myAnimeListId'],
+                    'episode' => (int)$video['episode']['episodeInt'],
                     'language' => $video['typeLang'],
                     'kind' => $kind,
                     'author' => $video['authorsSummary'],
                     'domain' => 'smotret-anime.online',
-                    'partner_video_id' => $video['id']
+                    'partner_video_id' => (int)$video['id']
                 ];
             }, $translations['data']);
 

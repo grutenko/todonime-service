@@ -60,7 +60,7 @@ class Get extends Command
             ->find([], ['sort' => ['shikimori_id' => -1], 'limit' => 1])
             ->toArray();
 
-        $lastMyShikiId = count($lastAnime) > 0
+        $lastMyShikiId = is_array($lastAnime) && count($lastAnime) > 0
             ? $lastAnime[0]['shikimori_id'] + 1
             : 0;
 
@@ -70,7 +70,7 @@ class Get extends Command
 
         $rangeChunk = array_chunk(range($lastMyShikiId, 100000), 50);
         foreach ($rangeChunk as $chunk) {
-
+            usleep(300000);
             $items = $this->sdk->anime()->list(['ids' => $chunk, 'limit' => 50, 'order' => 'id']);
             if ($items->count() == 0) {
                 if ($tryGetList < 20) {
@@ -89,7 +89,7 @@ class Get extends Command
 
             $this->db->animes->insertMany(array_map(function ($anime) {
                 return [
-                    'shikimori_id'  => $anime->id,
+                    'shikimori_id'  => (int)$anime->id,
                     'status'        => $anime->status,
                     'kind'          => $anime->kind,
                     'url'           => $anime->url,
