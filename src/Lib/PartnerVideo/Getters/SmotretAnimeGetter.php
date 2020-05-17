@@ -55,7 +55,7 @@ class SmotretAnimeGetter implements GetterInterface
             $translations = $this->api->send('/translations', [
                 'feed' => 'id',
                 'afterId' => $lastVideoId,
-                'limit' => 5000
+                'limit' => 1000
             ]);
 
             if (count($translations['data']) == 0) {
@@ -65,7 +65,7 @@ class SmotretAnimeGetter implements GetterInterface
             yield array_map(function ($video) {
                 if($video['typeKind'] == 'voice') {
                     $kind = 'dub';
-                } elseif($video['typeKind'] == 'subtitles')
+                } elseif($video['typeKind'] == 'sub')
                 {
                     $kind = 'sub';
                 } else
