@@ -40,6 +40,7 @@ class ResponseHelper
             ->withStatus($httpStatus)
             ->withHeader('Content-Type', 'application/json')
             ->withHeader('Access-Control-Allow-Origin', 'https://todonime.ru')
+            ->withHeader('Access-Control-Allow-Credentials', 'true')
             ->withBody(Psr7\stream_for($body));
     }
 
@@ -57,6 +58,7 @@ class ResponseHelper
         return $response
             ->withHeader('Content-Type', 'application/json')
             ->withHeader('Access-Control-Allow-Origin', 'https://todonime.ru')
+            ->withHeader('Access-Control-Allow-Credentials', 'true')
             ->withBody(Psr7\stream_for($body));
     }
 }
