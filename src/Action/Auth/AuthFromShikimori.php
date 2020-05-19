@@ -24,8 +24,6 @@ class AuthFromShikimori extends Action
      */
     public function __invoke(Request $request, Response $response, array $args): Response
     {
-        error_reporting(E_ALL);
-
         $params = $request->getQueryParams();
         if( !isset($params['code']) )  {
             return $response
@@ -78,9 +76,11 @@ class AuthFromShikimori extends Action
 
         $cookie = $request->getCookieParams();
 
+        $domain = ($_ENV['APP_ENV'] == 'local') ? '.todonime.lc' : '.todonime.ru';
+
         return $response
             ->withStatus(302)
             ->withHeader('Location', @$cookie['auth_back_url'] ?: '/')
-            ->withHeader('Set-Cookie', "auth={$code}; HttpOnly; Path=/; Max-Age=31536000");
+            ->withHeader('Set-Cookie', "auth={$code}; HttpOnly; Domain={$domain};Path=/; Max-Age=31536000");
     }
 }
