@@ -12,6 +12,7 @@ export function fetch (url, params, method) {
 
         const options = {
             "headers": {},
+            "withCredentials": true,
             "method": method || "GET",
             "url": API_PATH + url
         };
