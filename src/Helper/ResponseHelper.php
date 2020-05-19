@@ -56,7 +56,7 @@ class ResponseHelper
         ]);
         return $response
             ->withHeader('Content-Type', 'application/json')
-            ->withHeader('Access-Control-Allow-Origin', '*')
+            ->withHeader('Access-Control-Allow-Origin', 'todonime.ru')
             ->withBody(Psr7\stream_for($body));
     }
 }
