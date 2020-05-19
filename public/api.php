@@ -8,7 +8,6 @@ foreach(require __DIR__ . '/../config/middleware.php' as $middleware) {
     $app->add($middleware);
 }
 
-
 $customErrorHandler = function (
     $request,
     Throwable $exception,
@@ -40,7 +39,7 @@ $app->group('', function($group) use ($container) {
 
     $group->options('[{path:.*}]', function($request, $response) {
         /** @var Response $response */
-        return $response->withHeader('Access-Control-Allow-Origin', '*');
+        return $response->withHeader('Access-Control-Allow-Origin', '*.todonime.ru');
     });
 });
 
