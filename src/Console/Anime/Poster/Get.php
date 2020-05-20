@@ -85,7 +85,7 @@ class Get extends Command
             );
 
             $success = $this->cdn->writeStream(
-                "/public/anime/{$id}/poster/original",
+                "/anime/{$id}/poster/original",
                 $anime->getPoster()->detach()
             );
 
