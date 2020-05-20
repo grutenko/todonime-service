@@ -1,4 +1,7 @@
 <?php
+
+use App\Middleware\HeaderMiddleware;
+
 require __DIR__ . '/../src/header.php';
 
 /**
@@ -7,6 +10,7 @@ require __DIR__ . '/../src/header.php';
 foreach(require __DIR__ . '/../config/middleware.php' as $middleware) {
     $app->add($middleware);
 }
+$app->add(HeaderMiddleware::class);
 
 $customErrorHandler = function (
     $request,

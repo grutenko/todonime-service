@@ -36,7 +36,9 @@ class AuthMiddleware
             $user = $authHelper->getByCode($cookie['auth']);
 
             if($user != null) {
-                $request = $request->withAttribute('user', $user);
+                $request = $request
+                    ->withAttribute('user', $user)
+                    ->withAttribute('token', $cookie['auth']);
             }
         }
 
