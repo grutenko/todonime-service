@@ -24,6 +24,25 @@ class AuthHelper
     }
 
     /**
+     * 
+     *
+     * @param ObjectId $id
+     * @param string $token
+     * @return void
+     */
+    public function logout(ObjectId $id, string $token)
+    {
+        $this->db->todonime->users->updateOne(
+            [
+                '_id' => $id
+            ],
+            [
+                '$pull' => [ 'auth_code' => [ '$in' => [$token] ] ]
+            ]
+        );
+    }
+
+    /**
      * @param ObjectId $oid
      * @return string
      */
@@ -36,7 +55,7 @@ class AuthHelper
                 '_id' => $oid
             ],
             [
-                '$set' => [
+                '$addToSet' => [
                     'auth_code' => $code
                 ]
             ]);
