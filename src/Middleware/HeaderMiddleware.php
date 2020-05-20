@@ -13,6 +13,7 @@ class HeaderMiddleware
 
         return $response
             ->withHeader('Access-Control-Allow-Origin', 'https://todonime.ru')
+            ->withHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
             ->withHeader('Access-Control-Allow-Credentials', 'true');
     }
 }
