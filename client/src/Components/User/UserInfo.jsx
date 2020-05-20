@@ -11,7 +11,13 @@ export default function UserInfo () {
         [
             load,
             setLoad
-        ] = React.useState(false);
+        ] = React.useState(false),
+
+        logout = () => {
+            fetch('user/logout', {}, 'POST').then(data => {
+                window.location.href = window.location;
+            });
+        };
 
     if (!load) {
 
@@ -42,7 +48,15 @@ export default function UserInfo () {
                         Авторизация через shikimori.one
                     </Button>
                 </span>
-                : user.nickname
+                : <div>
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        href={`${process.env.REACT_APP_AUTH_BASE}?back_url=${window.location}`}
+                    >
+                        Выйти
+                    </Button>
+                </div>
             : null
         }
     </>;
