@@ -15,6 +15,14 @@ export function setShow( name ) {
     }
 }
 
+export function unsetShow( name ) {
+    if( alreadyShowed(name) ) {
+        var promt = getAllShowed();
+        promt.splice(  promt.indexOf(name) , 1) 
+        save( promt );  
+    }
+} 
+
 /**
  * Возвращает массив с именами всех показаных подсказок.
  * @return {Array}

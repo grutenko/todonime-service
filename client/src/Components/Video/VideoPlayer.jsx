@@ -20,7 +20,13 @@ import {Link, Redirect} from "react-router-dom";
 import Button from "@material-ui/core/Button";
 import ButtonPopper from "../Misc/ButtonPopper";
 import BeenhereIcon from "@material-ui/icons/Beenhere";
-import { alreadyShowed, setShow } from "../../lib/promt";
+import { alreadyShowed, setShow, unsetShow } from "../../lib/promt";
+import Snackbar from '@material-ui/core/Snackbar';
+import MuiAlert from '@material-ui/lab/Alert';
+
+function Alert(props) {
+  return <MuiAlert elevation={6} variant="filled" {...props} />;
+}
 
 moment.locale("ru");
 
@@ -31,11 +37,19 @@ class VideoPlayer extends React.Component {
         super(props);
 
         this.state = {
+            "showLogin": alreadyShowed('login'),
+            "showLogout": alreadyShowed('logout'),
             "data": null,
             "loaded": false,
             "rightMenuPortal": false
         };
 
+        if(this.state.showLogin) {
+            unsetShow('login');
+        }
+        if(this.state.showLogout) {
+            unsetShow('logout');
+        }
     }
 
     componentDidMount () {
@@ -205,7 +219,7 @@ class VideoPlayer extends React.Component {
     // eslint-disable-next-line class-methods-use-this
     render () {
 
-        const {loaded, data, redirectToNext} = this.state;
+        const {loaded, data, redirectToNext, showLogin, showLogout} = this.state;
 
         if(loaded && data.user === undefined && !alreadyShowed('auth')) {
             setShow('auth');
@@ -216,6 +230,28 @@ class VideoPlayer extends React.Component {
         return <>
             {loaded
                 ? <>
+                    <Snackbar
+                        open={showLogin}
+                        autoHideDuration={6000}
+                        onClose={() => this.setState({showLogin: false})}
+                        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+                        key="top,right"
+                    >
+                        <Alert severity="info">
+                            Вы успешно авторизировались через shikimori.one
+                        </Alert>
+                    </Snackbar>
+                    <Snackbar
+                        open={showLogout}
+                        autoHideDuration={6000}
+                        onClose={() => this.setState({showLogout: false})}
+                        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+                        key="top,right"
+                    >
+                        <Alert severity="info">
+                            Вы успешно вышли из аккаунта
+                        </Alert>
+                    </Snackbar>
                     {redirectToNext
                         ? <Redirect to={`/v/${data.next_episode.video_id}`}/>
                         : null

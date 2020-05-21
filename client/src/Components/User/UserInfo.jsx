@@ -1,6 +1,7 @@
 import React from "react";
 import Button from "@material-ui/core/Button";
 import {fetch} from "../../lib/api";
+import { setShow } from "../../lib/promt";
 
 export default function UserInfo () {
 
@@ -14,10 +15,15 @@ export default function UserInfo () {
         ] = React.useState(false),
 
         logout = () => {
+            setShow('logout');
             fetch('user/logout', {}, 'POST').then(data => {
                 window.location.href = window.location;
             });
-        };
+        },
+        login = () => {
+            setShow('login');
+            window.location.href = `${process.env.REACT_APP_AUTH_BASE}?back_url=${window.location}`;
+        }
 
     if (!load) {
 
@@ -43,7 +49,7 @@ export default function UserInfo () {
                     <Button
                         variant="contained"
                         color="primary"
-                        href={`${process.env.REACT_APP_AUTH_BASE}?back_url=${window.location}`}
+                        onClick={login}
                     >
                         Авторизация через shikimori.one
                     </Button>
