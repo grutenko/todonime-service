@@ -100,16 +100,6 @@ class VideoPlayer extends React.Component {
                     >
                         {result.data.anime.name_ru || result.data.anime.name_en}
                     </Button>
-                    <Button
-                        variant="contained"
-                        color={result.data.project ? "secondary" : "disabled"}
-                        onClick={() => window.open(`https://shikimori.one${result.data.anime.url}`)}
-                    >
-                        {result.data.author.substr(
-                            0,
-                            10
-                        )}
-                    </Button>
                     <span style={{"margin": "auto 5px"}}>{result.data.episode} серия</span>
                 </>);
 
