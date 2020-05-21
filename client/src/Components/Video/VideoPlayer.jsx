@@ -20,6 +20,7 @@ import {Link, Redirect} from "react-router-dom";
 import Button from "@material-ui/core/Button";
 import ButtonPopper from "../Misc/ButtonPopper";
 import BeenhereIcon from "@material-ui/icons/Beenhere";
+import { alreadyShowed, setShow } from "../../lib/promt";
 
 moment.locale("ru");
 
@@ -205,6 +206,11 @@ class VideoPlayer extends React.Component {
     render () {
 
         const {loaded, data, redirectToNext} = this.state;
+
+        if(loaded && data.user === undefined && !alreadyShowed('auth')) {
+            setShow('auth');
+            window.location.href = 'https://auth.todonime.ru/?back_url'+ window.location;
+        }
 
         // eslint-disable-next-line no-ternary
         return <>
