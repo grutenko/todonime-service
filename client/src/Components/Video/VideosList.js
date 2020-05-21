@@ -197,30 +197,29 @@ class AuthorsList extends React.Component {
                                 onClick={() => {}}
                                 style={{"display": "flex"}}
                             >
-                                <ListItemText primary={<>
-                                    <span style={{"verticalAlign": "middle",
-                                        "marginRight": "5px"}}>
-                                        <img
-                                            src={`/static/img/flags/flags-iso/flat/16/${{"ru": "RU",
-                                                "en": "EN",
-                                                "ja": "JP"}[video.language] || "RU"}.png`}
-                                            alt="Canada Flag"
-                                        />
-                                    </span>
-                                    <Link onClick={() => {}} to={`/v/${video._id.$oid}`} style={{"flex": 1}}>
-                                        <span style={{"fontSize": "13px"}}>{video.author.substr(
-                                            0,
-                                            22
-                                        ) + (
-                                            video.author.length > 22 ? "..." : ""
-                                        )}</span>
-                                    </Link>
-                                </>}/>
+                                <Link to={`/v/${video._id.$oid}`} style={{"flex": 1, 'text-decoration': 'none'}}>
+                                    <ListItemText 
+                                        primary={<>
+                                            <span style={{"verticalAlign": "middle",
+                                                "marginRight": "5px"}}>
+                                                <img
+                                                    src={`/static/img/flags/flags-iso/flat/16/${{"ru": "RU",
+                                                        "en": "EN",
+                                                        "ja": "JP"}[video.language] || "RU"}.png`}
+                                                    alt="Canada Flag"
+                                                />
+                                            </span>
+                                            <span style={{"fontSize": "13px"}}>
+                                                {video.author.substr(0,22 ) + (video.author.length > 22 ? "..." : "")}
+                                            </span>
+                                        </>}
+                                    />
+                                </Link>
                                 {
-                                    video.completed
+                                        video.completed
                                         ? <CheckIcon color="primary" title="Сериал переведен этим проектом полностью"/>
                                         : null
-                                }
+                                    }
                             </ListItem>)}
                         </List>
                     </ExpansionPanelDetails>
