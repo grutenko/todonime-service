@@ -77,12 +77,6 @@ class UpdateFullTranslate extends Command
                 return $v2['episode'] - $v1['episode'];
             });
 
-            $this->db->videos->updateMany(['completed' => true], [
-               '$unset' => [
-                   'completed' => 1
-               ]
-            ]);
-
             foreach($videos as $video)
             {
                 $animes[ $video['anime_id'] ][] = $video['episode'];
