@@ -20,12 +20,15 @@ import {Link, Redirect} from "react-router-dom";
 import Button from "@material-ui/core/Button";
 import ButtonPopper from "../Misc/ButtonPopper";
 import BeenhereIcon from "@material-ui/icons/Beenhere";
-import { alreadyShowed, setShow, unsetShow } from "../../lib/promt";
-import Snackbar from '@material-ui/core/Snackbar';
-import MuiAlert from '@material-ui/lab/Alert';
+import {alreadyShowed, setShow, unsetShow} from "../../lib/promt";
+import Snackbar from "@material-ui/core/Snackbar";
+import MuiAlert from "@material-ui/lab/Alert";
+import Comments from "./Comments";
 
-function Alert(props) {
-  return <MuiAlert elevation={6} variant="filled" {...props} />;
+function Alert (props) {
+
+    return <MuiAlert elevation={6} variant="filled" {...props} />;
+
 }
 
 moment.locale("ru");
@@ -37,19 +40,24 @@ class VideoPlayer extends React.Component {
         super(props);
 
         this.state = {
-            "showLogin": alreadyShowed('login'),
-            "showLogout": alreadyShowed('logout'),
+            "showLogin": alreadyShowed("login"),
+            "showLogout": alreadyShowed("logout"),
             "data": null,
             "loaded": false,
             "rightMenuPortal": false
         };
 
-        if(this.state.showLogin) {
-            unsetShow('login');
+        if (this.state.showLogin) {
+
+            unsetShow("login");
+
         }
-        if(this.state.showLogout) {
-            unsetShow('logout');
+        if (this.state.showLogout) {
+
+            unsetShow("logout");
+
         }
+
     }
 
     componentDidMount () {
@@ -211,9 +219,11 @@ class VideoPlayer extends React.Component {
 
         const {loaded, data, redirectToNext, showLogin, showLogout} = this.state;
 
-        if(loaded && data.user === undefined && !alreadyShowed('auth')) {
-            setShow('auth');
-            window.location.href = 'https://auth.todonime.ru/?back_url'+ window.location;
+        if (loaded && data.user === undefined && !alreadyShowed("auth")) {
+
+            setShow("auth");
+            window.location.href = `https://auth.todonime.ru/?back_url${window.location}`;
+
         }
 
         // eslint-disable-next-line no-ternary
@@ -223,8 +233,9 @@ class VideoPlayer extends React.Component {
                     <Snackbar
                         open={showLogin}
                         autoHideDuration={6000}
-                        onClose={() => this.setState({showLogin: false})}
-                        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+                        onClose={() => this.setState({"showLogin": false})}
+                        anchorOrigin={{"vertical": "top",
+                            "horizontal": "center"}}
                         key="top,right"
                     >
                         <Alert severity="info">
@@ -234,8 +245,9 @@ class VideoPlayer extends React.Component {
                     <Snackbar
                         open={showLogout}
                         autoHideDuration={6000}
-                        onClose={() => this.setState({showLogout: false})}
-                        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+                        onClose={() => this.setState({"showLogout": false})}
+                        anchorOrigin={{"vertical": "top",
+                            "horizontal": "center"}}
                         key="top,right"
                     >
                         <Alert severity="info">
@@ -247,6 +259,10 @@ class VideoPlayer extends React.Component {
                         : null
                     }
                     <VideoPlayerIframe url={data.url}/>
+                    <Comments
+                        animeId={data.anime._id.$oid}
+                        episode={data.episode}
+                    />
                     {this.renderRightToolbar()}
                 </>
                 : <Loader/>}
