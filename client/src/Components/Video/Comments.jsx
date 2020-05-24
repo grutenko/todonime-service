@@ -105,7 +105,7 @@ export default class Comments extends React.Component {
      */
     delete(commentId) {
         fetch("video/comments/"+commentId, {}, 'DELETE')
-            .then(data => {
+            .then(() => {
                 this.setState({
                     comments: this.state.comments.filter(comment => comment._id.$oid !== commentId)
                 })
@@ -235,7 +235,7 @@ function Comment ({comment, user, onDelete}) {
             src     = {comment.user.avatar}
         />
         <CommentText
-            onMenuClick = {action => onDelete(comment._id.$oid)}
+            onMenuClick = {() => onDelete(comment._id.$oid)}
             showMenu    = {hover}
             text        = {comment.text}
             user        = {comment.user}
@@ -375,7 +375,7 @@ function CommentText ({showMenu, text, user, createdAt, onMenuClick}) {
     return <div style={styles.text}>
         <div>
             <span style={styles.nickname}>
-                {user.nickname}<Scopes scopes={user.scope}/>
+                {user.nickname}<Scopes scopes={user.scope || []}/>
             </span>
             <time style={styles.time}>{ moment(createdAt).fromNow() }</time>
             <CommentMenu show={showMenu} onClick={onMenuClick} />
