@@ -4,6 +4,7 @@ import Layout from "./Components/Layout";
 import {Route, Switch} from "react-router-dom";
 import VideoPlayer from "./Components/Video/VideoPlayer";
 import Menu from './Components/Menu';
+import {withRouter} from "react-router-dom";
 
 import * as Api from './lib/api';
 import Loader from "./Components/Misc/Loader";
@@ -62,7 +63,7 @@ export default function App () {
 
 }
 
-function SuggestVideo ({"match": {"params": {animeId, episode}}}) {
+function SuggestVideo ({history, "match": {"params": {animeId, episode}}}) {
 
     const [
         load,
@@ -78,8 +79,8 @@ function SuggestVideo ({"match": {"params": {animeId, episode}}}) {
         ).then((data) => {
 
             setLoad(true);
-            window.location.href = `/v/${data.data.video_id}`;
-
+            history.replace(`/s/${animeId}/${episode}`);
+            history.push(`/v/${data.data.video_id}`);
         });
 
     }
@@ -87,3 +88,5 @@ function SuggestVideo ({"match": {"params": {animeId, episode}}}) {
     return <Loader/>;
 
 }
+
+SuggestVideo = withRouter(SuggestVideo);

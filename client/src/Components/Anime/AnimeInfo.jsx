@@ -1,14 +1,13 @@
 import React from "react";
+import EpisodesList from "./EpisodesList";
 
-export default function AnimeInfo ({anime}) {
+export default function AnimeInfo ({anime, user}) {
 
-    return <>
-        <img src={
-            (process.env.REACT_APP_ENV === "local"
-                ? "http://cdn.todonime.lc"
-                : "https://cdn.todonime.ru") +
-            anime.poster.original}
-        />
-    </>;
+    return <EpisodesList
+        anime                   = {anime}
+        canComplete             = {user !== null}
+        lastCompletedEpisode    = {5}
+        lastEpisode             = {anime.last_episode}
+    />
 
 }
