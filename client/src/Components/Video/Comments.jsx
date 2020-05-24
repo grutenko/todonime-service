@@ -344,7 +344,7 @@ function NotFoundComment({needAuth}) {
     </Paper>
 }
 
-function CommentText ({showMenu, text, user, createdAt, onMenuClick}) {
+class CommentText extends React.Component {
 
     /**
      *
@@ -354,10 +354,13 @@ function CommentText ({showMenu, text, user, createdAt, onMenuClick}) {
      *      time: {color: string, fontSize: string, "line-height": string, "marginRight": string}
      * }}
      */
-    const styles = {
-        "text": {
+    styles = {
+        "right": {
             "margin": "0 0 0 15px",
             "flex": 1
+        },
+        "text": {
+            "white-space": "break-spaces"
         },
         "nickname": {
             "marginRight": "5px",
@@ -370,18 +373,36 @@ function CommentText ({showMenu, text, user, createdAt, onMenuClick}) {
             "line-height": "1.5",
             "marginRight": "15px"
         }
+    };
+
+    componentDidMount() {
+        this.timer = setInterval(this.forceUpdate.bind(this), 60000);
     }
 
-    return <div style={styles.text}>
-        <div>
-            <span style={styles.nickname}>
+    componentWillUnmount() {
+        clearInterval(this.timer);
+    }
+
+    render() {
+        const {
+            user,
+            createdAt,
+            showMenu,
+            onMenuClick,
+            text
+        } = this.props;
+
+        return <div style={this.styles.right}>
+            <div>
+            <span style={this.styles.nickname}>
                 {user.nickname}<Scopes scopes={user.scope || []}/>
             </span>
-            <time style={styles.time}>{ moment(createdAt).fromNow() }</time>
-            <CommentMenu show={showMenu} onClick={onMenuClick} />
+                <time style={this.styles.time}>{ moment(createdAt).fromNow() }</time>
+                <CommentMenu show={showMenu} onClick={onMenuClick} />
+            </div>
+            <pre style={this.styles.text}>{ text }</pre>
         </div>
-        <pre>{ text }</pre>
-    </div>
+    }
 }
 
 function Scopes({scopes}) {
