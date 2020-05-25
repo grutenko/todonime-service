@@ -642,10 +642,12 @@ class CommentForm extends React.Component {
             this.inputRef.current.focus();
 
         }
-        const val = this.inputRef.current.value;
+        const val = this.state.value;
         const pos = this.inputRef.current.selectionStart;
 
-        this.inputRef.current.value = val.slice(0, pos) + emoji.native + val.slice(pos + 1);
+        this.setState({
+            value: val.slice(0, pos) + emoji.native + val.slice(pos + 1)
+        });
     }
 
     onKeyUp(e) {
