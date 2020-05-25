@@ -31,7 +31,7 @@ task('deploy:fpm-restart', 'sudo /etc/init.d/php7.2-fpm restart');
 task('deploy:daemon-restart', 'sudo systemctl restart todonime-queue');
 task('deploy:event-service-restart', function() {
     run("cd {{release_path}} && php daemons/ws.php stop");
-    run("'cd {{release_path}} && php daemons/ws.php start -d'");
+    run("cd {{release_path}} && php daemons/ws.php start -d");
 });
 
 task('deploy', [
