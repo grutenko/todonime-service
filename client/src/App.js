@@ -85,7 +85,7 @@ function SuggestVideo ({history, "match": {"params": {animeId, episode}}}) {
 
     }
 
-    return <Loader/>;
+    return <div></div>;
 
 }
 
