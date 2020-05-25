@@ -6,6 +6,6 @@ import * as buildQuery from "http-build-query";
  */
 export function createWs(channel, filter) {
     return new WebSocket(
-        "ws://ws.todonime.lc/?" + buildQuery({channel, filter})
+        (process.env.REACT_APP_WS_BASE_PATH || "wss://ws.todonime.ru") + buildQuery({channel, filter})
     );
 }
