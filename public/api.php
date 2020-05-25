@@ -10,7 +10,6 @@ require __DIR__ . '/../src/header.php';
 foreach(require __DIR__ . '/../config/middleware.php' as $middleware) {
     $app->add($middleware);
 }
-$app->add(HeaderMiddleware::class);
 
 $customErrorHandler = function (
     $request,
@@ -21,7 +20,7 @@ $customErrorHandler = function (
     ?LoggerInterface $logger = null
 ) use ($app) {
 
-    $payload = ['error' => $exception->getMessage()];
+    $payload = ['error' => $exception->getMessage(), 'error_descr' => $exception->getTrace()];
 
     $response = $app->getResponseFactory()->createResponse();
     $response->getBody()->write(
@@ -40,11 +39,6 @@ $app->group('', function($group) use ($container) {
     require __DIR__ . '/../routes/video.php';
     require __DIR__ . '/../routes/anime.php';
     require __DIR__ . '/../routes/user.php';
-
-    $group->options('[{path:.*}]', function($request, $response) {
-        /** @var Response $response */
-        return $response->withHeader('Access-Control-Allow-Origin', '*.todonime.ru');
-    });
 });
 
 $app->run();
