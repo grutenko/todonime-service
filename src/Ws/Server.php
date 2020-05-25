@@ -7,6 +7,7 @@ use App\Ws\Channel\ChannelInterface;
 use Workerman\Connection\AsyncTcpConnection;
 use Workerman\Connection\ConnectionInterface;
 use Workerman\Connection\TcpConnection;
+use Workerman\Lib\Timer;
 use Workerman\Worker;
 
 class Server
@@ -171,7 +172,20 @@ class Server
         $this->server->onWorkerStart = function()
         {
             $this->connectToEventObserver();
+            $this->setPingTimer();
         };
+    }
+
+    /**
+     * @return void
+     */
+    private function setPingTimer()
+    {
+        Timer::add(10, function() {
+            foreach($this->server->connections as $connection) {
+                $connection->send(pack('H*', '890400000000'), true);
+            }
+        });
     }
 
     /**
