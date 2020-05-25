@@ -11,7 +11,6 @@ import ViewListIcon from "@material-ui/icons/ViewList";
 import KeyboardArrowLeftIcon from "@material-ui/icons/KeyboardArrowLeft";
 import KeyboardArrowRightIcon from "@material-ui/icons/KeyboardArrowRight";
 import TheatersIcon from "@material-ui/icons/Theaters";
-import Popper from "@material-ui/core/Popper";
 import {drawerWidth} from "../Menu";
 import clsx from "clsx";
 import VideosList from "./VideosList";
@@ -93,12 +92,6 @@ class VideoPlayer extends React.Component {
                     // eslint-disable-next-line sort-keys
                     "data": result.data
                 });
-
-                const kind = {
-                    "dub": "озвучка",
-                    "sub": "субтитры",
-                    "org": "оригинал"
-                }[result.data.kind] || "озвучка";
 
                 this.props.setTitle(<>
                     <Button

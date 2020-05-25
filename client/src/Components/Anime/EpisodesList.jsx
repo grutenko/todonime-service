@@ -5,7 +5,6 @@ import ListItemIcon from "@material-ui/core/ListItemIcon";
 import Checkbox from "@material-ui/core/Checkbox";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
-import Link from "@material-ui/core/Link";
 import {withRouter} from "react-router-dom";
 
 class EpisodesList extends React.Component {

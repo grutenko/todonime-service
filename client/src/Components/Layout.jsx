@@ -93,8 +93,7 @@ const drawerWidth = 350,
 // eslint-disable-next-line max-lines-per-function
 export default function Layout ({title, setMenu, menuOpen, children}) {
 
-    const classes = useStyles(),
-        theme = useTheme();
+    const classes = useStyles();
 
     return <div className={classes.root}>
         <AppBar

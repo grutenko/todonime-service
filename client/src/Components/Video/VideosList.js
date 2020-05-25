@@ -1,6 +1,5 @@
 import React from "react";
 
-import {makeStyles} from "@material-ui/core/styles";
 import ExpansionPanel from "@material-ui/core/ExpansionPanel";
 import ExpansionPanelSummary from "@material-ui/core/ExpansionPanelSummary";
 import ExpansionPanelDetails from "@material-ui/core/ExpansionPanelDetails";
@@ -128,7 +127,7 @@ class AuthorsList extends React.Component {
 
     componentDidUpdate (prevProps, prevState) {
 
-        if (prevProps.currentId != this.props.currentId || prevProps.kind != this.props.kind) {
+        if (prevProps.currentId !== this.props.currentId || prevProps.kind !== this.props.kind) {
 
             this.setState({"domains": this.setDomains(this.props.videos)});
 
@@ -185,7 +184,10 @@ class AuthorsList extends React.Component {
                     >
                         <Typography>
                             <img style={{"marginRight": "5px",
-                                "verticalAlign": "middle"}} src={`https://www.google.com/s2/favicons?domain=${domain}`} />
+                                "verticalAlign": "middle"}}
+                                 src={`https://www.google.com/s2/favicons?domain=${domain}`}
+                                 alt={domain}
+                            />
                             {domain}
                         </Typography>
                     </ExpansionPanelSummary>
