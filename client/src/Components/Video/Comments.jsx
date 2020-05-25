@@ -101,8 +101,8 @@ export default class Comments extends React.Component {
             'comments',
             {
                 anime_id: animeId, episode
-            })
-            .onmessage = this.onEvent.bind(this);
+            });
+        this.ws.onmessage = this.onEvent.bind(this);
 
         this.__fetch();
     }
