@@ -29,10 +29,7 @@ task('deploy:install-composer', 'cd {{release_path}} && composer install --no-de
 task('deploy:install-npm', 'cd {{release_path}}/client && npm i && npm run build');
 task('deploy:fpm-restart', 'sudo /etc/init.d/php7.2-fpm restart');
 task('deploy:daemon-restart', 'sudo systemctl restart todonime-queue');
-task('deploy:event-service-restart', function() {
-    run("cd {{release_path}} && php daemons/ws.php stop");
-    run("cd {{release_path}} && php daemons/ws.php start -d");
-});
+task('deploy:event-service-restart', "sudo systemctl restart todonime-ws.service");
 
 task('deploy', [
     'deploy:info',
