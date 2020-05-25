@@ -18,9 +18,15 @@ import Menu from '@material-ui/core/Menu';
 import MenuItem from "@material-ui/core/MenuItem";
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
+import EditIcon from '@material-ui/icons/Edit';
+import CloseIcon from '@material-ui/icons/Close';
+import SendIcon from '@material-ui/icons/Send';
 
 import "emoji-mart/css/emoji-mart.css";
 import {Picker} from "emoji-mart";
+import {createWs} from "../../lib/ws";
+
+import './Comments.css';
 
 export default class Comments extends React.Component {
 
@@ -31,7 +37,8 @@ export default class Comments extends React.Component {
         "root": {
             "backgroundColor": "white",
             "margin": "24px 0",
-            "padding": "24px"
+            "padding": "24px",
+            "minHeight": "400px"
         }
     };
 
@@ -45,11 +52,66 @@ export default class Comments extends React.Component {
     };
 
     /**
+     * @param {MessageEvent} data
+     */
+    onEvent(e) {
+        const {
+            comments
+        } = this.state;
+
+        /**
+         * @var {{action: string, eventData: object}} data
+         */
+        const data = JSON.parse(e.data);
+
+        if(data.action === 'add') {
+            data.eventData.updated = true;
+            this.setState({
+                "comments"  : [ data.eventData, ...comments],
+            })
+        } else if(data.action === 'update') {
+            this.setState({
+                "comments": comments.map(comment => {
+                    if(comment._id.$oid === data.eventData.comment_id) {
+                        comment.text = data.eventData.text;
+                        comment.updated = true;
+                        return comment;
+                    } else
+                    {
+                        return comment;
+                    }
+                })
+            })
+        } else if(data.action === 'delete') {
+            this.setState({
+                "comments": comments.filter(comment => comment._id.$oid !== data.eventData.comment_id)
+            });
+        }
+    }
+
+    /**
      * @var {{animeId: int, episode: int}} props
      */
-
     componentDidMount() {
+        const {
+                animeId,
+                episode
+        } = this.props;
+        this.ws = createWs(
+            'comments',
+            {
+                anime_id: animeId, episode
+            })
+            .onmessage = this.onEvent.bind(this);
+
         this.__fetch();
+    }
+
+    /**
+     *
+     */
+    componentWillUnmount() {
+        this.ws.close();
     }
 
     /**
@@ -60,20 +122,26 @@ export default class Comments extends React.Component {
         const {
                 animeId,
                 episode
-            } = this.props,
-            {
-                comments
-            } = this.state;
+        } = this.props;
 
         fetch(
             "video/comments",
             { "anime_id": animeId, episode, text },
             "POST"
-        ).then(({data}) => {
-            this.setState({
-                "comments"  : [ data, ...comments],
-            })
-        });
+        ).then(() => {});
+    }
+
+    updateComment(commentId, text) {
+        const {
+                animeId,
+                episode
+            } = this.props;
+
+        fetch(
+            `video/comments/${commentId}`,
+            {"anime_id": animeId, episode, text},
+            "POST"
+        ).then(() => {});
     }
 
     /**
@@ -105,11 +173,7 @@ export default class Comments extends React.Component {
      */
     delete(commentId) {
         fetch("video/comments/"+commentId, {}, 'DELETE')
-            .then(() => {
-                this.setState({
-                    comments: this.state.comments.filter(comment => comment._id.$oid !== commentId)
-                })
-            });
+            .then(()=>{});
     }
 
     render() {
@@ -132,6 +196,7 @@ export default class Comments extends React.Component {
                     currentUser = { user }
                     comments    = { comments }
                     onSubmit    = { this.addComment.bind(this) }
+                    onUpdate    = { this.updateComment.bind(this) }
                     onDelete    = { this.delete.bind(this) }
                 />
             }
@@ -151,30 +216,67 @@ class CommentsBlock extends React.Component {
         }
     }
 
+    state = {
+        update: null
+    }
+
+    /**
+     * @param comment
+     */
+    onSetUpdate(comment) {
+        this.setState({update: comment});
+    }
+
+    onSubmit(text) {
+        if(this.state.update !== null) {
+            this.props.onUpdate(this.state.update._id.$oid, text);
+            this.setState({update: null});
+        } else
+        {
+            this.props.onSubmit(text);
+        }
+    }
+
+    onDelete(commentId) {
+        if(this.state.update !== null && this.state.update._id.$oid === commentId) {
+            this.setState({update: null});
+        }
+        this.props.onDelete(commentId);
+    }
+
+    onCancelUpdate() {
+        this.setState({update: null})
+    }
+
     render() {
         const {
             animeId,
             currentUser,
-            comments,
-            onSubmit
-        } = this.props;
+            comments
+        } = this.props,
+            {
+                update
+            } = this.state;
 
         return <div style={this.styles.root}>
             <h3>Комментарии</h3>
             {currentUser !== null
                 ? <CommentForm
-                    animeId     = {animeId}
-                    user        = {currentUser}
-                    onSubmit    = {onSubmit}
+                    animeId         = {animeId}
+                    user            = {currentUser}
+                    onSubmit        = {this.onSubmit.bind(this)}
+                    onCancelUpdate  = {this.onCancelUpdate.bind(this)}
+                    updateFor       = {update}
                 />
                 : null
             }
             { comments.map(comment => {
                 return <Comment
-                    key={comment._id.$oid}
-                    comment={comment}
-                    user={currentUser}
-                    onDelete={this.props.onDelete}
+                    key         = {comment._id.$oid}
+                    comment     = {comment}
+                    user        = {currentUser}
+                    onDelete    = {this.onDelete.bind(this)}
+                    onUpdate    = {this.onSetUpdate.bind(this)}
                 />
             }) }
             { comments.length === 0
@@ -191,7 +293,7 @@ class CommentsBlock extends React.Component {
  * @returns {*}
  * @constructor
  */
-function Comment ({comment, user, onDelete}) {
+function Comment ({comment, user, onDelete, onUpdate}) {
 
     /**
      * @var {{
@@ -213,6 +315,9 @@ function Comment ({comment, user, onDelete}) {
             "padding": "5px 15px",
             "margin": "0 0 15px 0"
         },
+        "updatedItem": {
+            "animation": "updatedComment 250ms"
+        },
         "avatar": {
             "marginTop": "15px"
         }
@@ -221,11 +326,18 @@ function Comment ({comment, user, onDelete}) {
     const [
         hover,
         setHover
-    ] = React.useState(false);
+    ] = React.useState(false),
+        onMenuClick = action => {
+            if(action === 'delete') {
+                onDelete(comment._id.$oid);
+            } else if(action === 'update') {
+                onUpdate(comment);
+            }
+        };
 
     return <Paper
         variant      = "outlined"
-        style        = {styles.item}
+        style        = {comment.updated ? Object.assign(styles.item, styles.updatedItem) : styles.item}
         onMouseEnter = {()=>setHover(true)}
         onMouseLeave = {()=>setHover(false)}
     >
@@ -235,8 +347,8 @@ function Comment ({comment, user, onDelete}) {
             src     = {comment.user.avatar}
         />
         <CommentText
-            onMenuClick = {() => onDelete(comment._id.$oid)}
-            showMenu    = {hover}
+            onMenuClick = {onMenuClick}
+            showMenu    = {hover && user !== null}
             text        = {comment.text}
             user        = {comment.user}
             createdAt   = {parseInt(
@@ -295,6 +407,16 @@ function CommentMenu({ show, onClick }) {
             onClose={handleClose}
         >
             <MenuItem onClick={()=> {
+                handleClose()
+                onClick('update');
+            }}>
+              <ListItemIcon>
+                <EditIcon fontSize="small" />
+              </ListItemIcon>
+              <ListItemText primary="Изменить" />
+            </MenuItem>
+            <MenuItem onClick={()=> {
+                handleClose()
                 onClick('delete');
             }}>
               <ListItemIcon>
@@ -321,7 +443,7 @@ function NotFoundComment({needAuth}) {
         },
         "notFound": {
             "margin": "auto",
-            "padding": "200px 40px",
+            "padding": "100px 40px",
             "textAlign": "center"
         },
         "link": {
@@ -434,7 +556,7 @@ class CommentForm extends React.Component {
      *      dropdown: {top: number, left: number, position: string, right: number, zIndex: number}
      * }}
      */
-    formClasses = {
+    styles = {
         "root": {
             "width": "100%",
             "marginBottom": "15px"
@@ -445,37 +567,59 @@ class CommentForm extends React.Component {
             "right": 0,
             "left": 0,
             "zIndex": 1
+        },
+        "time": {
+            "fontSize": "12px",
+            "color": "#949494",
+            "line-height": "1.5",
+            "marginRight": "15px"
+        },
+        "header": {
+            "fontSize": "12px",
+            "color": "#949494",
+            "marginBottom": "5px"
         }
     };
 
-    /**
-     * @type {React.RefObject<Element>}
-     */
     inputRef = React.createRef();
 
     /**
      * @type {{pickerShow: boolean}}
      */
     state = {
-        "pickerShow": false
+        "pickerShow": false,
+        "updateFor" : null,
+        "value"     : ''
     };
 
     /**
-     * @param _prevProps
+     * @param prevProps
      * @param prevState
      */
-    componentDidUpdate (_prevProps, prevState) {
+    componentDidUpdate ( prevProps, prevState) {
 
         if (prevState.pickerShow !== this.state.pickerShow) {
 
             if (this.state.pickerShow && this.inputRef.current !== document.activeElement) {
 
                 this.inputRef.current.focus();
-
             }
 
         }
 
+        if( JSON.stringify(this.props.updateFor) !== JSON.stringify(this.state.updateFor) ) {
+                this.setState({updateFor: this.props.updateFor});
+        }
+
+        if(JSON.stringify(prevState.updateFor) !== JSON.stringify(this.state.updateFor)) {
+            if(this.state.updateFor !== null) {
+                this.inputRef.current.focus();
+                this.setState({value: this.state.updateFor.text});
+            } else
+            {
+                this.setState({value: ''});
+            }
+        }
     }
 
     togglePicker() {
@@ -506,48 +650,85 @@ class CommentForm extends React.Component {
 
     onKeyUp(e) {
         if( this.inputRef.current === document.activeElement ) {
-            const val = this.inputRef.current.value.trim();
+            const val = this.state.value.trim();
 
             if( e.ctrlKey && e.keyCode === 13 ) {
                 if( val.length > 0) {
                     this.props.onSubmit(val);
-                    this.inputRef.current.value = "";
+                    this.setState({value: ''})
                 }
             }
         }
     }
 
+    onSend() {
+        const val = this.state.value.trim();
+        if( val.length > 0) {
+            this.props.onSubmit(val);
+            this.setState({value: ''})
+        }
+    }
+
+    onChange(e) {
+        this.setState({value: e.target.value})
+    }
+
     render () {
         const {
-            pickerShow
-        } = this.state;
+            pickerShow,
+            value,
+            updateFor
+        } = this.state,
+            {
+                onCancelUpdate
+            } = this.props;
 
         const inputProps = {
-            inputRef        : this.inputRef,
             inputProps      : {
                 onKeyUp: this.onKeyUp.bind(this)
             },
             startAdornment  : <CommentIcon />,
-            endAdornment    : <Emoji
-                show     = {pickerShow}
-                onToggle = {this.togglePicker.bind(this)}
-                onSelect = {this.setEmoji.bind(this)}
-            />
+            endAdornment    : <InputAdornment position="end">
+                <IconButton onClick={this.onSend.bind(this)} >
+                    <SendIcon color="primary" />
+                </IconButton>
+                <Emoji
+                    show     = {pickerShow}
+                    onToggle = {this.togglePicker.bind(this)}
+                    onSelect = {this.setEmoji.bind(this)}
+                />
+            </InputAdornment>
         };
 
         return <ClickAwayListener
             onClickAway={this.hidePicker.bind(this)}
         >
-            <TextField
-                style       = {this.formClasses.root}
-                id          = "outlined-multiline-flexible"
-                label       = "Ctrl+Enter - отправить"
-                multiline
-                rowsMax     = {8}
-                onChange    = { () => {} }
-                variant     = "outlined"
-                InputProps  = {inputProps}
-            />
+            <div>
+                {updateFor !== null
+                    ? <div style={this.styles.header}>
+                        <span>Редактирование комментария от </span>
+                        <time style={this.styles.time}>
+                            { moment(parseInt(updateFor.created_at.$date.$numberLong)).fromNow() }
+                        </time>
+                        <IconButton>
+                            <CloseIcon onClick={onCancelUpdate} style={{width: "10px", height: "10px"}} />
+                        </IconButton>
+                    </div>
+                    : null
+                }
+                <TextField
+                    inputRef    = {this.inputRef}
+                    style       = {this.styles.root}
+                    id          = "outlined-multiline-flexible"
+                    label       = "Ctrl+Enter - отправить"
+                    multiline
+                    rowsMax     = {8}
+                    onChange    = { this.onChange.bind(this) }
+                    variant     = "outlined"
+                    InputProps  = {inputProps}
+                    value       = {value}
+                />
+            </div>
         </ClickAwayListener>
     }
 
@@ -558,7 +739,7 @@ const CommentIcon = () =>
         <AddCommentIcon color="primary" />
     </InputAdornment>,
 
-    Emoji = ({show, onToggle, onSelect}) => <InputAdornment position="end">
+    Emoji = ({show, onToggle, onSelect}) => <span>
         <IconButton>
             <SentimentSatisfiedIcon
                 color="primary"
@@ -579,4 +760,4 @@ const CommentIcon = () =>
             />
             : null
         }
-    </InputAdornment>;
+    </span>;

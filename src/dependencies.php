@@ -1,5 +1,6 @@
 <?php
 
+use App\Ws\EventDispatcher;
 use Grutenko\Shikimori\Sdk;
 use League\Flysystem\Adapter\Local;
 use Monolog\Handler\StreamHandler;
@@ -53,4 +54,8 @@ $container->set('cdn', function () {
             LOCK_EX
         )
     );
+});
+
+$container->set('event_dispatcher', function( $c ) {
+    return new EventDispatcher("tcp://127.0.0.1:9645");
 });

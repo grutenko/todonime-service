@@ -6,12 +6,14 @@ namespace App\Action\Video;
 
 use App\Action\Action;
 use App\Helper\ResponseHelper;
+use App\Ws\EventDispatcher;
 use MongoDB\BSON\ObjectId;
 use MongoDB\BSON\UTCDateTime;
 use MongoDB\Collection;
 use Slim\Psr7\Request;
 use Slim\Psr7\Response;
 
+/** @property-read EventDispatcher event_dispatcher */
 class AddComment extends Action
 {
 
@@ -53,6 +55,8 @@ class AddComment extends Action
             ]]
         ])->toArray()[0];
         unset($comment['user']['token'], $comment['user']['auth_code']);
+
+        $this->event_dispatcher->send('comments', 'add', $comment);
 
         return ResponseHelper::success($response, $comment);
     }
