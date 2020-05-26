@@ -37,7 +37,7 @@ class AuthHelper
                 '_id' => $id
             ],
             [
-                '$pull' => [ 'auth_code' => [ '$in' => [$token] ] ]
+                '$pull' => [ 'auth_code' => $token ]
             ]
         );
     }
