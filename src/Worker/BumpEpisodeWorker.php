@@ -51,7 +51,14 @@ class BumpEpisodeWorker implements WorkerInterface
             return false;
         }
 
-        $this->sdk->useOauthToken($user['token']);
+        $this->sdk->useOauthToken($user['token'], function($newToken) use($user) {
+            $this->db->users->updateOne(
+                [ '_id' => $user['_id'] ],
+                ['$set' => [
+                    'token' => $newToken
+                ]]
+            );
+        });
 
         $anime = $this->db->animes->findOne(['_id' => new ObjectId($job['anime_id'])]);
         if($anime == null) {
@@ -62,8 +69,6 @@ class BumpEpisodeWorker implements WorkerInterface
         if($anime == null) {
             return false;
         }
-
-        echo "{$user['nickname']} {$anime->name} {$job['episode']}\r\n";
 
         if($anime->user_rate == null) {
             $rate = $this->sdk->user()->createRate([

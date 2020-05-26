@@ -126,7 +126,7 @@ final class Api
         $arData = $this->send($path, $params, $method);
 
         if($this->tokenIsSet()) {
-            if( isset($arData['error']) && $arData['error'] == 'invalid_token' ) {
+            if( isset($arData['error']) && $arData['error'] ) {
                 $this->refreshToken();
                 return $this->send($path, $params, $method);
             }
