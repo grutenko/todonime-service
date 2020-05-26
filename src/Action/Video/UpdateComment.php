@@ -28,6 +28,15 @@ class UpdateComment extends Action
             ->findOne([
                 '_id' => new ObjectId($commentId)
             ]);
+
+        if(
+            $comment['user_id']->__toString() != $user['_id']->__toString() &&
+            !in_array('admin', $user['scope'] ?: [])
+        )
+        {
+            return ResponseHelper::error($response, 'OPERATION_NOT_PERMITTED', [], '403');
+        }
+
         $this
             ->mongodb
             ->todonime
