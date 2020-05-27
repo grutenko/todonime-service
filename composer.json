@@ -48,6 +48,7 @@
         "league/flysystem-aws-s3-v3": "^1.0",
         "guzzlehttp/guzzle": "^6.5",
         "mongodb/mongodb": "^1.6",
-        "workerman/workerman": "^4.0"
+        "workerman/workerman": "^4.0",
+        "ext-pcntl": "*"
     }
 }
