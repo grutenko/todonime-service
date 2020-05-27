@@ -19,13 +19,17 @@ export default function App () {
 
         [
             title,
-            setTitle
+            setTitleContent
         ] = useState("Todonime"),
 
         setMenu = (dom) => {
 
             setMenuContent(dom);
 
+        },
+        setTitle = (siteTitle, dom) => {
+            document.getElementsByTagName('title')[0].text = siteTitle;
+            setTitleContent(dom);
         };
 
     return (

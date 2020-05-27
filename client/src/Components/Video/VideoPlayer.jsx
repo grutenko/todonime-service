@@ -93,17 +93,19 @@ class VideoPlayer extends React.Component {
                     "data": result.data
                 });
 
-                this.props.setTitle(<>
-                    <Button
-                        variant="contained"
-                        color="primary"
-                        onClick={() => window.open(`https://shikimori.one${result.data.anime.url}`)}
-                    >
-                        {result.data.anime.name_ru || result.data.anime.name_en}
-                    </Button>
-                    <span style={{"margin": "auto 5px"}}>{result.data.episode} серия</span>
-                </>);
-
+                this.props.setTitle(
+                    (result.data.anime.name_ru || result.data.anime.name_en) + " " + result.data.episode + " серия",
+                    <>
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            onClick={() => window.open(`https://shikimori.one${result.data.anime.url}`)}
+                        >
+                            {result.data.anime.name_ru || result.data.anime.name_en}
+                        </Button>
+                        <span style={{"margin": "auto 5px"}}>{result.data.episode} серия</span>
+                    </>
+                );
             });
 
     }
