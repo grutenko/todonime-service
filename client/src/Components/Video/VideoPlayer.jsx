@@ -123,7 +123,7 @@ class VideoPlayer extends React.Component {
 
     onOpenAnimeInfo () {
 
-        this.props.setMenu(<AnimeInfo anime={this.state.data.anime} />);
+        this.props.setMenu(<AnimeInfo anime={this.state.data.anime} currentEpisode={this.state.data.episode} />);
 
     }
 
