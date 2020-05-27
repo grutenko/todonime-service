@@ -5,6 +5,13 @@ import { setShow } from "../../lib/promt";
 
 export default function UserInfo () {
 
+    const styles = {
+        "root": {
+            textAlign: "center",
+            padding: "20px"
+        }
+    };
+
     const [
             user,
             setUser
@@ -41,30 +48,25 @@ export default function UserInfo () {
 
     }
 
-    return <>
+    return <div style={styles.root}>
         {load
             ? user == null
-                ? <span style={{"margin": "auto",
-                    "padding": "80px 0"}}>
-                    <Button
-                        variant="contained"
-                        color="primary"
-                        onClick={login}
-                    >
-                        Авторизация через shikimori.one
-                    </Button>
-                </span>
-                : <div>
-                    <Button
-                        variant="contained"
-                        color="primary"
-                        onClick={logout}
-                    >
-                        Выйти
-                    </Button>
-                </div>
+                ? <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={login}
+                >
+                    Авторизация через shikimori.one
+                </Button>
+                : <Button
+                    variant = "contained"
+                    color   = "primary"
+                    onClick = {logout}
+                >
+                    Выйти
+                </Button>
             : null
         }
-    </>;
+    </div>;
 
 }
