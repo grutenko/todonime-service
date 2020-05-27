@@ -482,7 +482,8 @@ class CommentText extends React.Component {
             "flex": 1
         },
         "text": {
-            "white-space": "break-spaces"
+            "white-space": "break-spaces",
+            "fontFamily": "inherit"
         },
         "nickname": {
             "marginRight": "5px",
