@@ -4,10 +4,8 @@ import Layout from "./Components/Layout";
 import {Route, Switch} from "react-router-dom";
 import VideoPlayer from "./Components/Video/VideoPlayer";
 import Menu from './Components/Menu';
-import {withRouter} from "react-router-dom";
 
 import * as Api from './lib/api';
-import Loader from "./Components/Misc/Loader";
 /* eslint-enable */
 
 export default function App () {
@@ -67,30 +65,61 @@ export default function App () {
 
 }
 
-function SuggestVideo ({history, "match": {"params": {animeId, episode}}}) {
+class SuggestVideo extends React.Component {
 
-    const [
-        load,
-        setLoad
-    ] = React.useState(false);
+    state = {
+        "load": false,
+        "notFound": false,
+    };
 
-    if (!load) {
+    fetch() {
+        const {
+            match: {
+                params: {
+                    animeId,
+                    episode
+                }
+            },
+            history
+        } = this.props;
 
         Api.fetch(
             "video/suggest",
-            {"anime_id": animeId,
-                episode}
+            {
+                "anime_id": animeId,
+                episode
+            }
         ).then((data) => {
 
-            setLoad(true);
+            this.setState({
+                load: false
+            })
             history.replace(`/s/${animeId}/${episode}`);
             history.push(`/v/${data.data.video_id}`);
-        });
 
+        }).catch( () => {
+
+            this.setState({
+                load: true,
+                notFound: true
+            });
+
+        })
     }
 
-    return <div></div>;
+    componentDidMount() {
+        this.fetch();
+    }
 
+    componentDidUpdate(prevProps) {
+        if(prevProps.animeId !== this.props.animeId || prevProps.episode !== this.props.episode) {
+
+            this.fetch();
+
+        }
+    }
+
+    render() {
+        return <div/>
+    }
 }
-
-SuggestVideo = withRouter(SuggestVideo);
