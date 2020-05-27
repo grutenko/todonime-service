@@ -24,20 +24,6 @@ const drawerWidth = 350,
         "main": {
             "width": "calc(100vw - 100px)"
         },
-        "appBarShift": {
-            "marginRight": drawerWidth,
-            "transition": theme.transitions.create(
-                [
-                    "margin",
-                    "width"
-                ],
-                {
-                    "duration": theme.transitions.duration.enteringScreen,
-                    "easing": theme.transitions.easing.easeOut
-                }
-            ),
-            "width": `calc(100% - ${drawerWidth}px)`
-        },
         "menuButton": {
             "marginRight": theme.spacing(0, 1),
             "zIndex": "10000"
@@ -98,12 +84,7 @@ export default function Layout ({title, setMenu, menuOpen, children}) {
     return <div className={classes.root}>
         <AppBar
             position="static"
-            className={clsx(
-                classes.appBar,
-                {
-                    [classes.appBarShift]: menuOpen
-                }
-            )}
+            className={classes.appBar}
         >
             <Toolbar variant="dense" className={classes.toolbar}>
                 <Typography
