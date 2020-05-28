@@ -3,6 +3,10 @@ import React from "react";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
 import {withRouter} from "react-router-dom";
+import ListItemIcon from "@material-ui/core/ListItemIcon";
+import Checkbox from "@material-ui/core/Checkbox";
+
+import {fetch as __fetch, fetch} from '../../lib/api';
 
 class EpisodesList extends React.Component {
 
@@ -20,7 +24,8 @@ class EpisodesList extends React.Component {
         super(props);
 
         this.state = {
-            currentEpisode: props.currentEpisode
+            currentEpisode      : props.currentEpisode,
+            lastCompletedEpisode: props.lastCompletedEpisode
         };
     }
 
@@ -45,12 +50,47 @@ class EpisodesList extends React.Component {
         }
     }
 
+    onBumpEpisode(episode) {
+        return () => {
+            if (this.props.canComplete) {
+
+                fetch(
+                    "user/episode/watched",
+                    {
+                        "anime_id": this.props.anime._id.$oid,
+                        "episode": episode
+                    },
+                    "PUT"
+                ).then((data) => {
+
+                    this.setState({lastCompletedEpisode: episode})
+
+                });
+
+            }
+        }
+    }
+
+    checkBox(checked, episode) {
+        return <ListItemIcon>
+            <Checkbox
+                color           = "primary"
+                edge            = "start"
+                checked         = {checked}
+                tabIndex        = {-1}
+                onClick         = {this.onBumpEpisode(episode)}
+                disableRipple
+            />
+        </ListItemIcon>
+    }
+
     render() {
         const {
-            lastEpisode,
+            lastEpisode
         } = this.props,
             {
-                currentEpisode
+                currentEpisode,
+                lastCompletedEpisode
             } = this.state;
 
         return <List
@@ -60,11 +100,12 @@ class EpisodesList extends React.Component {
         >
             {Array.from(Array(lastEpisode).keys()).map(episode =>
                 <ListItem
-                    key={episode + 1}
+                    key     ={episode + 1}
                     selected={episode + 1 === currentEpisode}
                     dense
                     button
                 >
+                    { this.checkBox( lastCompletedEpisode >= episode, episode)}
                     <div
                         onClick={this.onClickEpisode(episode + 1)}
                         style={this.styles.item}

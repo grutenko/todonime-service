@@ -29,6 +29,7 @@ $application->add(new Fix($container));
 $application->add( new \App\Console\Video\Get($container) );
 $application->add( new UpdateFullTranslate($container));
 $application->add(new ProjectFindVideos($container));
+$application->add( new \App\Console\User\GetUserRates($container));
 
 $application->add( new UpdateDatabase($container));
 

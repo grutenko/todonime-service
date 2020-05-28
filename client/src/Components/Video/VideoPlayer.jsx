@@ -123,13 +123,17 @@ class VideoPlayer extends React.Component {
 
     onOpenAnimeInfo () {
 
-        this.props.setMenu(<AnimeInfo anime={this.state.data.anime} currentEpisode={this.state.data.episode} />);
+        this.props.setMenu(<AnimeInfo
+            anime           = {this.state.data.anime}
+            currentEpisode  = {this.state.data.episode}
+            lastEpisode     = {this.state.data.last_watched_episode}
+        />);
 
     }
 
     bumpEpisode () {
 
-        if (this.state.data.user) {
+        if (this.state.data.user && !this.state.data.is_watched) {
 
             __fetch(
                 "user/episode/watched",
@@ -183,7 +187,9 @@ class VideoPlayer extends React.Component {
             </IconButton><br/>
             <IconButton>
                 <BeenhereIcon
-                    color={this.state.data.user ? "secondary" : "disabled"}
+                    color={this.state.data.user
+                        ? this.state.data.is_watched ? "primary" : "secondary"
+                        : "disabled"}
                     onClick={this.bumpEpisode.bind(this)}
                 />
             </IconButton><br/>

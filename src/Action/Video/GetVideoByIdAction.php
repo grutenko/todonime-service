@@ -77,6 +77,22 @@ class GetVideoByIdAction extends Action
         if($user != null) {
             unset($user['token'], $user['auth_code']);
             $responseVideo['user'] = $user;
+
+            $responseVideo['is_watched'] = $this->episodeWatched(
+                $user,
+                $responseVideo['anime']['_id'],
+                $responseVideo['episode']
+            );
+            $responseVideo['last_watched_episode'] = $this->getLastWatchedEpisode(
+                $user,
+                $responseVideo['anime']['_id']
+            );
+        }
+        else
+        {
+            $responseVideo['user'] = null;
+            $responseVideo['is_watched'] = false;
+            $responseVideo['last_watched_episode'] = 0;
         }
 
         usort($responseVideo['videos'], function($v1, $v2) {
@@ -105,6 +121,39 @@ class GetVideoByIdAction extends Action
         }
 
         return ResponseHelper::success($response, $responseVideo);
+    }
+
+    /**
+     * @param array $user
+     * @param ObjectId $animeId
+     * @param int|string $episode
+     * @return bool
+     */
+    private function episodeWatched( array $user, Objectid $animeId, $episode ): bool
+    {
+        return $this->getLastWatchedEpisode($user, $animeId) >= $episode;
+    }
+
+    /**
+     * @param array $user
+     * @param ObjectId $animeId
+     * @return int
+     */
+    private function getLastWatchedEpisode(array $user, Objectid $animeId): int
+    {
+        if( !isset($user['watched_episodes']) )
+        {
+            return 0;
+        }
+        foreach($user['watched_episodes'] as $watched)
+        {
+            if( $watched['anime_id']->__toString() == $animeId->__toString() )
+            {
+                return $watched['episodes'];
+            }
+        }
+
+        return 0;
     }
 
     /**

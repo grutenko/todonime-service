@@ -69,6 +69,33 @@ class UserMapper extends Mapper
     }
 
     /**
+     * @param int|string $userId
+     * @param string|null $targetType
+     */
+    public function getRates( $userId, ?string $targetType = null): ?array
+    {
+        if(!$this->api->tokenIsSet()) {
+            throw new RuntimeException('Этот метод может быть вызван только после упешной OAuth2.0 вторизации.');
+        }
+
+        $params = [
+            'user_id' => $userId
+        ];
+
+        if($targetType != null)
+        {
+            $params['target_type'] = $targetType;
+        }
+
+        $rates = $this->api->fetch("v2/user_rates", $params);
+        if( isset($rates['error']) ) {
+            return null;
+        }
+
+        return $rates;
+    }
+
+    /**
      * @param array $params
      * @return array|null
      */
