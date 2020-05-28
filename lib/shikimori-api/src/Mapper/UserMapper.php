@@ -37,7 +37,7 @@ class UserMapper extends Mapper
             return null;
         }
 
-        if($rate['episodes'] >= $episode) {
+        if($rate['episodes'] == $episode) {
             return $rate;
         }
 
@@ -71,6 +71,7 @@ class UserMapper extends Mapper
     /**
      * @param int|string $userId
      * @param string|null $targetType
+     * @return array|null
      */
     public function getRates( $userId, ?string $targetType = null): ?array
     {
