@@ -136,7 +136,8 @@ class GetUserRates extends Command
             );
 
             $output->writeln('<info> done.</info>');
-            return 0;
         }
+
+        return 0;
     }
 }
