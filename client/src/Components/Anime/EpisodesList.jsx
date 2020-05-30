@@ -53,6 +53,9 @@ class EpisodesList extends React.Component {
     onBumpEpisode(episode) {
         return () => {
             if (this.props.canComplete) {
+                if(this.state.lastCompletedEpisode >= episode) {
+                    episode--;
+                }
 
                 fetch(
                     "user/episode/watched",
