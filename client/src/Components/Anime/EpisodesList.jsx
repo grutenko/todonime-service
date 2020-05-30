@@ -105,7 +105,7 @@ class EpisodesList extends React.Component {
                     dense
                     button
                 >
-                    { this.checkBox( lastCompletedEpisode >= episode, episode)}
+                    { this.checkBox( lastCompletedEpisode > episode, episode)}
                     <div
                         onClick={this.onClickEpisode(episode + 1)}
                         style={this.styles.item}
