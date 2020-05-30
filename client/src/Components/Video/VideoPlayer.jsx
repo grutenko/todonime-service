@@ -18,11 +18,11 @@ import AnimeInfo from "../Anime/AnimeInfo";
 import {Link, Redirect} from "react-router-dom";
 import Button from "@material-ui/core/Button";
 import ButtonPopper from "../Misc/ButtonPopper";
-import BeenhereIcon from "@material-ui/icons/Beenhere";
 import {alreadyShowed, setShow, unsetShow} from "../../lib/promt";
 import Snackbar from "@material-ui/core/Snackbar";
 import MuiAlert from "@material-ui/lab/Alert";
 import Comments from "./Comments";
+import CheckIcon from '@material-ui/icons/Check';
 
 function Alert (props) {
 
@@ -173,7 +173,7 @@ class VideoPlayer extends React.Component {
             <IconButton>
                 <TheatersIcon onClick={this.onOpenAnimeInfo.bind(this)} />
             </IconButton><br/>
-            <IconButton>
+            {/*<IconButton>
                 {data.prev_episode !== null
                     ? <Link onClick={() => {
 
@@ -184,16 +184,16 @@ class VideoPlayer extends React.Component {
                     </Link>
                     : <KeyboardArrowLeftIcon />
                 }
-            </IconButton><br/>
+            </IconButton><br/>*/}
             <IconButton>
-                <BeenhereIcon
+                <CheckIcon
                     color={this.state.data.user
                         ? this.state.data.is_watched ? "primary" : "secondary"
                         : "disabled"}
                     onClick={this.bumpEpisode.bind(this)}
                 />
             </IconButton><br/>
-            {data.next_episode !== null
+            {/*data.next_episode !== null
                 ? data.next_episode.video_id != null
                     ? <IconButton><Link onClick={() => {
 
@@ -210,7 +210,7 @@ class VideoPlayer extends React.Component {
                         </ButtonPopper>
                         : <IconButton><KeyboardArrowRightIcon /></IconButton>
                 : <IconButton><KeyboardArrowRightIcon /></IconButton>
-            }
+            */}
         </div>;
 
     }
