@@ -165,13 +165,11 @@ class VideoPlayer extends React.Component {
                 }
             )}
         >
-            <IconButton
-                onClick={this.onOpenTranslationsList.bind(this)}
-            >
-                <ViewListIcon />
+            <IconButton onClick={this.onOpenTranslationsList.bind(this)}>
+                <TheatersIcon/>
             </IconButton><br/>
-            <IconButton>
-                <TheatersIcon onClick={this.onOpenAnimeInfo.bind(this)} />
+            <IconButton onClick={this.onOpenAnimeInfo.bind(this)}>
+                <ViewListIcon />
             </IconButton><br/>
             {/*<IconButton>
                 {data.prev_episode !== null
