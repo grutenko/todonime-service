@@ -98,22 +98,24 @@ class EpisodesList extends React.Component {
             component="div"
             aria-label="main mailbox folders"
         >
-            {Array.from(Array(lastEpisode).keys()).map(episode =>
-                <ListItem
-                    key     ={episode + 1}
-                    selected={episode + 1 === currentEpisode}
+            {Array.from(Array(lastEpisode).keys()).map(episode => {
+                episode = episode + 1;
+
+                return <ListItem
+                    key     ={episode}
+                    selected={episode === currentEpisode}
                     dense
                     button
                 >
-                    { this.checkBox( lastCompletedEpisode > episode, episode)}
+                    { this.checkBox( lastCompletedEpisode >= episode, episode)}
                     <div
-                        onClick={this.onClickEpisode(episode + 1)}
+                        onClick={this.onClickEpisode(episode)}
                         style={this.styles.item}
                     >
-                        {episode + 1}
+                        {episode}
                     </div>
                 </ListItem>
-            )}
+            })}
         </List>
     }
 }
