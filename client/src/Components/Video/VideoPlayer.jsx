@@ -24,6 +24,7 @@ import DialogTitle from "@material-ui/core/DialogTitle";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogActions from "@material-ui/core/DialogActions";
+import Typography from "@material-ui/core/Typography";
 
 moment.locale("ru");
 
@@ -285,6 +286,7 @@ class Toolbar extends React.Component {
         const {
             completed
         } = this.state;
+        const {data: {episode}} = this.props;
 
         return <div style={this.styles.buttons}>
             <Button
@@ -299,6 +301,14 @@ class Toolbar extends React.Component {
             >
                 <span className="hide-630px">Эпизоды</span>
             </Button>
+            <span
+                style={{
+                    marginRight: "5px 15px",
+                    color: "#8a8a8a"
+                }}
+            >
+                {episode} эпизод
+            </span>
             <Button
                 variant     = {completed ? "text" : "contained"}
                 color       = {completed ? "primary" : "secondary"}
