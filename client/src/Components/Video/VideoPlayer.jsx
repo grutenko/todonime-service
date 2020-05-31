@@ -37,6 +37,7 @@ export default class VideoPlayer extends React.Component {
             "showLogin": alreadyShowed("login"),
             "showLogout": alreadyShowed("logout"),
             "data": null,
+            "notFound": false,
             "loaded": false,
             "rightMenuPortal": false
         };
@@ -67,9 +68,13 @@ export default class VideoPlayer extends React.Component {
         }
 
         fetch(`video/${this.props.match.params.id}`)
-            .then((result) => {
-                this.setState({ "loaded": true, "data": result.data });
-            });
+            .then(
+                (result) => {
+                    this.setState({ "loaded": true, "data": result.data });
+                },
+                (result) => {
+                    this.setState({loaded: true, data: result, notFound: true})
+                });
 
     }
 
@@ -77,13 +82,48 @@ export default class VideoPlayer extends React.Component {
         this.fetch(false);
     }
 
+    renderCommon() {
+        const  {
+            showLogin,
+            showLogout,
+            data
+        } = this.state;
+
+        return <>
+            <AuthSnackbar
+                show    = { showLogin }
+                onClose = { () => this.setState({"showLogin": false}) }
+            >
+                Вы успешно авторизировались через shikimori.one
+            </AuthSnackbar>
+            <AuthSnackbar
+                show    = { showLogout }
+                onClose = { () => this.setState({"showLogout": false}) }
+            >
+                Вы успешно вышли из аккаунта
+            </AuthSnackbar>
+            <VideoPlayerIframe url={data.url}/>
+            <Toolbar
+                canComplete = { Boolean(data.user) }
+                isWatched   = { data.is_watched }
+                history     = { this.props.history }
+                nextEpisode = { data.next_episode ? data.next_episode.video_id : null}
+                data        = { data }
+                onUpdate    = { this.fetchWithoutLoader.bind(this) }
+                setMenu     = { this.props.setMenu }
+            />
+            <Comments
+                animeId     = { data.anime._id.$oid }
+                episode     = { data.episode }
+            /></>
+    }
+
     render () {
 
         const {
             loaded,
             data,
-            showLogin,
-            showLogout
+            notFound
         } = this.state;
 
         if (loaded && data.user === undefined && !alreadyShowed("auth")) {
@@ -95,33 +135,7 @@ export default class VideoPlayer extends React.Component {
 
         return <>
             {data !== null
-                ? <>
-                    <AuthSnackbar
-                        show    = { showLogin }
-                        onClose = { () => this.setState({"showLogin": false}) }
-                    >
-                        Вы успешно авторизировались через shikimori.one
-                    </AuthSnackbar>
-                    <AuthSnackbar
-                        show    = { showLogout }
-                        onClose = { () => this.setState({"showLogout": false}) }
-                    >
-                        Вы успешно вышли из аккаунта
-                    </AuthSnackbar>
-                    <VideoPlayerIframe url={data.url}/>
-                    <Toolbar
-                        canComplete = { Boolean(data.user) }
-                        isWatched   = { data.is_watched }
-                        history     = { this.props.history }
-                        nextEpisode = { data.next_episode ? data.next_episode.video_id : null}
-                        data        = { data }
-                        onUpdate    = { this.fetchWithoutLoader.bind(this) }
-                        setMenu     = { this.props.setMenu }
-                    />
-                    <Comments
-                        animeId     = { data.anime._id.$oid }
-                        episode     = { data.episode }
-                    /></>
+                ? !notFound ? this.renderCommon() : <NotFound />
                 : null
             }
             {!loaded
@@ -130,7 +144,26 @@ export default class VideoPlayer extends React.Component {
             }
         </>
     }
+}
 
+function NotFound() {
+    const styles = {
+        root: {
+            width: "100%",
+            height: "calc(100vh - 160px)",
+            display: "flex"
+        },
+        content: {
+            margin: "auto",
+            color: "white"
+        }
+    }
+
+    return <div style={styles.root}>
+        <div style={styles.content}>
+            Видео не найдено
+        </div>
+    </div>
 }
 
 class Toolbar extends React.Component {

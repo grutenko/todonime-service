@@ -98,12 +98,10 @@ class SuggestVideo extends React.Component {
             history.push(`/v/${data.data.video_id}`);
 
         }).catch( () => {
-
             this.setState({
                 load: true,
                 notFound: true
             });
-
         })
     }
 
@@ -112,14 +110,44 @@ class SuggestVideo extends React.Component {
     }
 
     componentDidUpdate(prevProps) {
-        if(prevProps.animeId !== this.props.animeId || prevProps.episode !== this.props.episode) {
-
+        if(
+            prevProps.animeId !== this.props.animeId ||
+            prevProps.episode !== this.props.episode
+        )
+        {
             this.fetch();
-
         }
     }
 
     render() {
-        return <div/>
+        const {
+            load,
+            notFound
+        } = this.state;
+
+        return load
+            ? notFound ? <NotFound /> : <div/>
+            : <div />
     }
+}
+
+
+function NotFound() {
+    const styles = {
+        root: {
+            width: "100%",
+            height: "calc(100vh - 160px)",
+            display: "flex"
+        },
+        content: {
+            margin: "auto",
+            color: "white"
+        }
+    }
+
+    return <div style={styles.root}>
+        <div style={styles.content}>
+            Эпизод не найден
+        </div>
+    </div>
 }
