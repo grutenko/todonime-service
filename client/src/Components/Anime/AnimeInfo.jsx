@@ -1,7 +1,7 @@
 import React from "react";
 import EpisodesList from "./EpisodesList";
 
-export default function AnimeInfo ({anime, currentEpisode, lastEpisode, user}) {
+export default function AnimeInfo ({anime, currentEpisode, lastEpisode, onUpdate, user}) {
 
     return <EpisodesList
         anime                   = {anime}
@@ -9,6 +9,7 @@ export default function AnimeInfo ({anime, currentEpisode, lastEpisode, user}) {
         lastCompletedEpisode    = {lastEpisode}
         lastEpisode             = {anime.last_episode}
         currentEpisode          = {currentEpisode}
+        onUpdate                = {onUpdate}
     />
 
 }

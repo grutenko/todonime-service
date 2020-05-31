@@ -19,6 +19,11 @@ import CheckIcon from '@material-ui/icons/Check';
 
 import "./VideoPlayer.css";
 import AnimeCard from "../Anime/AnimeCard";
+import Dialog from "@material-ui/core/Dialog";
+import DialogTitle from "@material-ui/core/DialogTitle";
+import DialogContent from "@material-ui/core/DialogContent";
+import DialogContentText from "@material-ui/core/DialogContentText";
+import DialogActions from "@material-ui/core/DialogActions";
 
 moment.locale("ru");
 
@@ -37,43 +42,39 @@ export default class VideoPlayer extends React.Component {
         };
 
         if (this.state.showLogin) {
-
             unsetShow("login");
-
         }
         if (this.state.showLogout) {
-
             unsetShow("logout");
-
         }
 
     }
 
     componentDidMount () {
-
         this.fetch();
-
     }
 
     componentDidUpdate (prevProps, prevState, snapshot) {
-
         if (this.props.match.params.id !== prevProps.match.params.id) {
-
             this.fetch();
-
         }
-
     }
 
-    fetch () {
+    fetch (useLoader) {
 
-        this.setState({"loaded": false});
+        if( useLoader === true || useLoader === undefined) {
+            this.setState({"loaded": false});
+        }
 
         fetch(`video/${this.props.match.params.id}`)
             .then((result) => {
                 this.setState({ "loaded": true, "data": result.data });
             });
 
+    }
+
+    fetchWithoutLoader() {
+        this.fetch(false);
     }
 
     render () {
@@ -92,34 +93,42 @@ export default class VideoPlayer extends React.Component {
 
         }
 
-        return loaded
-            ? <>
-                <AuthSnackbar
-                    show    = { showLogin }
-                    onClose = { () => this.setState({"showLogin": false}) }
-                >
-                    Вы успешно авторизировались через shikimori.one
-                </AuthSnackbar>
-                <AuthSnackbar
-                    show    = { showLogout }
-                    onClose = { () => this.setState({"showLogout": false}) }
-                >
-                    Вы успешно вышли из аккаунта
-                </AuthSnackbar>
-                <VideoPlayerIframe url={data.url}/>
-                <Toolbar
-                    canComplete = { Boolean(data.user) }
-                    isWatched   = { data.is_watched }
-                    history     = { this.props.history }
-                    nextEpisode = { data.next_episode.video_id}
-                    data        = { data }
-                    setMenu     = { this.props.setMenu }
-                />
-                <Comments
-                    animeId     = { data.anime._id.$oid }
-                    episode     = { data.episode }
-                /></>
-            : <Loader/>;
+        return <>
+            {data !== null
+                ? <>
+                    <AuthSnackbar
+                        show    = { showLogin }
+                        onClose = { () => this.setState({"showLogin": false}) }
+                    >
+                        Вы успешно авторизировались через shikimori.one
+                    </AuthSnackbar>
+                    <AuthSnackbar
+                        show    = { showLogout }
+                        onClose = { () => this.setState({"showLogout": false}) }
+                    >
+                        Вы успешно вышли из аккаунта
+                    </AuthSnackbar>
+                    <VideoPlayerIframe url={data.url}/>
+                    <Toolbar
+                        canComplete = { Boolean(data.user) }
+                        isWatched   = { data.is_watched }
+                        history     = { this.props.history }
+                        nextEpisode = { data.next_episode ? data.next_episode.video_id : null}
+                        data        = { data }
+                        onUpdate    = { this.fetchWithoutLoader.bind(this) }
+                        setMenu     = { this.props.setMenu }
+                    />
+                    <Comments
+                        animeId     = { data.anime._id.$oid }
+                        episode     = { data.episode }
+                    /></>
+                : null
+            }
+            {!loaded
+                ? <Loader/>
+                : null
+            }
+        </>
     }
 
 }
@@ -152,13 +161,20 @@ class Toolbar extends React.Component {
         }
     }
 
-    /**
-     * @type {{
-     *      completing: boolean
-     * }}
-     */
-    state = {
-        completing: false
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            completing: false,
+            completed: this.props.isWatched,
+            showRollbackForm: false
+        }
+    }
+
+    componentDidUpdate( prevProps ) {
+        if(prevProps.isWatched !== this.props.isWatched) {
+            this.setState({completed: this.props.isWatched})
+        }
     }
 
     onOpenList() {
@@ -185,6 +201,7 @@ class Toolbar extends React.Component {
             anime           = {data.anime}
             currentEpisode  = {data.episode}
             lastEpisode     = {data.last_watched_episode}
+            onUpdate        = { this.props.onUpdate }
         />);
     }
 
@@ -198,11 +215,19 @@ class Toolbar extends React.Component {
             },
             history,
             canComplete,
-            isWatched,
             nextEpisode
-        } = this.props
+        } = this.props;
 
-        if(!canComplete || isWatched || this.state.completing) {
+        const {
+            completed
+        } = this.state;
+
+        if(!canComplete || this.state.completing) {
+            return;
+        }
+
+        if(completed) {
+            this.setState({showRollbackForm: true});
             return;
         }
 
@@ -216,15 +241,50 @@ class Toolbar extends React.Component {
             },
             "PUT"
         ).then(() => {
-            this.setState({completing: false});
-            history.push(`/v/${nextEpisode}`);
+            this.setState({completing: false, completed: true});
+            this.props.onUpdate();
+
+            if(nextEpisode !== null) {
+                history.push(`/v/${nextEpisode}`);
+            }
+        })
+    }
+
+    rollbackEpisode() {
+        const {
+            data: {
+                anime: {
+                    _id
+                },
+                episode,
+            }
+        } = this.props;
+
+        this.setState({
+            completing: true,
+            showRollbackForm: false
+        });
+
+        fetch(
+            "user/episode/watched",
+            {
+                "anime_id" : _id.$oid,
+                "episode"  : episode - 1
+            },
+            "PUT"
+        ).then(() => {
+            this.setState({
+                completing: false,
+                completed: false
+            });
+            this.props.onUpdate();
         })
     }
 
     renderButtons() {
         const {
-            isWatched
-        } = this.props;
+            completed
+        } = this.state;
 
         return <div style={this.styles.buttons}>
             <Button
@@ -240,14 +300,14 @@ class Toolbar extends React.Component {
                 <span className="hide-630px">Эпизоды</span>
             </Button>
             <Button
-                variant     = {isWatched ? "text" : "contained"}
-                color       = {isWatched ? "primary" : "secondary"}
+                variant     = {completed ? "text" : "contained"}
+                color       = {completed ? "primary" : "secondary"}
                 onClick     = {this.bumpEpisode.bind(this)}
                 startIcon   = {<CheckIcon/>}
                 style       = {{float: "right"}}
             >
                 <span className="hide-630px">
-                    {isWatched ? "Просмотрена" : "Отметить просмотренной"}
+                    {completed ? "Просмотрена" : "Отметить просмотренной"}
                 </span>
             </Button>
         </div>
@@ -268,11 +328,47 @@ class Toolbar extends React.Component {
     }
 
     render() {
+        const {data} = this.props;
+        const {showRollbackForm} = this.state;
+
         return <div style={this.styles.root}>
+            <RollbackEpisodeDialog
+                completed   = {data.last_watched_episode}
+                current     = {data.episode}
+                open        = {showRollbackForm}
+                onClose     = {()=>this.setState({showRollbackForm: false})}
+                onRollback  = {this.rollbackEpisode.bind(this)}
+            />
             { this.renderButtons() }
             { this.renderAnimeInfo() }
         </div>
     }
+}
+
+function RollbackEpisodeDialog({completed, current, open, onClose, onRollback}) {
+    return <Dialog
+        open={open}
+        onClose={onClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+    >
+        <DialogTitle id="alert-dialog-title">{"Откатить просмотренное?"}</DialogTitle>
+        <DialogContent>
+            <DialogContentText id="alert-dialog-description">
+                Если вы откатите количество просмотренных серий,
+                то ваш прогресс вернется с {completed} серии на {current - 1}.<br/>
+                Все равно откатить?
+            </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+            <Button onClick={onClose} color="primary">
+                Нет
+            </Button>
+            <Button onClick={onRollback} color="primary" autoFocus>
+                Да
+            </Button>
+        </DialogActions>
+    </Dialog>
 }
 
 /**
@@ -305,7 +401,5 @@ function AuthSnackbar({show, children, onClose}) {
  * @constructor
  */
 function Alert (props) {
-
     return <MuiAlert elevation={6} variant="filled" {...props} />;
-
 }

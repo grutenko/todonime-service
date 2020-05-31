@@ -67,7 +67,7 @@ class EpisodesList extends React.Component {
                 ).then((data) => {
 
                     this.setState({lastCompletedEpisode: episode})
-
+                    this.props.onUpdate();
                 });
 
             }
