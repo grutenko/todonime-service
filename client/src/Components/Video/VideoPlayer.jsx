@@ -24,7 +24,6 @@ import DialogTitle from "@material-ui/core/DialogTitle";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogActions from "@material-ui/core/DialogActions";
-import Typography from "@material-ui/core/Typography";
 
 moment.locale("ru");
 
@@ -168,7 +167,8 @@ class Toolbar extends React.Component {
         this.state = {
             completing: false,
             completed: this.props.isWatched,
-            showRollbackForm: false
+            showRollbackForm: false,
+            showEpisodeSnackbar: false
         }
     }
 
@@ -242,11 +242,14 @@ class Toolbar extends React.Component {
             },
             "PUT"
         ).then(() => {
-            this.setState({completing: false, completed: true});
+            this.setState({completing: false});
             this.props.onUpdate();
 
-            if(nextEpisode !== null) {
+            if(nextEpisode !== undefined && nextEpisode !== null) {
                 history.push(`/v/${nextEpisode}`);
+            } else
+            {
+                this.setState({showEpisodeSnackbar: true})
             }
         })
     }
@@ -339,7 +342,10 @@ class Toolbar extends React.Component {
 
     render() {
         const {data} = this.props;
-        const {showRollbackForm} = this.state;
+        const {
+            showRollbackForm,
+            showEpisodeSnackbar
+        } = this.state;
 
         return <div style={this.styles.root}>
             <RollbackEpisodeDialog
@@ -348,6 +354,11 @@ class Toolbar extends React.Component {
                 open        = {showRollbackForm}
                 onClose     = {()=>this.setState({showRollbackForm: false})}
                 onRollback  = {this.rollbackEpisode.bind(this)}
+            />
+            <OngoingEpisodeSnackbar
+                open            = {showEpisodeSnackbar}
+                current         = {data.episode}
+                onClose         = {()=>this.setState({showEpisodeSnackbar: false})}
             />
             { this.renderButtons() }
             { this.renderAnimeInfo() }
@@ -379,6 +390,23 @@ function RollbackEpisodeDialog({completed, current, open, onClose, onRollback}) 
             </Button>
         </DialogActions>
     </Dialog>
+}
+
+function OngoingEpisodeSnackbar({open, current, onClose}) {
+    return <Snackbar
+        open             = { open }
+        autoHideDuration = { 6000 }
+        onClose          = { onClose }
+        anchorOrigin={{
+            "vertical"   : "top",
+            "horizontal" : "tight"
+        }}
+        key="top,right"
+    >
+        <Alert severity="success">
+            {current} эпизод отмечен как просмотренный. {current + 1} эпизод пока не выпущен.
+        </Alert>
+    </Snackbar>
 }
 
 /**
