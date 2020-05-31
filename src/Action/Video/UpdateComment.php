@@ -19,6 +19,7 @@ class UpdateComment extends Action
     public function __invoke(Request $request, Response $response, array $args): Response
     {
         $params = $request->getParsedBody();
+        $user = $request->getAttribute('user');
         $commentId = $args['commentId'];
 
         $comment = $this
