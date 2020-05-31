@@ -1,0 +1,5 @@
+@media screen and (max-width: 630px) {
+    .hide-630px {
+        display: none
+    }
+}

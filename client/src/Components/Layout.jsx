@@ -22,7 +22,7 @@ const drawerWidth = 350,
             "flexGrow": 1
         },
         "main": {
-            "width": "calc(100vw - 100px)"
+            "marginTop": theme.spacing(3)
         },
         "menuButton": {
             "marginRight": theme.spacing(0, 1),
@@ -53,7 +53,6 @@ const drawerWidth = 350,
         },
         "content": {
             "flexGrow": 1,
-            "padding": theme.spacing(3),
             "transition": theme.transitions.create(
                 "margin",
                 {

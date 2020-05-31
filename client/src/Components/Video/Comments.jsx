@@ -36,7 +36,7 @@ export default class Comments extends React.Component {
     styles = {
         "root": {
             "backgroundColor": "white",
-            "margin": "24px 0",
+            "margin": "0",
             "padding": "24px",
             "minHeight": "400px"
         }

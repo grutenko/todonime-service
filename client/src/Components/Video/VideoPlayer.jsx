@@ -4,35 +4,24 @@ import Loader from "../Misc/Loader";
 
 import moment from "moment";
 import "moment/locale/ru";
-import {fetch as __fetch} from "../../lib/api";
+import {fetch} from "../../lib/api";
 import VideoPlayerIframe from "./VideoPlayerIframe";
-import {IconButton, withStyles} from "@material-ui/core";
+import {Button} from "@material-ui/core";
 import ViewListIcon from "@material-ui/icons/ViewList";
-import KeyboardArrowLeftIcon from "@material-ui/icons/KeyboardArrowLeft";
-import KeyboardArrowRightIcon from "@material-ui/icons/KeyboardArrowRight";
 import TheatersIcon from "@material-ui/icons/Theaters";
-import {drawerWidth} from "../Menu";
-import clsx from "clsx";
 import VideosList from "./VideosList";
 import AnimeInfo from "../Anime/AnimeInfo";
-import {Link, Redirect} from "react-router-dom";
-import Button from "@material-ui/core/Button";
-import ButtonPopper from "../Misc/ButtonPopper";
 import {alreadyShowed, setShow, unsetShow} from "../../lib/promt";
 import Snackbar from "@material-ui/core/Snackbar";
 import MuiAlert from "@material-ui/lab/Alert";
 import Comments from "./Comments";
 import CheckIcon from '@material-ui/icons/Check';
 
-function Alert (props) {
-
-    return <MuiAlert elevation={6} variant="filled" {...props} />;
-
-}
+import "./VideoPlayer.css";
 
 moment.locale("ru");
 
-class VideoPlayer extends React.Component {
+export default class VideoPlayer extends React.Component {
 
     constructor (props) {
 
@@ -70,11 +59,6 @@ class VideoPlayer extends React.Component {
         if (this.props.match.params.id !== prevProps.match.params.id) {
 
             this.fetch();
-            if (this.props.menuOpen) {
-
-                this.onOpenTranslationsList();
-
-            }
 
         }
 
@@ -84,139 +68,21 @@ class VideoPlayer extends React.Component {
 
         this.setState({"loaded": false});
 
-        __fetch(`video/${this.props.match.params.id}`)
+        fetch(`video/${this.props.match.params.id}`)
             .then((result) => {
-
-                this.setState({
-                    "loaded": true,
-                    // eslint-disable-next-line sort-keys
-                    "data": result.data
-                });
-
-                this.props.setTitle(
-                    (result.data.anime.name_ru || result.data.anime.name_en) + " " + result.data.episode + " серия",
-                    <>
-                        <Button
-                            variant="contained"
-                            color="primary"
-                            onClick={() => window.open(`https://shikimori.one${result.data.anime.url}`)}
-                        >
-                            {result.data.anime.name_ru || result.data.anime.name_en}
-                        </Button>
-                        <span style={{"margin": "auto 5px"}}>{result.data.episode} серия</span>
-                    </>
-                );
+                this.setState({ "loaded": true, "data": result.data });
             });
 
     }
 
-    onOpenTranslationsList () {
-
-        this.props.setMenu(<VideosList
-            setMenu={this.props.setMenu}
-            currentId={this.props.match.params.id}
-            currentKind={this.state.data.kind}
-            videos={this.state.data.videos}
-        />);
-
-    }
-
-    onOpenAnimeInfo () {
-
-        this.props.setMenu(<AnimeInfo
-            anime           = {this.state.data.anime}
-            currentEpisode  = {this.state.data.episode}
-            lastEpisode     = {this.state.data.last_watched_episode}
-        />);
-
-    }
-
-    bumpEpisode () {
-
-        if (this.state.data.user && !this.state.data.is_watched) {
-
-            __fetch(
-                "user/episode/watched",
-                {
-                    "anime_id": this.state.data.anime._id.$oid,
-                    "episode": this.state.data.episode
-                },
-                "PUT"
-            ).then((data) => {
-
-                this.props.history.push(`/v/${this.state.data.next_episode.video_id}`);
-
-            });
-
-        }
-
-    }
-
-    renderRightToolbar () {
-
-        const {data} = this.state,
-            {menuOpen} = this.props;
-
-        return <div
-            className={clsx(
-                this.props.classes.fixedToolBox,
-                {
-                    [this.props.classes.fixedToolBoxShift]: menuOpen
-                }
-            )}
-        >
-            <IconButton onClick={this.onOpenTranslationsList.bind(this)}>
-                <TheatersIcon/>
-            </IconButton><br/>
-            <IconButton onClick={this.onOpenAnimeInfo.bind(this)}>
-                <ViewListIcon />
-            </IconButton><br/>
-            {/*<IconButton>
-                {data.prev_episode !== null
-                    ? <Link onClick={() => {
-
-                        this.props.setMenu(null);
-
-                    }} to={`/v/${data.prev_episode.video_id}`}>
-                        <KeyboardArrowLeftIcon />
-                    </Link>
-                    : <KeyboardArrowLeftIcon />
-                }
-            </IconButton><br/>*/}
-            <IconButton>
-                <CheckIcon
-                    color={this.state.data.user
-                        ? this.state.data.is_watched ? "primary" : "secondary"
-                        : "disabled"}
-                    onClick={this.bumpEpisode.bind(this)}
-                />
-            </IconButton><br/>
-            {/*data.next_episode !== null
-                ? data.next_episode.video_id != null
-                    ? <IconButton><Link onClick={() => {
-
-                        this.props.setMenu(null);
-
-                    }} to={`/v/${data.next_episode.video_id}`}>
-                        <KeyboardArrowRightIcon />
-                    </Link></IconButton>
-                    : data.next_episode.next_episode_at != null
-                        ? <ButtonPopper
-                            text={`${data.episode + 1} серия через ${moment(parseInt(data.next_episode.next_episode_at)).fromNow(true)}`}
-                        >
-                            <KeyboardArrowRightIcon />
-                        </ButtonPopper>
-                        : <IconButton><KeyboardArrowRightIcon /></IconButton>
-                : <IconButton><KeyboardArrowRightIcon /></IconButton>
-            */}
-        </div>;
-
-    }
-
-    // eslint-disable-next-line class-methods-use-this
     render () {
 
-        const {loaded, data, redirectToNext, showLogin, showLogout} = this.state;
+        const {
+            loaded,
+            data,
+            showLogin,
+            showLogout
+        } = this.state;
 
         if (loaded && data.user === undefined && !alreadyShowed("auth")) {
 
@@ -225,76 +91,191 @@ class VideoPlayer extends React.Component {
 
         }
 
-        // eslint-disable-next-line no-ternary
-        return <>
-            {loaded
-                ? <>
-                    <Snackbar
-                        open={showLogin}
-                        autoHideDuration={6000}
-                        onClose={() => this.setState({"showLogin": false})}
-                        anchorOrigin={{"vertical": "top",
-                            "horizontal": "center"}}
-                        key="top,right"
-                    >
-                        <Alert severity="info">
-                            Вы успешно авторизировались через shikimori.one
-                        </Alert>
-                    </Snackbar>
-                    <Snackbar
-                        open={showLogout}
-                        autoHideDuration={6000}
-                        onClose={() => this.setState({"showLogout": false})}
-                        anchorOrigin={{"vertical": "top",
-                            "horizontal": "center"}}
-                        key="top,right"
-                    >
-                        <Alert severity="info">
-                            Вы успешно вышли из аккаунта
-                        </Alert>
-                    </Snackbar>
-                    {redirectToNext
-                        ? <Redirect to={`/v/${data.next_episode.video_id}`}/>
-                        : null
-                    }
-                    <VideoPlayerIframe url={data.url}/>
-                    <Comments
-                        animeId={data.anime._id.$oid}
-                        episode={data.episode}
-                    />
-                    {this.renderRightToolbar()}
-                </>
-                : <Loader/>}
-        </>;
-
+        return loaded
+            ? <>
+                <AuthSnackbar
+                    show    = { showLogin }
+                    onClose = { () => this.setState({"showLogin": false}) }
+                >
+                    Вы успешно авторизировались через shikimori.one
+                </AuthSnackbar>
+                <AuthSnackbar
+                    show    = { showLogout }
+                    onClose = { () => this.setState({"showLogout": false}) }
+                >
+                    Вы успешно вышли из аккаунта
+                </AuthSnackbar>
+                <VideoPlayerIframe url={data.url}/>
+                <Toolbar
+                    canComplete = { Boolean(data.user) }
+                    isWatched   = { data.is_watched }
+                    history     = { this.props.history }
+                    nextEpisode = { data.next_episode.video_id}
+                    data        = { data }
+                    setMenu     = { this.props.setMenu }
+                />
+                <Comments
+                    animeId     = { data.anime._id.$oid }
+                    episode     = { data.episode }
+                /></>
+            : <Loader/>;
     }
 
 }
 
-const styles = (theme) => ({
-    "fixedToolBox": {
-        "background": "white",
-        "margin": "13px 11px",
-        "position": "fixed",
-        "zIndex": 2500,
-        "right": 0,
-        "top": 50
-    },
-    "fixedToolBoxShift": {
-        "marginRight": drawerWidth + 11,
-        "transition": theme.transitions.create(
-            [
-                "margin",
-                "width"
-            ],
-            {
-                "duration": theme.transitions.duration.enteringScreen,
-                "easing": theme.transitions.easing.easeOut
-            }
-        )
+class Toolbar extends React.Component {
+
+    /**
+     * @type {{
+     *      buttons: {margin: string, maxWidth: string},
+     *      root: {padding: string, background: string, marginTop: string}
+     * }}
+     */
+    styles = {
+        root: {
+            marginTop: "15px",
+            padding: "15px",
+            background: "white"
+        },
+        buttons: {
+            maxWidth: "800px",
+            margin: "auto"
+        }
     }
-});
 
-export default withStyles(styles)(VideoPlayer);
+    /**
+     * @type {{
+     *      completing: boolean
+     * }}
+     */
+    state = {
+        completing: false
+    }
 
+    onOpenList() {
+        const {
+            setMenu,
+            data
+        } = this.props;
 
+        setMenu(<VideosList
+            setMenu     = { setMenu }
+            currentId   = { data._id.$oid }
+            currentKind = { data.kind }
+            videos      = { data.videos }
+        />);
+    }
+
+    onOpenAnimeInfo() {
+        const {
+            setMenu,
+            data
+        } = this.props;
+
+        setMenu(<AnimeInfo
+            anime           = {data.anime}
+            currentEpisode  = {data.episode}
+            lastEpisode     = {data.last_watched_episode}
+        />);
+    }
+
+    bumpEpisode() {
+        const {
+            data: {
+                anime: {
+                    _id
+                },
+                episode,
+            },
+            history,
+            canComplete,
+            isWatched,
+            nextEpisode
+        } = this.props
+
+        if(!canComplete || isWatched || this.state.completing) {
+            return;
+        }
+
+        this.setState({completing: true});
+
+        fetch(
+            "user/episode/watched",
+            {
+                "anime_id" : _id.$oid,
+                "episode"  : episode
+            },
+            "PUT"
+        ).then(() => {
+            this.setState({completing: false});
+            history.push(`/v/${nextEpisode}`);
+        })
+    }
+
+    render() {
+        const {
+            isWatched
+        } = this.props;
+
+        return <div style={this.styles.root}>
+            <div style={this.styles.buttons}>
+                <Button
+                    onClick     = {this.onOpenList.bind(this)}
+                    startIcon   = {<TheatersIcon/>}
+                >
+                    <span className="hide-630px">Переводы</span>
+                </Button>
+                <Button
+                    onClick     = {this.onOpenAnimeInfo.bind(this)}
+                    startIcon   = {<ViewListIcon/>}
+                >
+                    <span className="hide-630px">Эпизоды</span>
+                </Button>
+                <Button
+                    variant     = {isWatched ? "text" : "contained"}
+                    color       = {isWatched ? "primary" : "secondary"}
+                    onClick     = {this.bumpEpisode.bind(this)}
+                    startIcon   = {<CheckIcon/>}
+                    style       = {{float: "right"}}
+                >
+                    <span className="hide-630px">{isWatched ? "Просмотрено" : "Отметить просмотренным"}</span>
+                </Button>
+            </div>
+        </div>
+    }
+}
+
+/**
+ * @param show
+ * @param children
+ * @param onClose
+ * @returns {*}
+ * @constructor
+ */
+function AuthSnackbar({show, children, onClose}) {
+    return <Snackbar
+        open             = { show }
+        autoHideDuration = { 6000 }
+        onClose          = { onClose }
+        anchorOrigin={{
+            "vertical"   : "top",
+            "horizontal" : "center"
+        }}
+        key="top,right"
+    >
+        <Alert severity="info">
+            { children }
+        </Alert>
+    </Snackbar>
+}
+
+/**
+ * @param props
+ * @returns {*}
+ * @constructor
+ */
+function Alert (props) {
+
+    return <MuiAlert elevation={6} variant="filled" {...props} />;
+
+}

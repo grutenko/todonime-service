@@ -6,7 +6,7 @@ import {withRouter} from "react-router-dom";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
 import Checkbox from "@material-ui/core/Checkbox";
 
-import {fetch as __fetch, fetch} from '../../lib/api';
+import {fetch} from '../../lib/api';
 
 class EpisodesList extends React.Component {
 
