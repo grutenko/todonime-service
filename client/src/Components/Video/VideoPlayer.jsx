@@ -18,6 +18,7 @@ import Comments from "./Comments";
 import CheckIcon from '@material-ui/icons/Check';
 
 import "./VideoPlayer.css";
+import AnimeCard from "../Anime/AnimeCard";
 
 moment.locale("ru");
 
@@ -140,6 +141,14 @@ class Toolbar extends React.Component {
         buttons: {
             maxWidth: "800px",
             margin: "auto"
+        },
+        animeInfo: {
+            maxWidth: "800px",
+            margin: "auto",
+            marginTop: "15px"
+        },
+        animeData: {
+            marginLeft: '5px'
         }
     }
 
@@ -212,35 +221,56 @@ class Toolbar extends React.Component {
         })
     }
 
-    render() {
+    renderButtons() {
         const {
             isWatched
         } = this.props;
 
+        return <div style={this.styles.buttons}>
+            <Button
+                onClick     = {this.onOpenList.bind(this)}
+                startIcon   = {<TheatersIcon/>}
+            >
+                <span className="hide-630px">Переводы</span>
+            </Button>
+            <Button
+                onClick     = {this.onOpenAnimeInfo.bind(this)}
+                startIcon   = {<ViewListIcon/>}
+            >
+                <span className="hide-630px">Эпизоды</span>
+            </Button>
+            <Button
+                variant     = {isWatched ? "text" : "contained"}
+                color       = {isWatched ? "primary" : "secondary"}
+                onClick     = {this.bumpEpisode.bind(this)}
+                startIcon   = {<CheckIcon/>}
+                style       = {{float: "right"}}
+            >
+                <span className="hide-630px">
+                    {isWatched ? "Просмотрена" : "Отметить просмотренной"}
+                </span>
+            </Button>
+        </div>
+    }
+
+    renderAnimeInfo() {
+        const {
+            data
+        } = this.props;
+
+        return <div style={this.styles.animeInfo}>
+                <AnimeCard
+                anime = {data.anime}
+                currentEpisode  = {data.episode}
+                lastEpisode     = {data.last_watched_episode}
+            />
+        </div>
+    }
+
+    render() {
         return <div style={this.styles.root}>
-            <div style={this.styles.buttons}>
-                <Button
-                    onClick     = {this.onOpenList.bind(this)}
-                    startIcon   = {<TheatersIcon/>}
-                >
-                    <span className="hide-630px">Переводы</span>
-                </Button>
-                <Button
-                    onClick     = {this.onOpenAnimeInfo.bind(this)}
-                    startIcon   = {<ViewListIcon/>}
-                >
-                    <span className="hide-630px">Эпизоды</span>
-                </Button>
-                <Button
-                    variant     = {isWatched ? "text" : "contained"}
-                    color       = {isWatched ? "primary" : "secondary"}
-                    onClick     = {this.bumpEpisode.bind(this)}
-                    startIcon   = {<CheckIcon/>}
-                    style       = {{float: "right"}}
-                >
-                    <span className="hide-630px">{isWatched ? "Просмотрено" : "Отметить просмотренным"}</span>
-                </Button>
-            </div>
+            { this.renderButtons() }
+            { this.renderAnimeInfo() }
         </div>
     }
 }
