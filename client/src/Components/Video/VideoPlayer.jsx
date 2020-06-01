@@ -24,6 +24,9 @@ import DialogTitle from "@material-ui/core/DialogTitle";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogActions from "@material-ui/core/DialogActions";
+import RecordVoiceOverIcon from "@material-ui/icons/RecordVoiceOver";
+import SubtitlesIcon from "@material-ui/icons/Subtitles";
+import TranslateIcon from "@material-ui/icons/Translate";
 
 moment.locale("ru");
 
@@ -187,10 +190,18 @@ class Toolbar extends React.Component {
         animeInfo: {
             maxWidth: "800px",
             margin: "auto",
-            marginTop: "15px"
+            marginTop: "10px"
         },
         animeData: {
             marginLeft: '5px'
+        },
+        authorInfo: {
+            marginBottom: "15px",
+            display: "flex",
+            alignItems: 'center'
+        },
+        authorInfoText: {
+            marginLeft: "5px"
         }
     }
 
@@ -364,8 +375,18 @@ class Toolbar extends React.Component {
             data
         } = this.props;
 
+        const icon = {
+            'dub': <RecordVoiceOverIcon />,
+            'sub': <SubtitlesIcon />,
+            'org': <TranslateIcon />
+        }[ data.kind ] || <RecordVoiceOverIcon />;
+
         return <div style={this.styles.animeInfo}>
-                <AnimeCard
+            <div style={this.styles.authorInfo}>
+                {icon}
+                <span style={this.styles.authorInfoText}>{data.author}</span>
+            </div>
+            <AnimeCard
                 anime = {data.anime}
                 currentEpisode  = {data.episode}
                 lastEpisode     = {data.last_watched_episode}
