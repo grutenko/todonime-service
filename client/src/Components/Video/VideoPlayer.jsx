@@ -187,7 +187,7 @@ class Toolbar extends React.Component {
             background: "white"
         },
         buttons: {
-            maxWidth: "800px",
+            maxWidth: "808px",
             margin: "auto"
         },
         animeInfo: {
@@ -411,9 +411,9 @@ class Toolbar extends React.Component {
         } = this.props;
 
         const icon = {
-            'dub': <RecordVoiceOverIcon />,
-            'sub': <SubtitlesIcon />,
-            'org': <TranslateIcon />
+            'dub': <RecordVoiceOverIcon fontSize="small"/>,
+            'sub': <SubtitlesIcon fontSize="small" />,
+            'org': <TranslateIcon fontSize="small" />
         }[ data.kind ] || <RecordVoiceOverIcon />;
 
         return <div style={this.styles.animeInfo}>
