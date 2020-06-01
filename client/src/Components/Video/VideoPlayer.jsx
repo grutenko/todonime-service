@@ -27,6 +27,9 @@ import DialogActions from "@material-ui/core/DialogActions";
 import RecordVoiceOverIcon from "@material-ui/icons/RecordVoiceOver";
 import SubtitlesIcon from "@material-ui/icons/Subtitles";
 import TranslateIcon from "@material-ui/icons/Translate";
+import IconButton from "@material-ui/core/IconButton";
+import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
+import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 
 moment.locale("ru");
 
@@ -329,6 +332,32 @@ class Toolbar extends React.Component {
         })
     }
 
+    onBackEpisode() {
+        const {
+            data: {
+                prev_episode
+            },
+            history
+        } = this.props;
+
+        if(prev_episode !== null && prev_episode.video_id !== undefined) {
+            history.push(`/v/${prev_episode.video_id}`);
+        }
+    }
+
+    onNextEpisode() {
+        const {
+            data: {
+                next_episode
+            },
+            history
+        } = this.props;
+
+        if(next_episode !== null && next_episode.video_id !== undefined) {
+            history.push(`/v/${next_episode.video_id}`);
+        }
+    }
+
     renderButtons() {
         const {
             completed
@@ -342,6 +371,9 @@ class Toolbar extends React.Component {
             >
                 <span className="hide-630px">Переводы</span>
             </Button>
+            <IconButton onClick={this.onBackEpisode.bind(this)}>
+                <ChevronLeftIcon/>
+            </IconButton>
             <Button
                 onClick     = {this.onOpenAnimeInfo.bind(this)}
                 startIcon   = {<ViewListIcon/>}
@@ -356,6 +388,9 @@ class Toolbar extends React.Component {
             >
                 {episode} эпизод
             </span>
+            <IconButton onClick={this.onNextEpisode.bind(this)}>
+                <ChevronRightIcon/>
+            </IconButton>
             <Button
                 variant     = {completed ? "text" : "contained"}
                 color       = {completed ? "primary" : "secondary"}
