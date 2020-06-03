@@ -110,7 +110,7 @@ export default class VideoPlayer extends React.Component {
             </AuthSnackbar>
             <VideoPlayerIframe url={data.url}/>
             <Toolbar
-                canComplete = { Boolean(data.user) }
+                canComplete = { data.user !== null }
                 isWatched   = { data.is_watched }
                 history     = { this.props.history }
                 nextEpisode = { data.next_episode ? data.next_episode.video_id : null}
@@ -212,10 +212,11 @@ class Toolbar extends React.Component {
         super(props);
 
         this.state = {
-            completing: false,
-            completed: this.props.isWatched,
-            showRollbackForm: false,
-            showEpisodeSnackbar: false
+            completing          : false,
+            completed           : this.props.isWatched,
+            showRollbackForm    : false,
+            showEpisodeSnackbar : false,
+            showAuthConfirm     : false
         }
     }
 
@@ -270,7 +271,12 @@ class Toolbar extends React.Component {
             completed
         } = this.state;
 
-        if(!canComplete || this.state.completing) {
+        if(!canComplete) {
+            this.setState({showAuthConfirm: true});
+            return;
+        }
+
+        if(this.state.completing) {
             return;
         }
 
@@ -360,6 +366,9 @@ class Toolbar extends React.Component {
 
     renderButtons() {
         const {
+            canComplete
+        } = this.props;
+        const {
             completed
         } = this.state;
         const {data: {episode}} = this.props;
@@ -393,7 +402,7 @@ class Toolbar extends React.Component {
             </IconButton>
             <Button
                 variant     = {completed ? "text" : "contained"}
-                color       = {completed ? "primary" : "secondary"}
+                color       = {completed ? "primary" : canComplete ? "secondary" : "disabled"}
                 onClick     = {this.bumpEpisode.bind(this)}
                 startIcon   = {<CheckIcon/>}
                 style       = {{float: "right"}}
@@ -429,14 +438,25 @@ class Toolbar extends React.Component {
         </div>
     }
 
+    login() {
+        setShow('login');
+        window.location.href = `${process.env.REACT_APP_AUTH_BASE}?back_url=${window.location}`;
+    }
+
     render() {
         const {data} = this.props;
         const {
             showRollbackForm,
-            showEpisodeSnackbar
+            showEpisodeSnackbar,
+            showAuthConfirm
         } = this.state;
 
         return <div style={this.styles.root}>
+            <ConfirmAuthDialog
+                open        = {showAuthConfirm}
+                onClose     = {()=>this.setState({showAuthConfirm: false})}
+                onConfirm   = {this.login.bind(this)}
+            />
             <RollbackEpisodeDialog
                 completed   = {data.last_watched_episode}
                 current     = {data.episode}
@@ -453,6 +473,32 @@ class Toolbar extends React.Component {
             { this.renderAnimeInfo() }
         </div>
     }
+}
+
+function ConfirmAuthDialog({open, onClose, onConfirm}) {
+    return <Dialog
+        open            = {open}
+        onClose         = {onClose}
+        aria-labelledby = "alert-dialog-title"
+        aria-describedby= "alert-dialog-description"
+    >
+        <DialogTitle id="alert-dialog-title">{"Авторизироваться через shikimori.one"}</DialogTitle>
+        <DialogContent>
+            <DialogContentText id="alert-dialog-description">
+                Для хранения вашего просмотреного мы используем shikimori.one. Cоответственно для отметки нужно
+                авторизироваться.<br/>
+                Перейти к авторизации? (2 клика).
+            </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+            <Button onClick={onClose} color="primary">
+                Нет
+            </Button>
+            <Button onClick={onConfirm} color="primary" autoFocus>
+                Да
+            </Button>
+        </DialogActions>
+    </Dialog>
 }
 
 function RollbackEpisodeDialog({completed, current, open, onClose, onRollback}) {
