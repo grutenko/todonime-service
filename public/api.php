@@ -39,6 +39,11 @@ $app->group('', function($group) use ($container) {
     require __DIR__ . '/../routes/video.php';
     require __DIR__ . '/../routes/anime.php';
     require __DIR__ . '/../routes/user.php';
+
+    $group->get('/notifications', function($request, $response)
+    {
+        return $response->withBody(\GuzzleHttp\Psr7\stream_for('[]'));
+    });
 });
 
 $app->run();
