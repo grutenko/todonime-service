@@ -120,6 +120,15 @@ class GetVideoByIdAction extends Action
             unset($responseVideo['project_id']);
         }
 
+        if(isset($responseVideo['anime']['episodes'][ $responseVideo['episode'] ]))
+        {
+            $responseVideo['name'] = $responseVideo['anime']['episodes'][ $responseVideo['episode'] ]['name'];
+        }
+        else
+        {
+            $responseVideo['name'] = 'Эпизод без имени';
+        }
+
         return ResponseHelper::success($response, $responseVideo);
     }
 

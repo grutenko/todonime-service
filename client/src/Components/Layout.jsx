@@ -22,7 +22,7 @@ const drawerWidth = 350,
             "flexGrow": 1
         },
         "main": {
-            "marginTop": theme.spacing(3)
+
         },
         "menuButton": {
             "marginRight": theme.spacing(0, 1),

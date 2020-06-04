@@ -31,6 +31,8 @@ import IconButton from "@material-ui/core/IconButton";
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import Achieve from "../Achievement/Achieve";
+import EditIcon from '@material-ui/icons/Edit';
+import TextField from "@material-ui/core/TextField";
 
 moment.locale("ru");
 
@@ -109,6 +111,7 @@ export default class VideoPlayer extends React.Component {
             >
                 Вы успешно вышли из аккаунта
             </AuthSnackbar>
+            <EpisodeName name={data.name || 'Эпизод без имени'} />
             <VideoPlayerIframe url={data.url}/>
             <Toolbar
                 canComplete = { data.user !== null }
@@ -171,6 +174,91 @@ function NotFound() {
             Видео не найдено
         </div>
     </div>
+}
+
+class EpisodeName extends React.Component {
+
+    styles = {
+        root: {
+            color: "rgb(138, 138, 138)",
+            display: "flex"
+        },
+        name: {
+            margin: "auto 0",
+            lineHeight: 1
+        }
+    };
+
+    constructor(props) {
+        super(props);
+        this.state = {
+            openDialog: false,
+            name: this.props.name
+        };
+    }
+
+    updateName( name ) {
+        fetch(
+            `anime/${this.props.animeId}/episode/name`,
+            {name},
+            'POST'
+        ).then(result => {
+            this.setState({
+                openDialog: false,
+                name
+            });
+        });
+    }
+
+    render() {
+        const {
+            openDialog,
+            name
+        } = this.state;
+
+        return <div style={this.styles.root}>
+            <UpdateEpisodeNameDialog
+                open = {openDialog}
+                name = {name}
+                onClose = {() => this.setState({openDialog: false})}
+                onConfirm = {this.updateName.bind(this)}
+            />
+            <span style={this.styles.name}>{this.props.name}</span>
+            <IconButton onClick={() => this.setState({openDialog: true})}>
+                <EditIcon style={{color: "rgb(138, 138, 138)"}} fontSize="small"/>
+            </IconButton>
+        </div>
+    }
+}
+
+
+function UpdateEpisodeNameDialog({open, name, onClose, onConfirm}) {
+    const ref = React.createRef();
+
+    return <Dialog
+        open            = {open}
+        onClose         = {onClose}
+        aria-labelledby = "alert-dialog-title"
+        aria-describedby= "alert-dialog-description"
+    >
+        <DialogTitle id="alert-dialog-title">{"Изменить название серии"}</DialogTitle>
+        <DialogContent>
+            <TextField
+                inputRef={ref}
+                id="standard-basic"
+                label="Название серии"
+                defaultValue={name}
+            />
+        </DialogContent>
+        <DialogActions>
+            <Button onClick={onClose} color="primary">
+                Отмена
+            </Button>
+            <Button onClick={()=> {onConfirm(ref.current.value)}} color="primary" autoFocus>
+                Обновить
+            </Button>
+        </DialogActions>
+    </Dialog>
 }
 
 class Toolbar extends React.Component {
