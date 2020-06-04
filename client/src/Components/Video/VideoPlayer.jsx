@@ -30,6 +30,7 @@ import TranslateIcon from "@material-ui/icons/Translate";
 import IconButton from "@material-ui/core/IconButton";
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
+import Achieve from "../Achievement/Achieve";
 
 moment.locale("ru");
 
@@ -470,6 +471,18 @@ class Toolbar extends React.Component {
                 onClose         = {()=>this.setState({showEpisodeSnackbar: false})}
             />
             { this.renderButtons() }
+            {data.user !== null && data.user.nickname === 'Андрей Чурик'
+                ? <div
+                    style={{
+                        maxWidth: "808px",
+                        margin: "auto",
+                        display: 'flex'
+                    }}
+                >
+                    <Achieve/>
+                </div>
+                : null
+            }
             { this.renderAnimeInfo() }
         </div>
     }
