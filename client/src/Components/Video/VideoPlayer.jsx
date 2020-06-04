@@ -111,7 +111,11 @@ export default class VideoPlayer extends React.Component {
             >
                 Вы успешно вышли из аккаунта
             </AuthSnackbar>
-            <EpisodeName name={data.name || 'Эпизод без имени'} />
+            <EpisodeName
+                name    = {data.name || 'Эпизод без имени'}
+                animeId = {data.anime._id.$oid}
+                episode = {data.episode}
+            />
             <VideoPlayerIframe url={data.url}/>
             <Toolbar
                 canComplete = { data.user !== null }
@@ -197,10 +201,19 @@ class EpisodeName extends React.Component {
         };
     }
 
+    componentDidUpdate(prevProps) {
+        if(prevProps.name !== this.props.name) {
+            this.setState({name: this.props.name});
+        }
+    }
+
     updateName( name ) {
         fetch(
             `anime/${this.props.animeId}/episode/name`,
-            {name},
+            {
+                name,
+                episode: this.props.episode
+            },
             'POST'
         ).then(result => {
             this.setState({
