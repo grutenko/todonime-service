@@ -236,7 +236,7 @@ class EpisodeName extends React.Component {
                 onClose = {() => this.setState({openDialog: false})}
                 onConfirm = {this.updateName.bind(this)}
             />
-            <span style={this.styles.name}>{this.props.name}</span>
+            <span style={this.styles.name}>{name}</span>
             <IconButton onClick={() => this.setState({openDialog: true})}>
                 <EditIcon style={{color: "rgb(138, 138, 138)"}} fontSize="small"/>
             </IconButton>
