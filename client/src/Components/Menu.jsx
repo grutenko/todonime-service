@@ -77,23 +77,30 @@ export default function Menu(props) {
     const theme = useTheme();
 
     return <Drawer
-            className={classes.drawer}
-            variant="temporary"
-            anchor="right"
-            open={open}
-            ModalProps={{ onBackdropClick: props.onClose, onEscapeKeyDown: props.onClose }}
-            classes={{
-                "paper": classes.drawerPaper
+            className   = {classes.drawer}
+            variant     = "temporary"
+            anchor      = "right"
+            open        = {open}
+            ModalProps  = {{
+                onBackdropClick: props.onClose,
+                onEscapeKeyDown: props.onClose
+            }}
+            PaperProps={{
+                style: {
+                    "width": drawerWidth
+                }
+            }}
+            classes     = {{
+                "paper": 'menu-scrollable'
             }}
         >
             <div className={classes.drawerHeader}>
                 <IconButton onClick={props.onClose}>
-                    {/* eslint-disable-next-line no-ternary */}
-                    {theme.direction === "rtl"
-                        ? <ChevronLeftIcon/>
-                        : <ChevronRightIcon/>}
+                    <ChevronRightIcon/>
                 </IconButton>
             </div>
-            <Container>{props.children || <div></div>}</Container>
+            <Container className="menu-container">
+                {props.children || <div/>}
+            </Container>
         </Drawer>
 }

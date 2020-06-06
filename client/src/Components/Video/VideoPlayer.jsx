@@ -615,7 +615,7 @@ function ConfirmAuthDialog({open, onClose, onConfirm}) {
     </Dialog>
 }
 
-function RollbackEpisodeDialog({completed, current, open, onClose, onRollback}) {
+export function RollbackEpisodeDialog({completed, current, open, onClose, onRollback}) {
     return <Dialog
         open={open}
         onClose={onClose}

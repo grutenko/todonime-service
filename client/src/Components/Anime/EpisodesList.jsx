@@ -7,6 +7,8 @@ import ListItemIcon from "@material-ui/core/ListItemIcon";
 import Checkbox from "@material-ui/core/Checkbox";
 
 import {fetch} from '../../lib/api';
+import {RollbackEpisodeDialog} from "../Video/VideoPlayer";
+import Typography from "@material-ui/core/Typography";
 
 class EpisodesList extends React.Component {
 
@@ -16,17 +18,65 @@ class EpisodesList extends React.Component {
         },
         "item": {
             "width": '100%',
-            "padding": '10px'
+            "padding": '10px',
+            display: 'flex'
+        },
+        number: {
+            margin: "auto 0",
+            lineHeight: 1,
+            marginRight: "15px"
         }
     }
 
     constructor(props) {
         super(props);
 
+        const episodesShow = props.lastEpisode <= 50
+            ? props.lastEpisode
+            : props.currentEpisode > 50
+                ? props.currentEpisode
+                : 50
+
         this.state = {
+            episodesShow,
             currentEpisode      : props.currentEpisode,
-            lastCompletedEpisode: props.lastCompletedEpisode
+            lastCompletedEpisode: props.lastCompletedEpisode,
+            showRollbackEpisodeDialog: false
         };
+
+        this.onScrollMenu = this.onScrollMenu.bind(this);
+
+        this.currentRef = React.createRef();
+    }
+
+    onScrollMenu(e) {
+        const menu = document
+            .getElementsByClassName('menu-scrollable')
+            [0];
+
+        if(menu.scrollTop >= menu.scrollHeight - 1500) {
+            this.setState({
+                episodesShow: this.state.episodesShow + 50 > this.props.lastEpisode
+                    ? this.props.lastEpisode
+                    : this.state.episodesShow + 50
+            })
+        }
+    }
+
+    componentDidMount() {
+        let menu = document
+            .getElementsByClassName('menu-scrollable')
+            [0];
+
+        menu.addEventListener('scroll', this.onScrollMenu);
+        menu.scrollTo(0, this.currentRef.current.offsetTop);
+    }
+
+    componentWillUnmount() {
+        document
+            .getElementsByClassName('menu-scrollable')
+            [0]
+            .removeEventListener('scroll', this.onScrollMenu);
     }
 
     componentDidUpdate(prevProps) {
@@ -50,32 +100,50 @@ class EpisodesList extends React.Component {
         }
     }
 
+    confirmBumpEpisode(episode) {
+        const {
+            rollbackEpisode
+        } = this.state;
+
+        if (!this.props.canComplete) {
+            return;
+        }
+
+        episode = typeof episode === 'number' ? episode : rollbackEpisode;
+
+        fetch(
+            "user/episode/watched",
+            {
+                "anime_id": this.props.anime._id.$oid,
+                "episode": episode
+            },
+            "PUT"
+        ).then((data) => {
+            this.setState({
+                lastCompletedEpisode: episode,
+                showRollbackEpisodeDialog: false,
+                rollbackEpisode: -1
+            })
+            this.props.onUpdate();
+        });
+    }
+
     onBumpEpisode(episode) {
         return () => {
-            if (this.props.canComplete) {
-                if(this.state.lastCompletedEpisode >= episode) {
-                    episode--;
-                }
-
-                fetch(
-                    "user/episode/watched",
-                    {
-                        "anime_id": this.props.anime._id.$oid,
-                        "episode": episode
-                    },
-                    "PUT"
-                ).then((data) => {
-
-                    this.setState({lastCompletedEpisode: episode})
-                    this.props.onUpdate();
+            if(this.state.lastCompletedEpisode < episode) {
+                this.confirmBumpEpisode(episode);
+            } else
+            {
+                this.setState({
+                    showRollbackEpisodeDialog: true,
+                    rollbackEpisode: episode - 1
                 });
-
             }
         }
     }
 
     checkBox(checked, episode) {
-        return <ListItemIcon>
+        return <ListItemIcon style={{minWidth: 0}}>
             <Checkbox
                 color           = "primary"
                 edge            = "start"
@@ -89,37 +157,67 @@ class EpisodesList extends React.Component {
 
     render() {
         const {
-            lastEpisode
+            canComplete
         } = this.props,
             {
+                episodesShow,
                 currentEpisode,
-                lastCompletedEpisode
+                rollbackEpisode,
+                lastCompletedEpisode,
+                showRollbackEpisodeDialog
             } = this.state;
 
-        return <List
-            style={{"flex": 1}}
-            component="div"
-            aria-label="main mailbox folders"
-        >
-            {Array.from(Array(lastEpisode).keys()).map(episode => {
-                episode = episode + 1;
+        return <>
+            <RollbackEpisodeDialog
+                completed   = {lastCompletedEpisode}
+                current     = {rollbackEpisode}
+                open        = {showRollbackEpisodeDialog}
+                onClose     = {()=>this.setState({showRollbackEpisodeDialog: false})}
+                onRollback  = {this.confirmBumpEpisode.bind(this)}
+            />
+            <List
+                style={{"flex": 1}}
+                component="div"
+                aria-label="main mailbox folders"
+            >
+                {Array.from(Array(episodesShow).keys()).map(episode => {
+                    episode = episode + 1;
 
-                return <ListItem
-                    key     ={episode}
-                    selected={episode === currentEpisode}
-                    dense
-                    button
-                >
-                    { this.checkBox( lastCompletedEpisode >= episode, episode)}
-                    <div
-                        onClick={this.onClickEpisode(episode)}
-                        style={this.styles.item}
+                    return <ListItem
+                        ref={episode === currentEpisode ? this.currentRef : React.createRef()}
+                        key     = {episode}
+                        selected= {episode === currentEpisode}
+                        dense
+                        button
                     >
-                        {episode}
-                    </div>
-                </ListItem>
-            })}
-        </List>
+                        {canComplete
+                            ? this.checkBox( lastCompletedEpisode >= episode, episode)
+                            : null}
+                        <div
+                            onClick={this.onClickEpisode(episode)}
+                            style={this.styles.item}
+                        >
+                            <span style={this.styles.number}>{episode}</span>
+                            <Typography
+                                style={{
+                                    fontSize: '12px',
+                                    color: "#898989",
+                                    maxWidth: "190px"
+                                }}
+                                display = "inline"
+                                variant = "overline"
+                                noWrap  = "true"
+                            >
+                                {this.props.anime.episodes && this.props.anime.episodes[ episode ]
+                                    ? this.props.anime.episodes[ episode ]['name'] || ''
+                                    : ''
+                                }
+                            </Typography>
+                        </div>
+                    </ListItem>
+                })}
+            </List>
+        </>
     }
 }
 
