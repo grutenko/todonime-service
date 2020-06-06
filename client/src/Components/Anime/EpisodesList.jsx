@@ -9,6 +9,7 @@ import Checkbox from "@material-ui/core/Checkbox";
 import {fetch} from '../../lib/api';
 import {RollbackEpisodeDialog} from "../Video/VideoPlayer";
 import Typography from "@material-ui/core/Typography";
+import Tooltip from "@material-ui/core/Tooltip";
 
 class EpisodesList extends React.Component {
 
@@ -198,21 +199,26 @@ class EpisodesList extends React.Component {
                             style={this.styles.item}
                         >
                             <span style={this.styles.number}>{episode}</span>
-                            <Typography
-                                style={{
-                                    fontSize: '12px',
-                                    color: "#898989",
-                                    maxWidth: "190px"
-                                }}
-                                display = "inline"
-                                variant = "overline"
-                                noWrap  = "true"
-                            >
-                                {this.props.anime.episodes && this.props.anime.episodes[ episode ]
-                                    ? this.props.anime.episodes[ episode ]['name'] || ''
-                                    : ''
-                                }
-                            </Typography>
+                            <Tooltip title={this.props.anime.episodes && this.props.anime.episodes[ episode ]
+                                ? this.props.anime.episodes[ episode ]['name'] || ''
+                                : ''
+                            }>
+                                <Typography
+                                    style={{
+                                        fontSize: '12px',
+                                        color: "#898989",
+                                        maxWidth: "190px"
+                                    }}
+                                    display = "inline"
+                                    variant = "overline"
+                                    noWrap  = "true"
+                                >
+                                    {this.props.anime.episodes && this.props.anime.episodes[ episode ]
+                                        ? this.props.anime.episodes[ episode ]['name'] || ''
+                                        : ''
+                                    }
+                                </Typography>
+                            </Tooltip>
                         </div>
                     </ListItem>
                 })}
