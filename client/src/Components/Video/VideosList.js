@@ -14,8 +14,9 @@ import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText";
 import Badge from "@material-ui/core/Badge";
-import {Link} from "react-router-dom";
+import {withRouter} from "react-router-dom";
 import CheckIcon from "@material-ui/icons/Check";
+import AddIcon from '@material-ui/icons/Add';
 
 export default class VideosList extends React.Component {
 
@@ -105,8 +106,13 @@ export default class VideosList extends React.Component {
                         </Badge>
                     </ToggleButton>
                 </ToggleButtonGroup>
+                {/*<ToggleButtonGroup size="small" style={{marginLeft: "5px"}}>
+                    <ToggleButton color="primary">
+                        <AddIcon />
+                    </ToggleButton>
+        </ToggleButtonGroup>*/}
             </div>
-            <AuthorsList currentId={currentId} videos={videos} kind={type}/>
+            <AuthorsListWithRouter currentId={currentId} videos={videos} kind={type}/>
         </>;
 
     }
@@ -120,19 +126,28 @@ class AuthorsList extends React.Component {
         super(props);
 
         this.state = {
-            "domains": this.setDomains(props.videos)
+            domains     : this.setDomains(props.videos),
+            currentId   : props.currentId
         };
 
     }
 
     componentDidUpdate (prevProps, prevState) {
-
         if (prevProps.currentId !== this.props.currentId || prevProps.kind !== this.props.kind) {
-
-            this.setState({"domains": this.setDomains(this.props.videos)});
-
+            this.setState({
+                domains: this.setDomains(this.props.videos),
+                currentId: this.props.currentId
+            });
         }
+    }
 
+    onClickVideo(id) {
+        return () => {
+            this.setState({
+                currentId: id
+            });
+            this.props.history.push(`/v/${id}`);
+        }
     }
 
     setDomains (videos) {
@@ -165,11 +180,9 @@ class AuthorsList extends React.Component {
     render () {
 
         const {
-                domains
-            } = this.state,
-            {
+                domains,
                 currentId
-            } = this.props;
+            } = this.state;
 
         return (
             <div style={{"width": "100%"}}>
@@ -196,32 +209,30 @@ class AuthorsList extends React.Component {
                             {authors.map((video, i) => <ListItem key={video._id.$oid}
                                 button
                                 selected={video._id.$oid === currentId}
-                                onClick={() => {}}
+                                onClick={this.onClickVideo(video._id.$oid)}
                                 style={{"display": "flex"}}
                             >
-                                <Link to={`/v/${video._id.$oid}`} style={{"flex": 1, 'text-decoration': 'none'}}>
-                                    <ListItemText 
-                                        primary={<>
-                                            <span style={{"verticalAlign": "middle",
-                                                "marginRight": "5px"}}>
-                                                <img
-                                                    src={`/static/img/flags/flags-iso/flat/16/${{"ru": "RU",
-                                                        "en": "EN",
-                                                        "ja": "JP"}[video.language] || "RU"}.png`}
-                                                    alt="Canada Flag"
-                                                />
-                                            </span>
-                                            <span style={{"fontSize": "13px"}}>
-                                                {video.author.substr(0,22 ) + (video.author.length > 22 ? "..." : "")}
-                                            </span>
-                                        </>}
-                                    />
-                                </Link>
+                                <ListItemText
+                                    primary={<>
+                                        <span style={{"verticalAlign": "middle",
+                                            "marginRight": "5px"}}>
+                                            <img
+                                                src={`/static/img/flags/flags-iso/flat/16/${{"ru": "RU",
+                                                    "en": "EN",
+                                                    "ja": "JP"}[video.language] || "RU"}.png`}
+                                                alt="Canada Flag"
+                                            />
+                                        </span>
+                                        <span style={{"fontSize": "13px"}}>
+                                            {video.author.substr(0,22 ) + (video.author.length > 22 ? "..." : "")}
+                                        </span>
+                                    </>}
+                                />
                                 {
-                                        video.completed
+                                    video.completed
                                         ? <CheckIcon color="primary" title="Сериал переведен этим проектом полностью"/>
                                         : null
-                                    }
+                                }
                             </ListItem>)}
                         </List>
                     </ExpansionPanelDetails>
@@ -229,5 +240,7 @@ class AuthorsList extends React.Component {
             </div>);
 
     }
-
 }
+
+
+const AuthorsListWithRouter = withRouter(AuthorsList);
