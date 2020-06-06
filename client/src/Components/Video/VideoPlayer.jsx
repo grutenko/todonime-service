@@ -529,6 +529,12 @@ class Toolbar extends React.Component {
 
         return <div style={this.styles.animeInfo}>
             <div style={this.styles.authorInfo}>
+                <img style={{"marginRight": "5px",
+                    "verticalAlign": "middle"}}
+                     src={`https://www.google.com/s2/favicons?domain=${data.domain}`}
+                     alt={data.domain}
+                     title={data.domain}
+                />
                 {icon}
                 <span style={this.styles.authorInfoText}>{data.author}</span>
             </div>
