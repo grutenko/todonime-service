@@ -11,6 +11,8 @@ foreach(require __DIR__ . '/../config/middleware.php' as $middleware) {
     $app->add($middleware);
 }
 
+$app->addBodyParsingMiddleware();
+
 $customErrorHandler = function (
     $request,
     Throwable $exception,

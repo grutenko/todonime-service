@@ -1,6 +1,7 @@
 <?php
 
 use App\Action\Video\AddComment;
+use App\Action\Video\AddVideo;
 use App\Action\Video\DeleteComment;
 use App\Action\Video\GetComments;
 use App\Action\Video\GetVideoByIdAction;
@@ -13,5 +14,7 @@ $group->get('/video/comments', GetComments::class);
 $group->post('/video/comments', AddComment::class);
 $group->delete('/video/comments/{commentId}', DeleteComment::class);
 $group->post('/video/comments/{commentId}', UpdateComment::class);
+
+$group->put('/video', AddVideo::class);
 
 $group->get('/video/{id}', GetVideoByIdAction::class);

@@ -32,7 +32,15 @@ import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import Achieve from "../Achievement/Achieve";
 import EditIcon from '@material-ui/icons/Edit';
+import AddIcon from "@material-ui/icons/Add";
+import Tooltip from "@material-ui/core/Tooltip";
 import TextField from "@material-ui/core/TextField";
+import FormControl from "@material-ui/core/FormControl";
+import Select from "@material-ui/core/Select";
+import MenuItem from "@material-ui/core/MenuItem";
+import FormHelperText from "@material-ui/core/FormHelperText";
+import Avatar from "@material-ui/core/Avatar"
+import {withRouter} from 'react-router-dom';
 
 moment.locale("ru");
 
@@ -113,8 +121,6 @@ export default class VideoPlayer extends React.Component {
             </AuthSnackbar>
             <EpisodeName
                 name    = {data.name || 'Эпизод без имени'}
-                animeId = {data.anime._id.$oid}
-                episode = {data.episode}
             />
             <VideoPlayerIframe url={data.url}/>
             <Toolbar
@@ -180,12 +186,13 @@ function NotFound() {
     </div>
 }
 
-class EpisodeName extends React.Component {
 
-    styles = {
+function EpisodeName({name}) {
+    const styles = {
         root: {
-            color: "rgb(138, 138, 138)",
-            display: "flex"
+            color: "white",
+            display: "flex",
+            padding: "10px 0"
         },
         name: {
             margin: "auto 0",
@@ -193,85 +200,9 @@ class EpisodeName extends React.Component {
         }
     };
 
-    constructor(props) {
-        super(props);
-        this.state = {
-            openDialog: false,
-            name: this.props.name
-        };
-    }
-
-    componentDidUpdate(prevProps) {
-        if(prevProps.name !== this.props.name) {
-            this.setState({name: this.props.name});
-        }
-    }
-
-    updateName( name ) {
-        fetch(
-            `anime/${this.props.animeId}/episode/name`,
-            {
-                name,
-                episode: this.props.episode
-            },
-            'POST'
-        ).then(result => {
-            this.setState({
-                openDialog: false,
-                name
-            });
-        });
-    }
-
-    render() {
-        const {
-            openDialog,
-            name
-        } = this.state;
-
-        return <div style={this.styles.root}>
-            <UpdateEpisodeNameDialog
-                open = {openDialog}
-                name = {name}
-                onClose = {() => this.setState({openDialog: false})}
-                onConfirm = {this.updateName.bind(this)}
-            />
-            <span style={this.styles.name}>{name}</span>
-            <IconButton onClick={() => this.setState({openDialog: true})}>
-                <EditIcon style={{color: "rgb(138, 138, 138)"}} fontSize="small"/>
-            </IconButton>
-        </div>
-    }
-}
-
-
-function UpdateEpisodeNameDialog({open, name, onClose, onConfirm}) {
-    const ref = React.createRef();
-
-    return <Dialog
-        open            = {open}
-        onClose         = {onClose}
-        aria-labelledby = "alert-dialog-title"
-        aria-describedby= "alert-dialog-description"
-    >
-        <DialogTitle id="alert-dialog-title">{"Изменить название серии"}</DialogTitle>
-        <DialogContent>
-            <TextField
-                inputRef={ref}
-                id="standard-basic"
-                label="Название серии"
-                defaultValue={name}
-            />
-        </DialogContent>
-        <DialogActions>
-            <Button onClick={onClose} color="primary">
-                Отмена
-            </Button>
-            <Button onClick={()=> {onConfirm(ref.current.value)}} color="primary" autoFocus>
-                Обновить
-            </Button>
-        </DialogActions>
-    </Dialog>
+    return <div style={styles.root}>
+        <span style={styles.name}>{name}</span>
+    </div>
 }
 
 class Toolbar extends React.Component {
@@ -289,8 +220,10 @@ class Toolbar extends React.Component {
             background: "white"
         },
         buttons: {
+            display: 'flex',
             maxWidth: "808px",
-            margin: "auto"
+            margin: "auto",
+            justifyContent: "center"
         },
         animeInfo: {
             maxWidth: "800px",
@@ -307,6 +240,12 @@ class Toolbar extends React.Component {
         },
         authorInfoText: {
             marginLeft: "5px"
+        },
+        uploader: {
+            fontSize: '12px',
+            color: '#898989',
+            marginLeft: '5px',
+            display: 'inline-flex'
         }
     }
 
@@ -468,51 +407,79 @@ class Toolbar extends React.Component {
 
     renderButtons() {
         const {
-            canComplete
+            canComplete,
         } = this.props;
         const {
             completed
         } = this.state;
-        const {data: {episode}} = this.props;
+        const {data: {
+            episode,
+            name,
+            anime,
+            projects
+        }} = this.props;
 
         return <div style={this.styles.buttons}>
-            <Button
-                onClick     = {this.onOpenList.bind(this)}
-                startIcon   = {<TheatersIcon/>}
-            >
-                <span className="hide-630px">Переводы</span>
-            </Button>
-            <IconButton onClick={this.onBackEpisode.bind(this)}>
-                <ChevronLeftIcon/>
-            </IconButton>
-            <Button
-                onClick     = {this.onOpenAnimeInfo.bind(this)}
-                startIcon   = {<ViewListIcon/>}
-            >
-                <span className="hide-630px">Эпизоды</span>
-            </Button>
-            <span
-                style={{
-                    marginRight: "5px 15px",
-                    color: "#8a8a8a"
-                }}
-            >
+            <div style={{margin: "auto 0"}}>
+                <Button
+                    onClick     = {this.onOpenList.bind(this)}
+                    startIcon   = {<TheatersIcon/>}
+                >
+                    <span className="hide-630px">Переводы</span>
+                </Button>
+                <AddVideoWithRouter
+                    animeId = {anime._id.$oid}
+                    animeName = {anime.name_ru || anime.name_en}
+                    episode = {episode}
+                    projects = {projects}
+                    onConfirm = {this.props.onUpdate}
+                />
+            </div>
+            <Tooltip title="Предыдущий эпизод">
+                <IconButton onClick={this.onBackEpisode.bind(this)}>
+                    <ChevronLeftIcon/>
+                </IconButton>
+            </Tooltip>
+            <div style={{margin: "auto 0"}}>
+                <Button
+                    onClick     = {this.onOpenAnimeInfo.bind(this)}
+                    startIcon   = {<ViewListIcon/>}
+                >
+                    <span className="hide-630px">Эпизоды</span>
+                </Button>
+                <span
+                    style={{
+                        margin: "11px 5px",
+                        color: "#8a8a8a"
+                    }}
+                >
                 {episode} эпизод
-            </span>
-            <IconButton onClick={this.onNextEpisode.bind(this)}>
-                <ChevronRightIcon/>
-            </IconButton>
-            <Button
-                variant     = {completed ? "text" : "contained"}
-                color       = {completed ? "primary" : canComplete ? "secondary" : "disabled"}
-                onClick     = {this.bumpEpisode.bind(this)}
-                startIcon   = {<CheckIcon/>}
-                style       = {{float: "right"}}
-            >
-                <span className="hide-630px">
-                    {completed ? "Просмотрена" : "Отметить просмотренной"}
                 </span>
-            </Button>
+                <UpdateEpisode
+                    episode = {episode}
+                    name    = {name}
+                    animeId = {anime._id.$oid}
+                    onUpdate= {this.props.onUpdate}
+                />
+            </div>
+            <Tooltip title="Следующий эпизод">
+                <IconButton onClick={this.onNextEpisode.bind(this)}>
+                    <ChevronRightIcon/>
+                </IconButton>
+            </Tooltip>
+            <div style={{margin: "auto 0 auto auto"}}>
+                <Button
+                    variant     = {completed ? "text" : "contained"}
+                    color       = {completed ? "primary" : canComplete ? "secondary" : "disabled"}
+                    onClick     = {this.bumpEpisode.bind(this)}
+                    startIcon   = {<CheckIcon/>}
+                    style       = {{marginLeft: "auto"}}
+                >
+                    <span className="hide-630px">
+                        {completed ? "Просмотрена" : "Отметить просмотренной"}
+                    </span>
+                </Button>
+            </div>
         </div>
     }
 
@@ -536,7 +503,28 @@ class Toolbar extends React.Component {
                      title={data.domain}
                 />
                 {icon}
-                <span style={this.styles.authorInfoText}>{data.author}</span>
+                <div style={this.styles.authorInfoText}>
+                    {data.author}
+                    {data.uploader
+                        ? <span style={this.styles.uploader}>
+                            <span style={{margin: "auto 0"}}>
+                                {'загрузил' + (data.uploader.sex == 'female' ? 'а' : '')}
+                            </span>
+                            <Avatar
+                                variant="rounded"
+                                src={data.uploader.avatar}
+                                style={{
+                                    'margin': '0 5px',
+                                    'width': '16px',
+                                    'height': '16px',
+                                    'display': 'inline-block'
+                                }}
+                            />
+                            <span style={{margin: "auto 0"}}>{data.uploader.nickname}</span>
+                        </span>
+                        : null
+                    }
+                </div>
             </div>
             <AnimeCard
                 anime = {data.anime}
@@ -595,6 +583,293 @@ class Toolbar extends React.Component {
     }
 }
 
+class AddVideo extends React.Component {
+
+    state = {
+        open        : false,
+        showSuccess : false
+    }
+
+    onConfirm(videoId) {
+        this.setState({
+            open        : false,
+            showSuccess : true,
+            videoId
+        });
+        this.props.onConfirm();
+    }
+
+    toVideo() {
+        const {
+            videoId
+        } = this.state;
+
+        this.props.history.push(`/v/${videoId}`);
+    }
+
+    render() {
+        const {
+            showSuccess
+        } = this.state;
+
+        return <>
+            <Snackbar
+                open={showSuccess}
+                autoHideDuration={6000}
+                onClose={()=>this.setState({showSuccess: false})}
+            >
+                <Alert onClose={()=>this.setState({showSuccess: false})} severity="success">
+                    Видео добавлено!
+                    <Button
+                        onClick={this.toVideo.bind(this)}
+                        variant="outlined"
+                        style={{marginLeft: "15px", color: 'white'}}
+                        size="small"
+                    >
+                        перейти
+                    </Button>
+                </Alert>
+            </Snackbar>
+            <AddVideoDialog
+                animeId     = {this.props.animeId}
+                episode     = {this.props.episode}
+                animeName   = {this.props.animeName}
+                projects    = {this.props.projects}
+                open        = {this.state.open}
+                onClose     = {()=>this.setState({open:false})}
+                onConfirm   = {this.onConfirm.bind(this)}
+            />
+            <Tooltip title="Добавить перевод.">
+                <IconButton onClick={()=> this.setState({open: true})}>
+                    <AddIcon style={{width: "16px", height: "16px"}}/>
+                </IconButton>
+            </Tooltip>
+        </>
+    }
+}
+
+const AddVideoWithRouter = withRouter(AddVideo);
+
+class AddVideoDialog extends React.Component {
+
+    state = {
+        url     : null,
+        kind    : 'dub',
+        lang    : 'ru',
+        author  : ''
+    }
+
+    send() {
+        const {
+            url,
+            kind,
+            lang,
+            author
+        } = this.state;
+        const {
+            animeId,
+            episode,
+            onConfirm
+        } = this.props;
+
+        fetch(
+            'video',
+            {
+                url,
+                kind,
+                lang,
+                author,
+                episode,
+                anime_id: animeId
+            },
+            'PUT'
+        ).then((data) => onConfirm(data.data.video_id.$oid));
+    }
+
+    renderForm() {
+        const {
+            kind, lang, author
+        } = this.state;
+
+        return <>
+            <div style={{display: 'flex'}}>
+                <FormControl>
+                    <Select
+                        labelId="kind-helper-text"
+                        value={kind}
+                        displayEmpty
+                        onChange={(e) =>
+                            this.setState({
+                                kind: e.target.value,
+                                lang: e.target.value === 'org' ? 'jp' : lang
+                            })
+                        }
+                    >
+                        <MenuItem value="dub">озвучка</MenuItem>
+                        <MenuItem value="sub">субтитры</MenuItem>
+                        <MenuItem value="org">оригинал</MenuItem>
+                    </Select>
+                    <FormHelperText>Тип</FormHelperText>
+                </FormControl>
+                <FormControl style={{marginLeft: "15px"}}>
+                    <Select
+                        labelId="lang-helper-text"
+                        value={lang}
+                        displayEmpty
+                        onChange={(e) => this.setState({lang: e.target.value}) }
+                    >
+                        <MenuItem value="ru">ru</MenuItem>
+                        <MenuItem value="en">en</MenuItem>
+                        <MenuItem value="jp">jp</MenuItem>
+                    </Select>
+                    <FormHelperText>Язык</FormHelperText>
+                </FormControl>
+                <FormControl style={{marginLeft: "15px", flex: 1}}>
+                    <TextField
+                        fullWidth   = {true}
+                        helperText  = "Ссылка на embed"
+                        placeholder = "https://ok.ru/videoembed/89366202942"
+                        onChange    = {(e) => this.setState({url: e.target.value})}
+                        InputProps={{
+                            style: {
+                                width: "100%"
+                            }
+                        }}
+                    />
+                </FormControl>
+            </div>
+            <FormControl style={{display: "flex", marginTop: "15px"}}>
+                <TextField
+                    fullWidth   = {true}
+                    helperText  = "Авторы"
+                    placeholder = "Ника Ленина & Shashiburi"
+                    value       = {author}
+                    onChange    = {(e) => this.setState({author: e.target.value})}
+                    InputProps={{
+                        style: {
+                            width: "100%"
+                        }
+                    }}
+                />
+            </FormControl>
+        </>
+    }
+
+    render() {
+        const {
+            open,
+            onClose,
+            episode,
+            animeName
+        } = this.props;
+
+        return <Dialog
+            open            = {open}
+            onClose         = {onClose}
+            aria-labelledby = "alert-dialog-title"
+            aria-describedby= "alert-dialog-description"
+        >
+            <DialogTitle id="alert-dialog-title">
+                {"Добавить видео к " + episode + " эпизоду " + animeName}
+            </DialogTitle>
+            <DialogContent>
+                <DialogContentText
+                    id="alert-dialog-description"
+                    style={{width: "450px"}}
+                >
+                    {this.renderForm()}
+                </DialogContentText>
+            </DialogContent>
+            <DialogActions>
+                <Button onClick={this.props.onClose} color="primary">
+                    отмена
+                </Button>
+                <Button onClick={this.send.bind(this)} color="primary" autoFocus>
+                    добавить
+                </Button>
+            </DialogActions>
+        </Dialog>
+    }
+}
+
+class UpdateEpisode extends React.Component {
+
+    state = {
+        open: false
+    };
+
+    openDialog() {
+        this.setState({open: true})
+    }
+
+    onSave(name) {
+        fetch(`anime/${this.props.animeId}/episode/name`, {
+            episode: this.props.episode,
+            name
+        }, 'POST')
+            .then(() => {
+                this.setState({open: false})
+                this.props.onUpdate()
+            });
+    }
+
+    render() {
+        return <>
+            <UpdateEpisodeDialog
+                episode = {this.props.episode}
+                name = {this.props.name}
+                open={this.state.open}
+                onClose={()=>this.setState({open:false})}
+                onConfirm={this.onSave.bind(this)}
+            />
+            <Tooltip title="Изменить параметры серии">
+                <IconButton onClick={this.openDialog.bind(this)}>
+                    <EditIcon style={{width: "16px", height: "16px"}}/>
+                </IconButton>
+            </Tooltip>
+        </>
+    }
+}
+
+function UpdateEpisodeDialog({open, episode, name, onClose, onConfirm}) {
+    const ref = React.createRef();
+
+    const onSave = () => {
+        onConfirm(ref.current.value);
+    }
+
+    return <Dialog
+        open            = {open}
+        onClose         = {onClose}
+        aria-labelledby = "alert-dialog-title"
+        aria-describedby= "alert-dialog-description"
+    >
+        <DialogTitle id="alert-dialog-title">{"Изменение " + episode + " эпизода."}</DialogTitle>
+        <DialogContent>
+            <DialogContentText id="alert-dialog-description" style={{width: "450px"}}>
+                <TextField
+                    inputRef    = {ref}
+                    fullWidth   = {true}
+                    helperText  = "Название эпизода"
+                    placeholder = "Название эпизода"
+                    defaultValue= {name}
+                    InputProps  = {{
+                        width: "350px"
+                    }}
+                />
+            </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+            <Button onClick={onClose} color="primary">
+                отмена
+            </Button>
+            <Button onClick={onSave} color="primary" autoFocus>
+                сохранить
+            </Button>
+        </DialogActions>
+    </Dialog>
+}
+
 function ConfirmAuthDialog({open, onClose, onConfirm}) {
     return <Dialog
         open            = {open}
@@ -605,7 +880,7 @@ function ConfirmAuthDialog({open, onClose, onConfirm}) {
         <DialogTitle id="alert-dialog-title">{"Авторизироваться через shikimori.one"}</DialogTitle>
         <DialogContent>
             <DialogContentText id="alert-dialog-description">
-                Для хранения вашего просмотреного мы используем shikimori.one. Cоответственно для отметки нужно
+                Для хранения вашего просмотреного мы используем shikimori.one. Поэтому для отметки нужно
                 авторизироваться.<br/>
                 Перейти к авторизации? (2 клика).
             </DialogContentText>

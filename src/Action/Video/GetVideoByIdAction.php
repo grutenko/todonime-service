@@ -120,6 +120,19 @@ class GetVideoByIdAction extends Action
             unset($responseVideo['project_id']);
         }
 
+        if( isset($responseVideo['uploader']) )
+        {
+            $uploader = $this->mongodb->todonime->users->findOne(
+                ['_id' => $responseVideo['uploader']]
+            );
+            unset(
+                $uploader['watched_episodes'],
+                $uploader['auth_code'],
+                $uploader['token']
+            );
+            $responseVideo['uploader'] = $uploader;
+        }
+
         if(isset($responseVideo['anime']['episodes'][ $responseVideo['episode'] ]))
         {
             $responseVideo['name'] = $responseVideo['anime']['episodes'][ $responseVideo['episode'] ]['name'];
@@ -128,6 +141,13 @@ class GetVideoByIdAction extends Action
         {
             $responseVideo['name'] = 'Эпизод без имени';
         }
+
+        $responseVideo['projects'] = $this
+            ->mongodb
+            ->todonime
+            ->projects
+            ->find()
+            ->toArray();
 
         return ResponseHelper::success($response, $responseVideo);
     }

@@ -16,7 +16,6 @@ import ListItemText from "@material-ui/core/ListItemText";
 import Badge from "@material-ui/core/Badge";
 import {withRouter} from "react-router-dom";
 import CheckIcon from "@material-ui/icons/Check";
-import AddIcon from '@material-ui/icons/Add';
 
 export default class VideosList extends React.Component {
 
@@ -106,11 +105,6 @@ export default class VideosList extends React.Component {
                         </Badge>
                     </ToggleButton>
                 </ToggleButtonGroup>
-                {/*<ToggleButtonGroup size="small" style={{marginLeft: "5px"}}>
-                    <ToggleButton color="primary">
-                        <AddIcon />
-                    </ToggleButton>
-        </ToggleButtonGroup>*/}
             </div>
             <AuthorsListWithRouter currentId={currentId} videos={videos} kind={type}/>
         </>;
@@ -241,6 +235,5 @@ class AuthorsList extends React.Component {
 
     }
 }
-
 
 const AuthorsListWithRouter = withRouter(AuthorsList);
