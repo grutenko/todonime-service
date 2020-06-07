@@ -2,6 +2,8 @@
 
 use App\Middleware\HeaderMiddleware;
 
+define(__START__, microtime());
+
 require __DIR__ . '/../src/header.php';
 
 /**
