@@ -46,7 +46,7 @@ class AuthMiddleware
                         '_id' => $user['_id']
                     ],
                     ['$set' => [
-                        'last_Active' => new UTCDateTime()
+                        'last_active' => new UTCDateTime()
                     ]]
                 );
             }
