@@ -8,6 +8,7 @@ use App\Helper\AuthHelper;
 use DI\Container;
 use DI\DependencyException;
 use DI\NotFoundException;
+use MongoDB\BSON\UTCDateTime;
 use Slim\Psr7\Request;
 
 class AuthMiddleware
@@ -39,6 +40,15 @@ class AuthMiddleware
                 $request = $request
                     ->withAttribute('user', $user)
                     ->withAttribute('token', $cookie['auth']);
+
+                $this->db->todonime->users->updateOne(
+                    [
+                        '_id' => $user['_id']
+                    ],
+                    ['$set' => [
+                        'last_Active' => new UTCDateTime()
+                    ]]
+                );
             }
         }
 
