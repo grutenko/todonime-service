@@ -337,12 +337,12 @@ class Toolbar extends React.Component {
             "PUT"
         ).then(() => {
             this.setState({completing: false});
-            this.props.onUpdate();
 
             if(nextEpisode !== undefined && nextEpisode !== null) {
                 history.push(`/v/${nextEpisode}`);
             } else
             {
+                this.props.onUpdate();
                 this.setState({showEpisodeSnackbar: true})
             }
         })
@@ -508,7 +508,7 @@ class Toolbar extends React.Component {
                     {data.uploader
                         ? <span style={this.styles.uploader}>
                             <span style={{margin: "auto 0"}}>
-                                {'загрузил' + (data.uploader.sex == 'female' ? 'а' : '')}
+                                {'загрузил' + (data.uploader.sex === 'female' ? 'а' : '')}
                             </span>
                             <Avatar
                                 variant="rounded"
