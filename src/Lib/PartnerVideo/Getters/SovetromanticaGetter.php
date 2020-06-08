@@ -96,6 +96,9 @@ class SovetromanticaGetter implements GetterInterface
         $project = $db->projects->findOne([
            'name' => 'SovetRomantica'
         ]);
+        $uploader = $db->users->findOne([
+            'nickname' => 'Кёко'
+        ]);
 
         $episodes = array_filter($episodes, function($episode) {
             return isset($episode['embed'])
@@ -104,7 +107,7 @@ class SovetromanticaGetter implements GetterInterface
                 && isset($episode['episode_id']);
         });
 
-        return array_map(function($episode) use($anime, $project) {
+        return array_map(function($episode) use($anime, $project, $uploader) {
             return [
                 'url'               => $episode['embed'],
                 'anime_id'          => (int)$anime['anime_shikimori'],
@@ -114,7 +117,8 @@ class SovetromanticaGetter implements GetterInterface
                 'author'            => 'Sovetromantica',
                 'domain'            => 'sovetromantica.com',
                 'project_id'        => $project['_id'],
-                'partner_video_id'  => (int)$episode['episode_id']
+                'partner_video_id'  => (int)$episode['episode_id'],
+                'uploader'          => $uploader ? $uploader['_id'] : null
             ];
         }, $episodes);
     }
