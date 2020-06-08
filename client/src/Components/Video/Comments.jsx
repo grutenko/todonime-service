@@ -211,7 +211,7 @@ class CommentsBlock extends React.Component {
      */
     styles = {
         "root": {
-            "maxWidth": "950px",
+            "maxWidth": "75vw",
             "margin": "auto"
         }
     }
@@ -258,7 +258,7 @@ class CommentsBlock extends React.Component {
                 update
             } = this.state;
 
-        return <div style={this.styles.root}>
+        return <div style={this.styles.root} className="block">
             <h3>Комментарии</h3>
             {currentUser !== null
                 ? <CommentForm

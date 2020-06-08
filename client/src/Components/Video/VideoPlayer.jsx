@@ -225,7 +225,7 @@ function EpisodeName({name}) {
         }
     };
 
-    return <div style={styles.root}>
+    return <div style={styles.root} className="block">
         <span style={styles.name}>{name}</span>
     </div>
 }
@@ -245,12 +245,12 @@ class Toolbar extends React.Component {
         },
         buttons: {
             display: 'flex',
-            maxWidth: "958px",
+            maxWidth: "75vw",
             margin: "auto",
             justifyContent: "center"
         },
         animeInfo: {
-            maxWidth: "950px",
+            maxWidth: "75vw",
             margin: "auto",
             marginTop: "10px"
         },
@@ -443,7 +443,7 @@ class Toolbar extends React.Component {
             projects
         }} = this.props;
 
-        return <div style={this.styles.buttons}>
+        return <div style={this.styles.buttons} className="block">
             <div style={{margin: "auto 0"}}>
                 <Button
                     onClick     = {this.onOpenList.bind(this)}
@@ -518,7 +518,7 @@ class Toolbar extends React.Component {
             'org': <TranslateIcon fontSize="small" />
         }[ data.kind ] || <RecordVoiceOverIcon />;
 
-        return <div style={this.styles.animeInfo}>
+        return <div style={this.styles.animeInfo} className="block">
             <div style={this.styles.authorInfo}>
                 <img style={{"marginRight": "5px",
                     "verticalAlign": "middle"}}
