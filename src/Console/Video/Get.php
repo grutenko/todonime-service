@@ -6,7 +6,9 @@ namespace App\Console\Video;
 
 use App\Lib\PartnerVideo\Getter;
 use App\Lib\PartnerVideo\Getters\SmotretAnimeGetter;
+use App\Lib\PartnerVideo\Getters\SovetromanticaGetter;
 use App\Lib\SmotretAnimeApi;
+use App\Lib\SovetromanticaApi;
 use DI\Container;
 use DI\DependencyException;
 use DI\NotFoundException;
@@ -56,7 +58,8 @@ class Get extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $getters = [
-            new SmotretAnimeGetter(new SmotretAnimeApi)
+            new SmotretAnimeGetter(new SmotretAnimeApi),
+            new SovetromanticaGetter(new SovetromanticaApi)
         ];
         (new Getter($getters, $this->db, $output))
             ->run();
