@@ -84,7 +84,7 @@ export default function Layout ({title, setMenu, menuOpen, children}) {
     const classes = useStyles();
 
     return <div className={classes.root}>
-        <AppBar
+        {/*<AppBar
             position="static"
             className={classes.appBar}
         >
@@ -106,7 +106,7 @@ export default function Layout ({title, setMenu, menuOpen, children}) {
                     <AccountCircle />
                 </IconButton>
             </Toolbar>
-        </AppBar>
+        </AppBar>*/}
         <Container maxWidth={false} className={classes.main}>
             {children}
         </Container>

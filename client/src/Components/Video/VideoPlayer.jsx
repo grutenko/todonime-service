@@ -178,7 +178,7 @@ function BackgroundPoster({poster, children}) {
         blur: {
             width: '100%',
             backdropFilter: "blur(8px)",
-            background: 'rgba(255, 255, 255, 0.1)',
+            background: 'rgba(0, 0, 0, 0.2)',
         }
     };
 
@@ -216,7 +216,7 @@ function EpisodeName({name}) {
             color: "white",
             display: "flex",
             padding: "10px 0",
-            maxWidth: "950px",
+            maxWidth: "75vw",
             margin: "auto"
         },
         name: {
