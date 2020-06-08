@@ -19,10 +19,13 @@ const drawerWidth = 350,
     /* eslint-disable */
     useStyles = makeStyles((theme) => ({
         "root": {
-            "flexGrow": 1
+            "flexGrow": 1,
+            "padding": 0,
+            "margin": 0
         },
         "main": {
-
+            "padding": 0,
+            "margin": 0
         },
         "menuButton": {
             "marginRight": theme.spacing(0, 1),

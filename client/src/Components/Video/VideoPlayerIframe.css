@@ -1,4 +1,7 @@
 .video-player__iframe {
+    height: calc(100vh - 160px);
     width: 100%;
-    height: calc(100vh - 180px);
+    max-width: 950px;
+    margin: auto;
+    display: block;
 }

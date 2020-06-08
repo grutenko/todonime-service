@@ -119,10 +119,12 @@ export default class VideoPlayer extends React.Component {
             >
                 Вы успешно вышли из аккаунта
             </AuthSnackbar>
-            <EpisodeName
-                name    = {data.name || 'Эпизод без имени'}
-            />
-            <VideoPlayerIframe url={data.url}/>
+            <BackgroundPoster poster = {process.env.REACT_APP_CDN_BASE + data.anime.poster.original}>
+                <EpisodeName
+                    name    = {data.name || 'Эпизод без имени'}
+                />
+                <VideoPlayerIframe url={data.url}/>
+            </BackgroundPoster>
             <Toolbar
                 canComplete = { data.user !== null }
                 isWatched   = { data.is_watched }
@@ -166,6 +168,27 @@ export default class VideoPlayer extends React.Component {
     }
 }
 
+function BackgroundPoster({poster, children}) {
+    const styles = {
+        root: {
+            backgroundImage: `url(${poster})`,
+            backgroundPosition: 'center',
+            backgroundSize: 'cover'
+        },
+        blur: {
+            width: '100%',
+            backdropFilter: "blur(8px)",
+            background: 'rgba(255, 255, 255, 0.1)',
+        }
+    };
+
+    return <div style={styles.root}>
+        <div style={styles.blur}>
+            {children}
+        </div>
+    </div>
+}
+
 function NotFound() {
     const styles = {
         root: {
@@ -192,11 +215,13 @@ function EpisodeName({name}) {
         root: {
             color: "white",
             display: "flex",
-            padding: "10px 0"
+            padding: "10px 0",
+            maxWidth: "950px",
+            margin: "auto"
         },
         name: {
             margin: "auto 0",
-            lineHeight: 1
+            lineHeight: 1,
         }
     };
 
@@ -215,18 +240,17 @@ class Toolbar extends React.Component {
      */
     styles = {
         root: {
-            marginTop: "15px",
             padding: "15px",
             background: "white"
         },
         buttons: {
             display: 'flex',
-            maxWidth: "808px",
+            maxWidth: "958px",
             margin: "auto",
             justifyContent: "center"
         },
         animeInfo: {
-            maxWidth: "800px",
+            maxWidth: "950px",
             margin: "auto",
             marginTop: "10px"
         },

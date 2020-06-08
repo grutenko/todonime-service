@@ -211,7 +211,7 @@ class CommentsBlock extends React.Component {
      */
     styles = {
         "root": {
-            "maxWidth": "800px",
+            "maxWidth": "950px",
             "margin": "auto"
         }
     }
