@@ -41,10 +41,24 @@ import MenuItem from "@material-ui/core/MenuItem";
 import FormHelperText from "@material-ui/core/FormHelperText";
 import Avatar from "@material-ui/core/Avatar"
 import {withRouter} from 'react-router-dom';
+import UserButton from "../User/UserButton";
+import UserInfo from "../User/UserInfo";
 
 moment.locale("ru");
 
 export default class VideoPlayer extends React.Component {
+
+    styles = {
+
+        topToolbar: {
+            color: "white",
+            display: "flex",
+            padding: "10px 0",
+            maxWidth: "70vw",
+            margin: "auto",
+            justifyContent: 'space-between'
+        }
+    }
 
     constructor (props) {
 
@@ -99,6 +113,10 @@ export default class VideoPlayer extends React.Component {
         this.fetch(false);
     }
 
+    onShowUser() {
+        this.props.setMenu(<UserInfo/>);
+    }
+
     renderCommon() {
         const  {
             showLogin,
@@ -120,9 +138,15 @@ export default class VideoPlayer extends React.Component {
                 Вы успешно вышли из аккаунта
             </AuthSnackbar>
             <BackgroundPoster poster = {process.env.REACT_APP_CDN_BASE + data.anime.poster.original}>
-                <EpisodeName
-                    name    = {data.name || 'Эпизод без имени'}
-                />
+                <div style={this.styles.topToolbar}>
+                    <EpisodeName
+                        name    = {data.name || 'Эпизод без имени'}
+                    />
+                    <UserButton
+                        user    = {data.user}
+                        onClick = {this.onShowUser.bind(this)}
+                    />
+                </div>
                 <VideoPlayerIframe url={data.url}/>
             </BackgroundPoster>
             <Toolbar
@@ -212,22 +236,13 @@ function NotFound() {
 
 function EpisodeName({name}) {
     const styles = {
-        root: {
-            color: "white",
-            display: "flex",
-            padding: "10px 0",
-            maxWidth: "75vw",
-            margin: "auto"
-        },
         name: {
             margin: "auto 0",
             lineHeight: 1,
         }
     };
 
-    return <div style={styles.root} className="block">
-        <span style={styles.name}>{name}</span>
-    </div>
+    return <span style={styles.name}>{name}</span>
 }
 
 class Toolbar extends React.Component {
@@ -245,12 +260,12 @@ class Toolbar extends React.Component {
         },
         buttons: {
             display: 'flex',
-            maxWidth: "75vw",
+            maxWidth: "calc(70vw + 12px)",
             margin: "auto",
             justifyContent: "center"
         },
         animeInfo: {
-            maxWidth: "75vw",
+            maxWidth: "70vw",
             margin: "auto",
             marginTop: "10px"
         },

@@ -11,7 +11,6 @@ import Typography from "@material-ui/core/Typography";
 import useTheme from "@material-ui/core/styles/useTheme";
 import Container from "@material-ui/core/Container";
 
-import UserInfo from './User/UserInfo';
 /* eslint-enable */
 
 const drawerWidth = 350,
@@ -84,29 +83,6 @@ export default function Layout ({title, setMenu, menuOpen, children}) {
     const classes = useStyles();
 
     return <div className={classes.root}>
-        {/*<AppBar
-            position="static"
-            className={classes.appBar}
-        >
-            <Toolbar variant="dense" className={classes.toolbar}>
-                <Typography
-                    variant="div"
-                    color="inherit"
-                    className={classes.title}
-                >
-                    {title}
-                </Typography>
-                <IconButton
-                    edge="end"
-                    className={classes.menuButton}
-                    color="inherit"
-                    aria-label="menu"
-                    onClick={() => setMenu(<UserInfo/>)}
-                >
-                    <AccountCircle />
-                </IconButton>
-            </Toolbar>
-        </AppBar>*/}
         <Container maxWidth={false} className={classes.main}>
             {children}
         </Container>

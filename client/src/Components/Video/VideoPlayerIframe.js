@@ -18,7 +18,7 @@ export default class VideoPlayerIframe extends React.Component {
     render() {
         return <>
             {!this.state.load
-                ? <LinearProgress style={{maxWidth: '75vw', margin: 'auto'}} className="block"/>
+                ? <LinearProgress style={{maxWidth: '70vw', margin: 'auto'}} className="block"/>
                 : null
             }
             <iframe
