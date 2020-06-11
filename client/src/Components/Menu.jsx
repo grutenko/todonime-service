@@ -25,10 +25,16 @@ export const drawerWidth = 450;
         },
         "drawer": {
             "width": drawerWidth,
-            "flexShrink": 0
+            "flexShrink": 0,
+            [theme.breakpoints.down('sm')]: {
+                "width": '100vw'
+            },
         },
         "drawerPaper": {
-            "width": drawerWidth
+            "width": drawerWidth,
+            [theme.breakpoints.down('sm')]: {
+                "width": '100vw'
+            },
         },
         "drawerHeader": {
             "display": "flex",
@@ -86,9 +92,7 @@ export default function Menu(props) {
                 onEscapeKeyDown: props.onClose
             }}
             PaperProps={{
-                style: {
-                    "width": drawerWidth
-                }
+                className: classes.drawerPaper
             }}
             classes     = {{
                 "paper": 'menu-scrollable'

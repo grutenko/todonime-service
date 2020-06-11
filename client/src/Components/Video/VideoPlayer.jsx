@@ -138,7 +138,7 @@ export default class VideoPlayer extends React.Component {
                 Вы успешно вышли из аккаунта
             </AuthSnackbar>
             <BackgroundPoster poster = {process.env.REACT_APP_CDN_BASE + data.anime.poster.original}>
-                <div style={this.styles.topToolbar}>
+                <div style={this.styles.topToolbar} className="block">
                     <EpisodeName
                         name    = {data.name || 'Эпизод без имени'}
                     />
