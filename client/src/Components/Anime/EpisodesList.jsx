@@ -207,7 +207,7 @@ class EpisodesList extends React.Component {
                                     style={{
                                         fontSize: '12px',
                                         color: "#898989",
-                                        maxWidth: "190px"
+                                        maxWidth: "290px"
                                     }}
                                     display = "inline"
                                     variant = "overline"
