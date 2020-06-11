@@ -16,6 +16,7 @@ import ListItemText from "@material-ui/core/ListItemText";
 import Badge from "@material-ui/core/Badge";
 import {withRouter} from "react-router-dom";
 import CheckIcon from "@material-ui/icons/Check";
+import Tooltip from "@material-ui/core/Tooltip";
 
 export default class VideosList extends React.Component {
 
@@ -218,13 +219,15 @@ class AuthorsList extends React.Component {
                                             />
                                         </span>
                                         <span style={{"fontSize": "13px"}}>
-                                            {video.author.substr(0,22 ) + (video.author.length > 22 ? "..." : "")}
+                                            {video.author.substr(0,42 ) + (video.author.length > 42 ? "..." : "")}
                                         </span>
                                     </>}
                                 />
                                 {
                                     video.completed
-                                        ? <CheckIcon color="primary" title="Сериал переведен этим проектом полностью"/>
+                                        ? <Tooltip title="Это означает, что аниме переведено полностью этим проектом">
+                                            <CheckIcon color="primary" title="Сериал переведен этим проектом полностью"/>
+                                        </Tooltip>
                                         : null
                                 }
                             </ListItem>)}

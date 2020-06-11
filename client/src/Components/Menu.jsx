@@ -12,7 +12,7 @@ import ClickAwayListener from "@material-ui/core/ClickAwayListener";
 /* eslint-enable */
 
 
-export const drawerWidth = 350;
+export const drawerWidth = 450;
 
 /* eslint-disable */
     const useStyles = makeStyles((theme) => ({
