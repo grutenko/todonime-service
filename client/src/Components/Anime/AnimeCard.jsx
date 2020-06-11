@@ -3,8 +3,7 @@ import Card from "@material-ui/core/Card";
 import CardMedia from "@material-ui/core/CardMedia";
 import Typography from "@material-ui/core/Typography";
 import LinearProgress from "@material-ui/core/LinearProgress";
-import Button from "@material-ui/core/Button";
-import {Star, StarBorder, StarHalf} from "@material-ui/icons";
+import {Star, StarBorder} from "@material-ui/icons";
 
 export default function AnimeCard ({anime, currentEpisode, lastEpisode, user}) {
 
