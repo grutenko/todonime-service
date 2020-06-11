@@ -43,6 +43,7 @@ import Avatar from "@material-ui/core/Avatar"
 import {withRouter} from 'react-router-dom';
 import UserButton from "../User/UserButton";
 import UserInfo from "../User/UserInfo";
+import GitHubIcon from "@material-ui/icons/GitHub";
 
 moment.locale("ru");
 
@@ -161,7 +162,12 @@ export default class VideoPlayer extends React.Component {
             <Comments
                 animeId     = { data.anime._id.$oid }
                 episode     = { data.episode }
-            /></>
+            />
+            <div style={{backgroundColor: 'white', padding: "25px"}}>
+                <div style={{maxWidth: "70vw", margin: 'auto'}} className="block">
+                    Copyright (C) 2020 <IconButton href="https://github.com/grutenko/todonime-service"><GitHubIcon /></IconButton>
+                </div>
+            </div></>
     }
 
     render () {
