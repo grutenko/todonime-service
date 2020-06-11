@@ -61,7 +61,7 @@ const Rating = ({rating}) =>
         {Array.from(Array(5).keys()).map((i) =>
             i+1 <= Math.floor(rating/2)
                 ? <Star color="primary"/>
-                : rating/2 - Math.floor(rating/2) < 0.25
+                : rating/2 - Math.floor(rating/2) > 0.25
                     ? <StarBorder color="primary"/>
                     : <StarHalf color="primary" />
         )}
