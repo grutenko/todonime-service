@@ -59,11 +59,7 @@ export default function AnimeCard ({anime, currentEpisode, lastEpisode, user}) {
 const Rating = ({rating}) =>
     <div style={{display: 'flex'}}>
         {Array.from(Array(5).keys()).map((i) =>
-            i+1 <= Math.floor(rating/2)
-                ? <Star color="primary"/>
-                : rating/2 - Math.floor(rating/2) > 0.25
-                    ? <StarBorder color="primary"/>
-                    : <StarHalf color="primary" />
+            i + 1 <= Math.ceil(rating / 2) ? <Star color="primary"/> : <StarBorder color="primary"/>
         )}
         <span style={{margin: 'auto 15px'}}>{rating}</span>
     </div>
