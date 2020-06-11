@@ -73,7 +73,7 @@ class Fix extends \Symfony\Component\Console\Command\Command
                 $this->db->animes->updateOne([
                     'shikimori_id' => $anime->id
                 ], [
-                    '$set' => ['url' => $anime->url]
+                    '$set' => ['rating' => (float)$anime->score]
                 ]);
             }
 
