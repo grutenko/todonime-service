@@ -237,7 +237,7 @@ function NotFound() {
 function EpisodeName({name}) {
     const styles = {
         name: {
-            margin: "auto 0",
+            margin: "auto 10px",
             lineHeight: 1,
         }
     };
