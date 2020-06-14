@@ -25,6 +25,7 @@ $application->add( new WhenEpisode($container));
 $application->add( new \App\Console\Anime\Poster\Get($container));
 $application->add( new UpdateLastEpisode($container));
 $application->add(new Fix($container));
+$application->add(new \App\Console\Anime\Episode\SetNames($container));
 
 $application->add( new \App\Console\Video\Get($container) );
 $application->add( new UpdateFullTranslate($container));
