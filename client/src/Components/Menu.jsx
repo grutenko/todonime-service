@@ -103,7 +103,7 @@ export default function Menu(props) {
                     <ChevronRightIcon/>
                 </IconButton>
             </div>
-            <Container className="menu-container">
+            <Container className="menu-container" style={{padding: '0 5px'}}>
                 {props.children || <div/>}
             </Container>
         </Drawer>

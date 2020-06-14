@@ -18,7 +18,6 @@ class EpisodesList extends React.Component {
             "flex": 1
         },
         "item": {
-            "width": '100%',
             "padding": '10px',
             display: 'flex'
         },
@@ -26,6 +25,35 @@ class EpisodesList extends React.Component {
             margin: "auto 0",
             lineHeight: 1,
             marginRight: "15px"
+        },
+        archRoot: {
+            marginTop: '8px'
+        },
+        arch: {
+            display: 'flex',
+            padding: '0 5px',
+            backgroundColor: '#f50057',
+            borderBottom: '1px solid white',
+            overflow: 'hidden',
+            cursor: 'default',
+        },
+        archText: {
+            writingMode: 'vertical-lr',
+            textOrientation: 'upright',
+            textTransform: 'uppercase',
+            fontSize: '12px',
+            lineHeight: 1,
+            color: 'white',
+            margin: '5px 0',
+            overflow: 'hidden',
+            zIndex: 2
+        },
+        archCompleted: {
+            marginLeft: '-5px',
+            width: '22px',
+            position: 'absolute',
+            zIndex: 0,
+            backgroundColor: '#3f51b5'
         }
     }
 
@@ -156,6 +184,35 @@ class EpisodesList extends React.Component {
         </ListItemIcon>
     }
 
+    renderArchs() {
+        const {anime} = this.props,
+            {
+                lastCompletedEpisode,
+                episodesShow
+            } = this.state,
+            arches = anime.arches
+                .sort((i, j) => i.start - j.start)
+                .filter(i => i.start < episodesShow);
+
+        return <div style={this.styles.archRoot}>
+            {arches.map((arch, i) =>
+                <div key={i} style={{height: (59.2 * (arch.end - arch.start + 1) - 1) + 'px', ...this.styles.arch}}>
+                    {lastCompletedEpisode - (arch.end - arch.start) > 0
+                        ? <div
+                            style={{
+                                height: lastCompletedEpisode >= arch.end
+                                    ? (59.2 * (arch.end - arch.start + 1) - 1) + 'px'
+                                    : (59.2 * (lastCompletedEpisode - arch.start + 1) - 1) + 'px',
+                                ...this.styles.archCompleted
+                            }}></div>
+                        : null
+                    }
+                    <div style={this.styles.archText}>{arch.name}</div>
+                </div>
+            )}
+        </div>
+    }
+
     render() {
         const {
             canComplete
@@ -176,53 +233,56 @@ class EpisodesList extends React.Component {
                 onClose     = {()=>this.setState({showRollbackEpisodeDialog: false})}
                 onRollback  = {this.confirmBumpEpisode.bind(this)}
             />
-            <List
-                style={{"flex": 1}}
-                component="div"
-                aria-label="main mailbox folders"
-            >
-                {Array.from(Array(episodesShow).keys()).map(episode => {
-                    episode = episode + 1;
+            <div style={{display: 'flex'}}>
+                <List
+                    style={{"flex": 1}}
+                    component="div"
+                    aria-label="main mailbox folders"
+                >
+                    {Array.from(Array(episodesShow).keys()).map(episode => {
+                        episode = episode + 1;
 
-                    return <ListItem
-                        ref={episode === currentEpisode ? this.currentRef : React.createRef()}
-                        key     = {episode}
-                        selected= {episode === currentEpisode}
-                        dense
-                        button
-                    >
-                        {canComplete
-                            ? this.checkBox( lastCompletedEpisode >= episode, episode)
-                            : null}
-                        <div
-                            onClick={this.onClickEpisode(episode)}
-                            style={this.styles.item}
+                        return <ListItem
+                            ref={episode === currentEpisode ? this.currentRef : React.createRef()}
+                            key     = {episode}
+                            selected= {episode === currentEpisode}
+                            dense
+                            button
                         >
-                            <span style={this.styles.number}>{episode}</span>
-                            <Tooltip title={this.props.anime.episodes && this.props.anime.episodes[ episode ]
-                                ? this.props.anime.episodes[ episode ]['name'] || ''
-                                : ''
-                            }>
-                                <Typography
-                                    style={{
-                                        fontSize: '12px',
-                                        color: "#898989",
-                                        maxWidth: "290px"
-                                    }}
-                                    display = "inline"
-                                    variant = "overline"
-                                    noWrap  = "true"
-                                >
-                                    {this.props.anime.episodes && this.props.anime.episodes[ episode ]
-                                        ? this.props.anime.episodes[ episode ]['name'] || ''
-                                        : ''
-                                    }
-                                </Typography>
-                            </Tooltip>
-                        </div>
-                    </ListItem>
-                })}
-            </List>
+                            {canComplete
+                                ? this.checkBox( lastCompletedEpisode >= episode, episode)
+                                : null}
+                            <div
+                                onClick={this.onClickEpisode(episode)}
+                                style={this.styles.item}
+                            >
+                                <span style={this.styles.number}>{episode}</span>
+                                <Tooltip title={this.props.anime.episodes && this.props.anime.episodes[ episode ]
+                                    ? this.props.anime.episodes[ episode ]['name'] || ''
+                                    : ''
+                                }>
+                                    <Typography
+                                        style={{
+                                            fontSize: '12px',
+                                            color: "#898989",
+                                            maxWidth: "260px"
+                                        }}
+                                        display = "inline"
+                                        variant = "overline"
+                                        noWrap  = "true"
+                                    >
+                                        {this.props.anime.episodes && this.props.anime.episodes[ episode ]
+                                            ? this.props.anime.episodes[ episode ]['name'] || ''
+                                            : ''
+                                        }
+                                    </Typography>
+                                </Tooltip>
+                            </div>
+                        </ListItem>
+                    })}
+                </List>
+                { this.renderArchs() }
+            </div>
         </>
     }
 }
