@@ -53,7 +53,17 @@ class EpisodesList extends React.Component {
             width: '22px',
             position: 'absolute',
             zIndex: 0,
-            backgroundColor: '#3f51b5'
+            backgroundColor: '#3f51b5',
+            display: 'flex',
+            alignItems: 'flex-end',
+            overflow: 'hidden'
+        },
+        archProgress: {
+            fontSize: '8px',
+            color: '#54573c',
+            verticalAlign: 'bottom',
+            padding: '4px',
+            zIndex: 3
         }
     }
 
@@ -197,14 +207,21 @@ class EpisodesList extends React.Component {
         return <div style={this.styles.archRoot}>
             {arches.map((arch, i) =>
                 <div key={i} style={{height: (59.2 * (arch.end - arch.start + 1) - 1) + 'px', ...this.styles.arch}}>
-                    {lastCompletedEpisode - (arch.end - arch.start) > 0
+                    {lastCompletedEpisode - arch.start >= 0
                         ? <div
                             style={{
                                 height: lastCompletedEpisode >= arch.end
                                     ? (59.2 * (arch.end - arch.start + 1) - 1) + 'px'
                                     : (59.2 * (lastCompletedEpisode - arch.start + 1) - 1) + 'px',
                                 ...this.styles.archCompleted
-                            }}></div>
+                            }}>
+                            {lastCompletedEpisode < arch.end
+                                ? <span style={this.styles.archProgress}>
+                                    {Math.floor((lastCompletedEpisode - arch.start + 1) / (arch.end - arch.start + 1) * 100)}%
+                                </span>
+                                : null
+                            }
+                        </div>
                         : null
                     }
                     <div style={this.styles.archText}>{arch.name}</div>
