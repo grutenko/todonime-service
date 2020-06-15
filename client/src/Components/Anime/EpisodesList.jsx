@@ -37,6 +37,10 @@ class EpisodesList extends React.Component {
     }
 
     onScrollMenu(e) {
+        if( this.state.episodesShow >= this.props.lastEpisode) {
+            return;
+        }
+
         const menu = document
             .getElementsByClassName('menu-scrollable')
             [0];
