@@ -298,7 +298,10 @@ class EpisodesList extends React.Component {
                         </ListItem>
                     })}
                 </List>
-                { this.renderArchs() }
+                { this.props.anime.arches
+                    ? this.renderArchs()
+                    : null
+                }
             </div>
         </>
     }
