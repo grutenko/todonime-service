@@ -1,0 +1,59 @@
+.episodes__list {
+    flex: 1
+}
+
+.episodes__item {
+    padding: 10px;
+    display: flex;
+}
+
+.episodes__number {
+    margin: auto 0;
+    line-height: 1;
+    margin-right: 15px
+}
+
+.arches__root {
+    margin-top: 8px
+}
+
+.arch {
+    display: flex;
+    padding: 0 5px;
+    background-color: #f50057;
+    border-bottom: 1px solid white;
+    overflow: hidden;
+    cursor: default;
+}
+
+.arch__text {
+    writing-mode: vertical-lr;
+    text-orientation: upright;
+    text-transform: uppercase;
+    font-size: 12px;
+    line-height: 1;
+    color: white;
+    margin: 5px 0;
+    overflow: hidden;
+    z-index: 2;
+    white-space: nowrap;
+}
+
+.arch__progress {
+    margin-left: -5px;
+    width: 22px;
+    position: absolute;
+    z-index: 0;
+    background-color: #3f51b5;
+    display: flex;
+    align-items: flex-end;
+    overflow: hidden;
+}
+
+.arch__progress-percent {
+    font-size: 8px;
+    color: white;
+    vertical-align: bottom;
+    padding: 4px;
+    z-index: 3;
+}

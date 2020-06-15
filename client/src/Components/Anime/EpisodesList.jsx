@@ -11,61 +11,9 @@ import {RollbackEpisodeDialog} from "../Video/VideoPlayer";
 import Typography from "@material-ui/core/Typography";
 import Tooltip from "@material-ui/core/Tooltip";
 
-class EpisodesList extends React.Component {
+import './EpisodesList.css';
 
-    styles = {
-        "list": {
-            "flex": 1
-        },
-        "item": {
-            "padding": '10px',
-            display: 'flex'
-        },
-        number: {
-            margin: "auto 0",
-            lineHeight: 1,
-            marginRight: "15px"
-        },
-        archRoot: {
-            marginTop: '8px'
-        },
-        arch: {
-            display: 'flex',
-            padding: '0 5px',
-            backgroundColor: '#f50057',
-            borderBottom: '1px solid white',
-            overflow: 'hidden',
-            cursor: 'default',
-        },
-        archText: {
-            writingMode: 'vertical-lr',
-            textOrientation: 'upright',
-            textTransform: 'uppercase',
-            fontSize: '12px',
-            lineHeight: 1,
-            color: 'white',
-            margin: '5px 0',
-            overflow: 'hidden',
-            zIndex: 2
-        },
-        archCompleted: {
-            marginLeft: '-5px',
-            width: '22px',
-            position: 'absolute',
-            zIndex: 0,
-            backgroundColor: '#3f51b5',
-            display: 'flex',
-            alignItems: 'flex-end',
-            overflow: 'hidden'
-        },
-        archProgress: {
-            fontSize: '8px',
-            color: '#54573c',
-            verticalAlign: 'bottom',
-            padding: '4px',
-            zIndex: 3
-        }
-    }
+class EpisodesList extends React.Component {
 
     constructor(props) {
         super(props);
@@ -204,19 +152,19 @@ class EpisodesList extends React.Component {
                 .sort((i, j) => i.start - j.start)
                 .filter(i => i.start < episodesShow);
 
-        return <div style={this.styles.archRoot}>
+        return <div className="arches__root">
             {arches.map((arch, i) =>
-                <div key={i} style={{height: (59.2 * (arch.end - arch.start + 1) - 1) + 'px', ...this.styles.arch}}>
+                <div className="arch" key={i} style={{height: (59.2 * (arch.end - arch.start + 1) - 1) + 'px'}}>
                     {lastCompletedEpisode - arch.start >= 0
                         ? <div
+                            className="arch__progress"
                             style={{
                                 height: lastCompletedEpisode >= arch.end
                                     ? (59.2 * (arch.end - arch.start + 1) - 1) + 'px'
                                     : (59.2 * (lastCompletedEpisode - arch.start + 1) - 1) + 'px',
-                                ...this.styles.archCompleted
                             }}>
                             {lastCompletedEpisode < arch.end
-                                ? <span style={this.styles.archProgress}>
+                                ? <span className="arch__progress-percent">
                                     {Math.floor((lastCompletedEpisode - arch.start + 1) / (arch.end - arch.start + 1) * 100)}%
                                 </span>
                                 : null
@@ -224,7 +172,7 @@ class EpisodesList extends React.Component {
                         </div>
                         : null
                     }
-                    <div style={this.styles.archText}>{arch.name}</div>
+                    <div className="arch__text" title={arch.name}>{arch.name}</div>
                 </div>
             )}
         </div>
@@ -271,9 +219,9 @@ class EpisodesList extends React.Component {
                                 : null}
                             <div
                                 onClick={this.onClickEpisode(episode)}
-                                style={this.styles.item}
+                                className="episodes__item"
                             >
-                                <span style={this.styles.number}>{episode}</span>
+                                <span className="episodes__number">{episode}</span>
                                 <Tooltip title={this.props.anime.episodes && this.props.anime.episodes[ episode ]
                                     ? this.props.anime.episodes[ episode ]['name'] || ''
                                     : ''
