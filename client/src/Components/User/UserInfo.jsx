@@ -3,14 +3,9 @@ import Button from "@material-ui/core/Button";
 import {fetch} from "../../lib/api";
 import { setShow } from "../../lib/promt";
 
-export default function UserInfo () {
+import './UserInfo.css';
 
-    const styles = {
-        "root": {
-            textAlign: "center",
-            padding: "20px"
-        }
-    };
+export default function UserInfo () {
 
     const [
             user,
@@ -48,7 +43,7 @@ export default function UserInfo () {
 
     }
 
-    return <div style={styles.root}>
+    return <div className="user-info__root">
         {load
             ? user == null
                 ? <Button

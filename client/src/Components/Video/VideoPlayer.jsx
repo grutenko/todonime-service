@@ -49,18 +49,6 @@ moment.locale("ru");
 
 export default class VideoPlayer extends React.Component {
 
-    styles = {
-
-        topToolbar: {
-            color: "white",
-            display: "flex",
-            padding: "10px 0",
-            maxWidth: "70vw",
-            margin: "auto",
-            justifyContent: 'space-between'
-        }
-    }
-
     constructor (props) {
 
         super(props);
@@ -139,7 +127,7 @@ export default class VideoPlayer extends React.Component {
                 Вы успешно вышли из аккаунта
             </AuthSnackbar>
             <BackgroundPoster poster = {process.env.REACT_APP_CDN_BASE + data.anime.poster.original}>
-                <div style={this.styles.topToolbar} className="block">
+                <div className="top-toolbar block">
                     <EpisodeName
                         name    = {data.name || 'Эпизод без имени'}
                     />
@@ -163,8 +151,8 @@ export default class VideoPlayer extends React.Component {
                 animeId     = { data.anime._id.$oid }
                 episode     = { data.episode }
             />
-            <div style={{backgroundColor: 'white', padding: "25px"}}>
-                <div style={{maxWidth: "70vw", margin: 'auto'}} className="block">
+            <div className="footer">
+                <div className="footer__text block">
                     Copyright (C) 2020 <IconButton href="https://github.com/grutenko/todonime-service"><GitHubIcon /></IconButton>
                 </div>
             </div></>
@@ -199,41 +187,19 @@ export default class VideoPlayer extends React.Component {
 }
 
 function BackgroundPoster({poster, children}) {
-    const styles = {
-        root: {
-            backgroundImage: `url(${poster})`,
-            backgroundPosition: 'center',
-            backgroundSize: 'cover'
-        },
-        blur: {
-            width: '100%',
-            backdropFilter: "blur(8px)",
-            background: 'rgba(0, 0, 0, 0.2)',
-        }
-    };
-
-    return <div style={styles.root}>
-        <div style={styles.blur}>
+    return <div
+        className="background-poster"
+        style={{backgroundImage: `url(${poster})`}}
+    >
+        <div className="background-poster__blur">
             {children}
         </div>
     </div>
 }
 
 function NotFound() {
-    const styles = {
-        root: {
-            width: "100%",
-            height: "calc(100vh - 160px)",
-            display: "flex"
-        },
-        content: {
-            margin: "auto",
-            color: "white"
-        }
-    }
-
-    return <div style={styles.root}>
-        <div style={styles.content}>
+    return <div className="not-found">
+        <div className="not-found__content">
             Видео не найдено
         </div>
     </div>
@@ -241,58 +207,10 @@ function NotFound() {
 
 
 function EpisodeName({name}) {
-    const styles = {
-        name: {
-            margin: "auto 10px",
-            lineHeight: 1,
-        }
-    };
-
-    return <span style={styles.name}>{name}</span>
+    return <span className="episode-name">{name}</span>
 }
 
 class Toolbar extends React.Component {
-
-    /**
-     * @type {{
-     *      buttons: {margin: string, maxWidth: string},
-     *      root: {padding: string, background: string, marginTop: string}
-     * }}
-     */
-    styles = {
-        root: {
-            padding: "15px",
-            background: "white"
-        },
-        buttons: {
-            display: 'flex',
-            maxWidth: "calc(70vw + 12px)",
-            margin: "auto",
-            justifyContent: "center"
-        },
-        animeInfo: {
-            maxWidth: "70vw",
-            margin: "auto",
-            marginTop: "10px"
-        },
-        animeData: {
-            marginLeft: '5px'
-        },
-        authorInfo: {
-            marginBottom: "15px",
-            display: "flex",
-            alignItems: 'center'
-        },
-        authorInfoText: {
-            marginLeft: "5px"
-        },
-        uploader: {
-            fontSize: '12px',
-            color: '#898989',
-            marginLeft: '5px',
-            display: 'inline-flex'
-        }
-    }
 
     constructor(props) {
         super(props);
@@ -466,7 +384,7 @@ class Toolbar extends React.Component {
             projects
         }} = this.props;
 
-        return <div style={this.styles.buttons} className="block">
+        return <div className="toolbar__buttons block">
             <div style={{margin: "auto 0"}}>
                 {!mobile
                     ? <Button
@@ -566,8 +484,8 @@ class Toolbar extends React.Component {
             'org': <TranslateIcon fontSize="small" />
         }[ data.kind ] || <RecordVoiceOverIcon />;
 
-        return <div style={this.styles.animeInfo} className="block">
-            <div style={this.styles.authorInfo}>
+        return <div className="toolbar__anime-info block">
+            <div className="toolbar__author-info">
                 <img style={{"marginRight": "5px",
                     "verticalAlign": "middle"}}
                      src={`https://www.google.com/s2/favicons?domain=${data.domain}`}
@@ -575,10 +493,10 @@ class Toolbar extends React.Component {
                      title={data.domain}
                 />
                 {icon}
-                <div style={this.styles.authorInfoText}>
+                <div className="toolbar__author-info__text">
                     {data.author}
                     {data.uploader
-                        ? <span style={this.styles.uploader}>
+                        ? <span className="toolbar__uploader">
                             <span style={{margin: "auto 0"}}>
                                 {'загрузил' + (data.uploader.sex === 'female' ? 'а' : '')}
                             </span>
@@ -619,7 +537,7 @@ class Toolbar extends React.Component {
             showAuthConfirm
         } = this.state;
 
-        return <div style={this.styles.root}>
+        return <div className="toolbar">
             <ConfirmAuthDialog
                 open        = {showAuthConfirm}
                 onClose     = {()=>this.setState({showAuthConfirm: false})}

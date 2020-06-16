@@ -31,18 +31,6 @@ import './Comments.css';
 export default class Comments extends React.Component {
 
     /**
-     * @type {{root: {padding: string, backgroundColor: string, margin: string}}}
-     */
-    styles = {
-        "root": {
-            "backgroundColor": "white",
-            "margin": "0",
-            "padding": "24px",
-            "minHeight": "400px"
-        }
-    };
-
-    /**
      * @type {{comments: ?array, load: boolean, user: ?array}}
      */
     state = {
@@ -187,7 +175,7 @@ export default class Comments extends React.Component {
                 episode
             }= this.props;
 
-        return <div style={this.styles.root}>
+        return <div className="comments">
             {load
                 ? <CircularProgress color="inherit" />
                 : <CommentsBlock
@@ -205,16 +193,6 @@ export default class Comments extends React.Component {
 }
 
 class CommentsBlock extends React.Component {
-
-    /**
-     * @type {{root: {margin: string, maxWidth: string}}}
-     */
-    styles = {
-        "root": {
-            "maxWidth": "70vw",
-            "margin": "auto"
-        }
-    }
 
     state = {
         update: null
@@ -258,7 +236,7 @@ class CommentsBlock extends React.Component {
                 update
             } = this.state;
 
-        return <div style={this.styles.root} className="block">
+        return <div className="comments__block block">
             <h3>Комментарии</h3>
             {currentUser !== null
                 ? <CommentForm
@@ -303,26 +281,6 @@ function Comment ({comment, user, onDelete, onUpdate}) {
      * }} comment
      */
 
-    /**
-     * @type {{
-     *      item: {padding: string, margin: string, display: string}
-     *      avatar: {marginTop: string}
-     * }}
-     */
-    const styles = {
-        "item": {
-            "display": "flex",
-            "padding": "5px 15px",
-            "margin": "0 0 15px 0"
-        },
-        "updatedItem": {
-            "animation": "updatedComment 250ms"
-        },
-        "avatar": {
-            "marginTop": "15px"
-        }
-    };
-
     const [
         hover,
         setHover
@@ -337,12 +295,12 @@ function Comment ({comment, user, onDelete, onUpdate}) {
 
     return <Paper
         variant      = "outlined"
-        style        = {comment.updated ? Object.assign(styles.item, styles.updatedItem) : styles.item}
+        className    = {comment.updated ? "comment comment-updated" : 'comment'}
         onMouseEnter = {()=>setHover(true)}
         onMouseLeave = {()=>setHover(false)}
     >
         <Avatar
-            style   ={styles.avatar}
+            className="comment__avatar"
             alt     = {comment.user.nickname}
             src     = {comment.user.avatar}
         />
@@ -429,35 +387,14 @@ function CommentMenu({ show, onClick }) {
 }
 
 function NotFoundComment({needAuth}) {
-    /**
-     * @type {{
-     *      item: {padding: string, margin: string, display: string},
-     *      notFound: {margin: string, padding: string, textAlign: string}
-     * }}
-     */
-    const styles = {
-        "item": {
-            "display": "flex",
-            "padding": "15px",
-            "margin": "0 0 15px 0"
-        },
-        "notFound": {
-            "margin": "auto",
-            "padding": "100px 40px",
-            "textAlign": "center"
-        },
-        "link": {
-            "fontSize": "inherit"
-        }
-    };
 
-    return <Paper variant="outlined" style={styles.item}>
-        <div style={styles.notFound}>
+    return <Paper variant="outlined" className="not-found-comment">
+        <div className="not-found-comment__content">
             Еще нет комментариев.
             {needAuth
                 ? <>
                     <br/>
-                    <a href="https://auth.todonime.ru" style={styles.link}>
+                    <a href="https://auth.todonime.ru" className="not-found-comment__link">
                         Авторизируйтесь
                     </a> и напишите свой.
                 </>
@@ -467,36 +404,6 @@ function NotFoundComment({needAuth}) {
 }
 
 class CommentText extends React.Component {
-
-    /**
-     *
-     * @type {{
-     *      nickname: {marginRight: string, "font-weight": string, "line-height": string},
-     *      text: {margin: string, flex: number},
-     *      time: {color: string, fontSize: string, "line-height": string, "marginRight": string}
-     * }}
-     */
-    styles = {
-        "right": {
-            "margin": "0 0 0 15px",
-            "flex": 1
-        },
-        "text": {
-            "white-space": "break-spaces",
-            "fontFamily": "inherit"
-        },
-        "nickname": {
-            "marginRight": "5px",
-            "font-weight": "bold",
-            "line-height": "1"
-        },
-        "time": {
-            "fontSize": "12px",
-            "color": "#949494",
-            "line-height": "1.5",
-            "marginRight": "15px"
-        }
-    };
 
     componentDidMount() {
         this.timer = setInterval(this.forceUpdate.bind(this), 60000);
@@ -515,34 +422,23 @@ class CommentText extends React.Component {
             text
         } = this.props;
 
-        return <div style={this.styles.right}>
+        return <div className="comment__right">
             <div>
-            <span style={this.styles.nickname}>
+            <span className="comment__nickname">
                 {user.nickname}<Scopes scopes={user.scope || []}/>
             </span>
-                <time style={this.styles.time}>{ moment(createdAt).fromNow() }</time>
+                <time className="comment__time">{ moment(createdAt).fromNow() }</time>
                 <CommentMenu show={showMenu} onClick={onMenuClick} />
             </div>
-            <pre style={this.styles.text}>{ text }</pre>
+            <pre className="comment__text">{ text }</pre>
         </div>
     }
 }
 
 function Scopes({scopes}) {
-
-    /**
-     * @type {{chip: {height: string, marginLeft: string}}}
-     */
-    const styles = {
-        "chip": {
-            "height": "20px",
-            "marginLeft": "5px"
-        }
-    };
-
     return <>
         {scopes.map(scope => <Chip
-            style={styles.chip}
+            className="comment__chip"
             color="primary"
             label={scope}
         />)}
@@ -550,37 +446,6 @@ function Scopes({scopes}) {
 }
 
 class CommentForm extends React.Component {
-
-    /**
-     * @type {{
-     *      root: {width: string, marginBottom: string},
-     *      dropdown: {top: number, left: number, position: string, right: number, zIndex: number}
-     * }}
-     */
-    styles = {
-        "root": {
-            "width": "100%",
-            "marginBottom": "15px"
-        },
-        "dropdown": {
-            "position": "absolute",
-            "top": 28,
-            "right": 0,
-            "left": 0,
-            "zIndex": 1
-        },
-        "time": {
-            "fontSize": "12px",
-            "color": "#949494",
-            "line-height": "1.5",
-            "marginRight": "15px"
-        },
-        "header": {
-            "fontSize": "12px",
-            "color": "#949494",
-            "marginBottom": "5px"
-        }
-    };
 
     inputRef = React.createRef();
 
@@ -708,9 +573,9 @@ class CommentForm extends React.Component {
         >
             <div>
                 {updateFor !== null
-                    ? <div style={this.styles.header}>
+                    ? <div className="form__header">
                         <span>Редактирование комментария от </span>
-                        <time style={this.styles.time}>
+                        <time className="form__time">
                             { moment(parseInt(updateFor.created_at.$date.$numberLong)).fromNow() }
                         </time>
                         <IconButton>
@@ -721,7 +586,8 @@ class CommentForm extends React.Component {
                 }
                 <TextField
                     inputRef    = {this.inputRef}
-                    style       = {this.styles.root}
+                    style       = {{marginBottom: '15px'}}
+                    className   = "form"
                     id          = "outlined-multiline-flexible"
                     label       = "Ctrl+Enter - отправить"
                     multiline

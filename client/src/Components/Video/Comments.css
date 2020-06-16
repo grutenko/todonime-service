@@ -2,3 +2,99 @@
     from { opacity: 0; }
     to { opacity: 1 }
 }
+
+.comments {
+    background-color: white;
+    margin: 0;
+    padding: 24px;
+    min-height: 400px
+}
+
+.comments__block {
+    max-width: 70vw;
+    margin: auto
+}
+
+.comment {
+    display: flex;
+    padding: 5px 15px;
+    margin: 0 0 15px 0
+}
+
+.comment-updated {
+    animation: updatedComment 250ms;
+}
+
+.not-found-comment {
+    display: flex;
+    padding: 15px;
+    margin: 0 0 15px 0
+}
+
+.not-found-comment__content {
+    margin: auto;
+    padding: 100px 40px;
+    text-align: center
+}
+
+.not-found-comment__link {
+    font-size: inherit
+}
+
+.comment__avatar {
+    margin-top: 15px
+}
+
+.comment__right {
+    margin: 0 0 0 15px;
+    flex: 1
+}
+
+.comment__text {
+    white-space: break-spaces;
+    font-family: inherit
+}
+
+.comment__nickname {
+    margin-right: 5px;
+    font-weight: bold;
+    line-height: 1
+}
+
+.comment__time {
+    font-size: 12px;
+    color: #949494;
+    line-height: 1.5;
+    margin-right: 15px
+}
+
+.comment__chip {
+    height: 20px;
+    margin-left: 5px
+}
+
+.form {
+    width: 100%;
+    margin-bottom: 15px
+}
+
+.form__dropdown {
+    position: absolute;
+    top: 28px;
+    right: 0;
+    left: 0;
+    z-index: 1;
+}
+
+.form__time {
+    font-size: 12px;
+    color: #949494;
+    line-height: 1.5;
+    margin-right: 15px;
+}
+
+.form__header {
+    font-size: 12px;
+    color: #949494;
+    margin-bottom: 5px;
+}
