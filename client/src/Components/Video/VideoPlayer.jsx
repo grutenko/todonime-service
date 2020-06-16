@@ -103,7 +103,7 @@ export default class VideoPlayer extends React.Component {
     }
 
     onShowUser() {
-        this.props.setMenu(<UserInfo/>);
+        this.props.setMenu(<UserInfo user={this.state.data.user}/>);
     }
 
     renderCommon() {

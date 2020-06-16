@@ -1,0 +1,25 @@
+.anime-card {
+    display: flex
+}
+
+.anime-card__cover {
+    width: 151px;
+}
+
+.anime-card__content {
+    flex: 1 0 auto;
+}
+
+.anime-card__text {
+    margin: 10px 15px 15px 15px;
+}
+
+.anime-card__progress {
+    margin: 0
+}
+
+.anime-card__progress-text {
+    font-size: 12px;
+    color: #898989;
+    margin: 0 15px
+}
