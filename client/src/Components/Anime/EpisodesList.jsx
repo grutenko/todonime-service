@@ -231,11 +231,7 @@ class EpisodesList extends React.Component {
                                     : ''
                                 }>
                                     <Typography
-                                        style={{
-                                            fontSize: '12px',
-                                            color: "#898989",
-                                            maxWidth: "260px"
-                                        }}
+                                        className="episode__name"
                                         display = "inline"
                                         variant = "overline"
                                         noWrap  = "true"

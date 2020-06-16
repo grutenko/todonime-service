@@ -1,0 +1,14 @@
+.user__button {
+    display: inline-flex;
+}
+
+.user__name {
+    color: white;
+    margin: auto 5px;
+}
+
+@media screen and (max-width: 960px){
+    .user__name {
+        display: none;
+    }
+}

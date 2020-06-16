@@ -302,7 +302,8 @@ class Toolbar extends React.Component {
             completed           : this.props.isWatched,
             showRollbackForm    : false,
             showEpisodeSnackbar : false,
-            showAuthConfirm     : false
+            showAuthConfirm     : false,
+            mobile              : window.innerWidth <= 630
         }
     }
 
@@ -455,7 +456,8 @@ class Toolbar extends React.Component {
             canComplete,
         } = this.props;
         const {
-            completed
+            completed,
+            mobile
         } = this.state;
         const {data: {
             episode,
@@ -466,64 +468,89 @@ class Toolbar extends React.Component {
 
         return <div style={this.styles.buttons} className="block">
             <div style={{margin: "auto 0"}}>
-                <Button
-                    onClick     = {this.onOpenList.bind(this)}
-                    startIcon   = {<TheatersIcon/>}
-                >
-                    <span className="hide-630px">Переводы</span>
-                </Button>
-                <AddVideoWithRouter
-                    animeId = {anime._id.$oid}
-                    animeName = {anime.name_ru || anime.name_en}
-                    episode = {episode}
-                    projects = {projects}
-                    onConfirm = {this.props.onUpdate}
-                />
+                {!mobile
+                    ? <Button
+                        onClick     = {this.onOpenList.bind(this)}
+                        startIcon   = {<TheatersIcon/>}
+                    >
+                        <span className="hide-630px">Переводы</span>
+                    </Button>
+                    : <IconButton onClick = {this.onOpenList.bind(this)}>
+                        <TheatersIcon/>
+                    </IconButton>
+                }
+                {!mobile
+                    ? <AddVideoWithRouter
+                        animeId = {anime._id.$oid}
+                        animeName = {anime.name_ru || anime.name_en}
+                        episode = {episode}
+                        projects = {projects}
+                        onConfirm = {this.props.onUpdate}
+                    />
+                    : null
+                }
             </div>
             <Tooltip title="Предыдущий эпизод">
-                <IconButton onClick={this.onBackEpisode.bind(this)}>
+                <IconButton className="hide-630px" onClick={this.onBackEpisode.bind(this)}>
                     <ChevronLeftIcon/>
                 </IconButton>
             </Tooltip>
             <div style={{margin: "auto 0"}}>
-                <Button
-                    onClick     = {this.onOpenAnimeInfo.bind(this)}
-                    startIcon   = {<ViewListIcon/>}
-                >
-                    <span className="hide-630px">Эпизоды</span>
-                </Button>
+                {!mobile
+                    ? <Button
+                        onClick={this.onOpenAnimeInfo.bind(this)}
+                        startIcon={<ViewListIcon/>}
+                    >
+                        <span className="hide-630px">Эпизоды</span>
+                    </Button>
+                    : <IconButton onClick={this.onOpenAnimeInfo.bind(this)}>
+                        <ViewListIcon/>
+                    </IconButton>
+                }
                 <span
                     style={{
                         margin: "11px 5px",
                         color: "#8a8a8a"
                     }}
                 >
-                {episode} эпизод
+                    {episode} эпизод
                 </span>
-                <UpdateEpisode
-                    episode = {episode}
-                    name    = {name}
-                    animeId = {anime._id.$oid}
-                    onUpdate= {this.props.onUpdate}
-                />
+                {!mobile
+                    ? <UpdateEpisode
+                        episode = {episode}
+                        name    = {name}
+                        animeId = {anime._id.$oid}
+                        onUpdate= {this.props.onUpdate}
+                    />
+                    : null
+                }
             </div>
             <Tooltip title="Следующий эпизод">
-                <IconButton onClick={this.onNextEpisode.bind(this)}>
+                <IconButton className="hide-630px" onClick={this.onNextEpisode.bind(this)}>
                     <ChevronRightIcon/>
                 </IconButton>
             </Tooltip>
             <div style={{margin: "auto 0 auto auto"}}>
-                <Button
-                    variant     = {completed ? "text" : "contained"}
-                    color       = {completed ? "primary" : canComplete ? "secondary" : "disabled"}
-                    onClick     = {this.bumpEpisode.bind(this)}
-                    startIcon   = {<CheckIcon/>}
-                    style       = {{marginLeft: "auto"}}
-                >
-                    <span className="hide-630px">
-                        {completed ? "Просмотрена" : "Отметить просмотренной"}
-                    </span>
-                </Button>
+                {!mobile
+                    ? <Button
+                        variant     = {completed ? "text" : "contained"}
+                        color       = {completed ? "primary" : canComplete ? "secondary" : "disabled"}
+                        onClick     = {this.bumpEpisode.bind(this)}
+                        startIcon   = {<CheckIcon/>}
+                        style       = {{marginLeft: "auto"}}
+                    >
+                        <span className="hide-630px">
+                            {completed ? "Просмотрена" : "Отметить просмотренной"}
+                        </span>
+                    </Button>
+                    : <IconButton
+                        color       = {completed ? "primary" : canComplete ? "secondary" : "disabled"}
+                        onClick     = {this.bumpEpisode.bind(this)}
+                        style       = {{marginLeft: "auto"}}
+                    >
+                        <CheckIcon/>
+                    </IconButton>
+                }
             </div>
         </div>
     }
@@ -868,7 +895,7 @@ class UpdateEpisode extends React.Component {
                 onConfirm={this.onSave.bind(this)}
             />
             <Tooltip title="Изменить параметры серии">
-                <IconButton onClick={this.openDialog.bind(this)}>
+                <IconButton className="hide-630px" onClick={this.openDialog.bind(this)}>
                     <EditIcon style={{width: "16px", height: "16px"}}/>
                 </IconButton>
             </Tooltip>
