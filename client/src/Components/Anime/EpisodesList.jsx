@@ -88,6 +88,7 @@ class EpisodesList extends React.Component {
         return () => {
             this.setState({currentEpisode: episode})
             this.props.history.push(`/s/${shikimori_id}/${episode}`);
+            this.props.onClick();
         }
     }
 
@@ -115,7 +116,6 @@ class EpisodesList extends React.Component {
                 showRollbackEpisodeDialog: false,
                 rollbackEpisode: -1
             })
-            this.props.onUpdate();
         });
     }
 

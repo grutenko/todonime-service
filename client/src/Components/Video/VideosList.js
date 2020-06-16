@@ -78,7 +78,8 @@ export default class VideosList extends React.Component {
             } = this.state,
             {
                 videos,
-                currentId
+                currentId,
+                onClick
             } = this.props;
 
         return <>
@@ -107,7 +108,7 @@ export default class VideosList extends React.Component {
                     </ToggleButton>
                 </ToggleButtonGroup>
             </div>
-            <AuthorsListWithRouter currentId={currentId} videos={videos} kind={type}/>
+            <AuthorsListWithRouter currentId={currentId} videos={videos} kind={type} onClick={onClick}/>
         </>;
 
     }
@@ -142,6 +143,7 @@ class AuthorsList extends React.Component {
                 currentId: id
             });
             this.props.history.push(`/v/${id}`);
+            this.props.onClick()
         }
     }
 

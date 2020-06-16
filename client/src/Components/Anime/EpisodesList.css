@@ -5,6 +5,7 @@
 .episodes__item {
     padding: 10px 0 10px 10px;
     display: flex;
+    width: 100%
 }
 
 .episodes__number {

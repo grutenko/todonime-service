@@ -242,6 +242,7 @@ class Toolbar extends React.Component {
             currentId   = { data._id.$oid }
             currentKind = { data.kind }
             videos      = { data.videos }
+            onClick     = { this.onMobileClose.bind(this) }
         />);
     }
 
@@ -256,7 +257,14 @@ class Toolbar extends React.Component {
             currentEpisode  = {data.episode}
             lastEpisode     = {data.last_watched_episode}
             onUpdate        = { this.props.onUpdate }
+            onClick         = { this.onMobileClose.bind(this)}
         />);
+    }
+
+    onMobileClose() {
+        if(this.state.mobile) {
+            this.props.setMenu(null);
+        }
     }
 
     bumpEpisode() {
