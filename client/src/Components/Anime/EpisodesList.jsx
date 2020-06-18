@@ -146,6 +146,11 @@ class EpisodesList extends React.Component {
         </ListItemIcon>
     }
 
+    getFillersForArch(start, end) {
+        return Object.entries(this.props.anime.episodes || {})
+            .filter(([i, item]) => i >= start && i <= end && item.type === 'filler');
+    }
+
     renderArchs() {
         const {anime} = this.props,
             {
@@ -159,6 +164,9 @@ class EpisodesList extends React.Component {
         return <div className="arches__root">
             {arches.map((arch, i) =>
                 <div className="arch" key={i} style={{height: (59.2 * (arch.end - arch.start + 1) - 1) + 'px'}}>
+                    {this.getFillersForArch(arch.start, arch.end).map(([i, item]) =>
+                        <div style={{marginTop: (59.2 * (i - arch.start)) + 'px'}} className="arch__filler" title="Филлерный эпизод"></div>
+                    )}
                     {lastCompletedEpisode - arch.start >= 0
                         ? <div
                             className="arch__progress"

@@ -33,6 +33,20 @@
     cursor: default;
 }
 
+.arch__filler {
+    opacity: 0.5;
+    background: white;
+    width: 22px;
+    position: absolute;
+    height: 59.2px;
+    z-index: 2;
+    margin-left: -5px;
+}
+
+.arch__filler {
+    opacity: 0.7;
+}
+
 .arch__text {
     writing-mode: vertical-lr;
     text-orientation: upright;

@@ -44,6 +44,7 @@ import {withRouter} from 'react-router-dom';
 import UserButton from "../User/UserButton";
 import UserInfo from "../User/UserInfo";
 import GitHubIcon from "@material-ui/icons/GitHub";
+import Chip from "@material-ui/core/Chip";
 
 moment.locale("ru");
 
@@ -130,6 +131,10 @@ export default class VideoPlayer extends React.Component {
                 <div className="top-toolbar block">
                     <EpisodeName
                         name    = {data.name || 'Эпизод без имени'}
+                        isFiller= {data.anime.episodes
+                            && data.anime.episodes[ data.episode ]
+                            && data.anime.episodes[ data.episode ].type === 'filler'
+                        }
                     />
                     <UserButton
                         user    = {data.user}
@@ -206,8 +211,14 @@ function NotFound() {
 }
 
 
-function EpisodeName({name}) {
-    return <span className="episode-name">{name}</span>
+function EpisodeName({name, isFiller}) {
+    return <span className="episode-name">
+        {name}
+        {isFiller
+            ? <Chip style={{marginLeft: '15px'}} label='филлер'/>
+            : null
+        }
+    </span>
 }
 
 class Toolbar extends React.Component {
