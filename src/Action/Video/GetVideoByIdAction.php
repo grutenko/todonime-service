@@ -142,13 +142,6 @@ class GetVideoByIdAction extends Action
             $responseVideo['name'] = 'Эпизод без имени';
         }
 
-        $responseVideo['projects'] = $this
-            ->mongodb
-            ->todonime
-            ->projects
-            ->find()
-            ->toArray();
-
         return ResponseHelper::success($response, $responseVideo);
     }
 
