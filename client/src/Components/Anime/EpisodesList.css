@@ -39,11 +39,12 @@
     width: 22px;
     position: absolute;
     height: 59.2px;
-    z-index: 2;
+    z-index: 3;
     margin-left: -5px;
+    transition: 250ms;
 }
 
-.arch__filler {
+.arch__filler:hover {
     opacity: 0.7;
 }
 
