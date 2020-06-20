@@ -39,6 +39,12 @@ export default class Comments extends React.Component {
         user        : null
     };
 
+    componentDidUpdate(prevProps, prevState) {
+        if(prevProps.animeId !== this.props.animeId || prevProps.episode !== this.props.episode) {
+            this.__fetch();
+        }
+    }
+
     /**
      * @param {MessageEvent} data
      */
