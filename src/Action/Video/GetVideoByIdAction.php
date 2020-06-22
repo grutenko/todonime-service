@@ -21,7 +21,7 @@ class GetVideoByIdAction extends Action
      */
     public function __invoke(Request $request, Response $response, array $args): Response
     {
-        $video = $this->mongodb->todonime->videos->aggregate([
+        $videos = $this->mongodb->todonime->videos->aggregate([
             [
                 '$match' => ['_id' => new ObjectId($args['id'])]
             ],
@@ -65,37 +65,37 @@ class GetVideoByIdAction extends Action
             ]]
         ])->toArray();
 
-        if (count($video) == 0) {
+        if (count($videos) == 0) {
             return ResponseHelper::notFound($response, 'Video ' . $args['id'] . ' not found.');
         }
 
-        $responseVideo = $video[0];
-        $responseVideo['next_episode'] = $this->suggestNextEpisode($responseVideo);
-        $responseVideo['prev_episode'] = $this->suggestPrevVideo($responseVideo);
+        $video = $videos[0];
+        $video['next_episode'] = $this->suggestNextEpisode($video);
+        $video['prev_episode'] = $this->suggestPrevVideo($video);
 
         $user = $request->getAttribute('user');
         if($user != null) {
             unset($user['token'], $user['auth_code']);
-            $responseVideo['user'] = $user;
+            $video['user'] = $user;
 
-            $responseVideo['is_watched'] = $this->episodeWatched(
+            $video['is_watched'] = $this->episodeWatched(
                 $user,
-                $responseVideo['anime']['_id'],
-                $responseVideo['episode']
+                $video['anime']['_id'],
+                $video['episode']
             );
-            $responseVideo['last_watched_episode'] = $this->getLastWatchedEpisode(
+            $video['last_watched_episode'] = $this->getLastWatchedEpisode(
                 $user,
-                $responseVideo['anime']['_id']
+                $video['anime']['_id']
             );
         }
         else
         {
-            $responseVideo['user'] = null;
-            $responseVideo['is_watched'] = false;
-            $responseVideo['last_watched_episode'] = 0;
+            $video['user'] = null;
+            $video['is_watched'] = false;
+            $video['last_watched_episode'] = 0;
         }
 
-        usort($responseVideo['videos'], function($v1, $v2) {
+        usort($video['videos'], function($v1, $v2) {
             $cmp = [
                 'ru' => 3,
                 'russian' => 3,
@@ -110,39 +110,39 @@ class GetVideoByIdAction extends Action
                 - (($cmp[$v1['language']] ?: 3) + (int)@$v1['completed']);
         });
 
-        if( isset($responseVideo['project_id']) ) {
-            $responseVideo['project'] = $this->mongodb->todonime->projects->findOne(
-                ['_id' => $responseVideo['project_id']],
+        if( isset($video['project_id']) ) {
+            $video['project'] = $this->mongodb->todonime->projects->findOne(
+                ['_id' => $video['project_id']],
                 [
                     'completed' => 0
                 ]
             );
-            unset($responseVideo['project_id']);
+            unset($video['project_id']);
         }
 
-        if( isset($responseVideo['uploader']) )
+        if( isset($video['uploader']) )
         {
             $uploader = $this->mongodb->todonime->users->findOne(
-                ['_id' => $responseVideo['uploader']]
+                ['_id' => $video['uploader']]
             );
             unset(
                 $uploader['watched_episodes'],
                 $uploader['auth_code'],
                 $uploader['token']
             );
-            $responseVideo['uploader'] = $uploader;
+            $video['uploader'] = $uploader;
         }
 
-        if(isset($responseVideo['anime']['episodes'][ $responseVideo['episode'] ]))
+        if(isset($video['anime']['episodes'][ $video['episode'] ]))
         {
-            $responseVideo['name'] = $responseVideo['anime']['episodes'][ $responseVideo['episode'] ]['name'];
+            $video['name'] = $video['anime']['episodes'][ $video['episode'] ]['name'];
         }
         else
         {
-            $responseVideo['name'] = 'Эпизод без имени';
+            $video['name'] = 'Эпизод без имени';
         }
 
-        return ResponseHelper::success($response, $responseVideo);
+        return ResponseHelper::success($response, $video);
     }
 
     /**
