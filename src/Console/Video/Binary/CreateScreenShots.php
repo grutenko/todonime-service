@@ -67,7 +67,7 @@ class CreateScreenShots extends \Symfony\Component\Console\Command\Command
             $screenshots = [];
             foreach(scandir( dirname($path.$thumbPath) ) as $name)
             {
-                if( in_array($name, ['.', '..']) )
+                if( in_array($name, ['.', '..']) || explode('_', $name)[0] != $dbVideo['episode'])
                 {
                     continue;
                 }
