@@ -129,21 +129,24 @@ class Download extends TodonimeCommand
 
         $src = "{$storage}/episodes/$animeId/$episode.mp4";
 
-        if( !file_exists($src) )
+        if( file_exists($src) && !$force )
         {
-            $download = new SmotretAnimeDownloader(
-                $partnerVideoId,
-                $cookie,
-                $force
-            );
-            $download->onProgress(function($downloaded, $total) use ($output) {
-                $output->write("\r{$downloaded}/{$total} (". ($total ? floor($downloaded / $total * 100) : 0) ."%)");
-            });
-
-            $output->writeln('');
-            $download->save( $src );
-            $output->writeln('');
+            $output->writeln('<info>skipped.</info>');
+            return 0;
         }
+
+        $download = new SmotretAnimeDownloader(
+            $partnerVideoId,
+            $cookie,
+            $force
+        );
+        $download->onProgress(function($downloaded, $total) use ($output) {
+            $output->write("\r{$downloaded}/{$total} (". ($total ? floor($downloaded / $total * 100) : 0) ."%)");
+        });
+
+        $output->writeln('');
+        $download->save( $src );
+        $output->writeln('');
 
         if(!file_exists("{$storage}/thumbnails/$animeId"))
         {
