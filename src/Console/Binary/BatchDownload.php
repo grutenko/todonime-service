@@ -83,7 +83,6 @@ class BatchDownload extends TodonimeCommand
 
         foreach($videos as $video)
         {
-            print_r($video);
             $this
                 ->getApplication()
                 ->find('binary:download')
