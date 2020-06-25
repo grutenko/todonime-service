@@ -1,0 +1,7 @@
+/public/anime/*
+/public/episodes/*
+/public/thumbnails/*
+/public/user/*
+
+/log/*
+/cache/*

@@ -1,0 +1,211 @@
+{% extends 'embed/layout.twig' %}
+{% block head %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ '/assets/css/embed.css' | cdn }}">
+{% endblock %}
+{% block content %}
+    <div class="video-player__container">
+        <div class="poster overlay"
+             style="background-image: url(http://cdn.todonime.lc{{ preview }})"
+        ></div>
+        <div class="play overlay">
+            <img class="play__button"
+                 src="{{ '/assets/img/play_arrow-24px.svg' | cdn }}"
+            >
+        </div>
+        <video class="video-player"
+               preload
+               crossorigin
+        >
+            <source src="{{ video | cdn }}" type="video/webm">
+        </video>
+        <div class="subtitles"><div class="subtitles-inner"></div></div>
+        <div class="thumbnail">
+            <img class="thumbnail__image" />
+            <div class="thumbnail__time"></div>
+        </div>
+        <div class="toolbar">
+            <img class="toolbar__icon play__icon"
+                 src="{{ '/assets/img/play_arrow-24px.svg' | cdn }}"
+            >
+            <div class="progress">
+                <div class="progress__loaded"></div>
+                <div class="progress__watched"></div>
+                <div class="progress__cursor"></div>
+            </div>
+            <img class="toolbar__icon"
+                 onClick="toggleFullScreen()"
+                 src="{{ '/assets/img/open_in_full-24px.svg' | cdn }}"
+            >
+        </div>
+    </div>
+    <script src="{{ '/assets/js/libjass.js' | cdn }}"></script>
+    <script>
+        var toggleFullScreen = function () {
+            if (document.fullscreenElement) {
+                document.exitFullscreen();
+            } else {
+                document.documentElement.requestFullscreen();
+            }
+        }
+
+        const thumbnails = {{ screenshots | json_encode() | raw }};
+        var hideThumbnailID;
+
+        function hideOverlays() {
+            const overlays = document.getElementsByClassName('overlay');
+
+            for (let i = 0; i < overlays.length; i++) {
+                overlays[i].classList.add('disabled');
+            }
+        }
+
+        function showPlayButton() {
+            document.getElementsByClassName('play')[0].classList.remove('disabled');
+        }
+
+        function togglePlay(e) {
+            if(player.paused) player.play(); else player.pause();
+
+            if(player.paused) {
+                document.getElementsByClassName('play__icon')[0].src = '{{ '/assets/img/play_arrow-24px.svg' | cdn }}'
+            } else
+            {
+                document.getElementsByClassName('play__icon')[0].src = '{{ '/assets/img/pause-24px.svg' | cdn }}'
+            }
+        }
+
+        function toLeft( sec ) {
+            if(player.currentTime - sec >= 0) {
+                player.currentTime -= sec;
+            } else
+            {
+                player.currentTime = 0;
+            }
+            setProgress()
+        }
+
+        function toRight( sec ) {
+            if(player.currentTime + sec <= player.duration) {
+                player.currentTime += sec;
+            } else
+            {
+                player.currentTime = player.duration;
+            }
+            setProgress()
+        }
+
+        function hideThumbnail() {
+            document.getElementsByClassName('thumbnail')[0].classList.remove('show');
+        }
+
+        function setThumbnail(x, currentTime, path) {
+            const progress = document.getElementsByClassName('progress')[0],
+                  top = progress.getBoundingClientRect().top - 200,
+                  left = progress.getBoundingClientRect().left + x - 150;
+
+            const thumbnail = document.getElementsByClassName('thumbnail')[0],
+                  image = document.getElementsByClassName('thumbnail__image')[0],
+                  time = document.getElementsByClassName('thumbnail__time')[0];
+
+            if(hideThumbnailID) {
+                clearTimeout(hideThumbnailID);
+            }
+            hideThumbnailID = setTimeout(hideThumbnail, 500);
+
+            image.src = '{{ cdn_url }}' + path;
+            thumbnail.classList.add('show');
+            thumbnail.style.left = (left >= 0 ? left + 300 <= window.innerWidth ? left : window.innerWidth - 300 : 0) + 'px';
+            thumbnail.style.top = top + 'px';
+
+            const h = Math.floor(currentTime / 3600),
+                  m = Math.floor((currentTime % 3600) / 60),
+                  s = Math.floor((currentTime % 3600) % 60);
+
+            time.textContent = (h > 0 ? h + ':' : '') + m + ':' + s;
+        }
+
+        function onProgressMouseMove(e) {
+            const x = e.offsetX,
+                  y = e.offsetY;
+
+            const progress = document.getElementsByClassName('progress')[0],
+                  size = progress.offsetWidth;
+
+            const cursor =  document.getElementsByClassName('progress__cursor')[0];
+
+            const duration = player.duration;
+
+            const movedSeconds = x / (size / duration);
+
+            for(let i in thumbnails) {
+                if(thumbnails[i].start <= movedSeconds && thumbnails[i].end >= movedSeconds) {
+                    setThumbnail(x, movedSeconds, thumbnails[i].path);
+                    break;
+                }
+            }
+
+            cursor.style.marginLeft = (x - 5) + 'px';
+        }
+
+        function onUpdateSeek(e) {
+            const x = e.offsetX,
+                y = e.offsetY;
+
+            const progress = document.getElementsByClassName('progress')[0],
+                size = progress.clientWidth;
+
+            const duration = player.duration;
+
+            player.currentTime = x / (size / duration);
+            setProgress();
+        }
+
+        function setProgress() {
+            const loaded = document.getElementsByClassName('progress__loaded')[0];
+            const watched = document.getElementsByClassName('progress__watched')[0];
+
+            const progress = document.getElementsByClassName('progress')[0],
+                size = progress.clientWidth;
+
+            loaded.style.width = size * (player.buffered.end(player.buffered.length - 1) / player.duration) + 'px';
+            watched.style.width = size * (player.currentTime / player.duration) + 'px';
+        }
+
+        const player = document.getElementsByClassName('video-player')[0];
+        const container = document.getElementsByClassName('video-player__container')[0];
+        const progress = document.getElementsByClassName('progress')[0];
+
+        progress.addEventListener('mousemove', onProgressMouseMove);
+        progress.addEventListener('click', onUpdateSeek);
+        document.getElementsByClassName('play__icon')[0].addEventListener('click', togglePlay);
+
+        player.addEventListener('play', hideOverlays);
+        player.addEventListener('pause', showPlayButton);
+
+        container.addEventListener('click', function(e) {
+            if(e === undefined || e.target.closest('.toolbar') === null) {
+                togglePlay(e);
+            }
+        });
+        document.addEventListener('keyup', function(e) {
+            switch(e.code) {
+                case 'Space': togglePlay(); break;
+                case 'ArrowRight': toRight(10); break;
+                case 'ArrowLeft': toLeft(10); break;
+            }
+        });
+
+        {% if subs %}
+        libjass.ASS.fromUrl('{{ subs | cdn }}').then(ass => {
+            new libjass.renderers.WebRenderer(
+                ass,
+                new libjass.renderers.VideoClock(player),
+                document.getElementsByClassName('subtitles-inner')[0]
+            );
+        });
+        {% endif %}
+
+        setInterval(setProgress, 1000);
+    </script>
+{% endblock %}

@@ -7,6 +7,17 @@ use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
 use phpFastCache\Helper\Psr16Adapter;
 
+$container->set('twig', function() {
+    $loader = new \Twig\Loader\FilesystemLoader(__DIR__ . '/../templates');
+    $env = new \Twig\Environment($loader, [
+        'cache' => __DIR__ . '/../storage/cache/twig',
+        'debug' => $_ENV['DEBUG'] ?: false
+    ]);
+    $env->addExtension(new \App\Twig\Extension());
+    $env->addGlobal('cdn_url', $_ENV['CDN_URL'] ?: 'https://cdn.todonime.ru');
+    return $env;
+});
+
 $container->set('shikimori_sdk', function () {
     return new Sdk([
         'app_name' => $_ENV['APP_NAME'] ?: 'Applicaton',

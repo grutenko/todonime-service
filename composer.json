@@ -49,6 +49,7 @@
         "guzzlehttp/guzzle": "^6.5",
         "mongodb/mongodb": "^1.6",
         "workerman/workerman": "^4.0",
-        "ext-pcntl": "*"
+        "ext-pcntl": "*",
+        "twig/twig": "^3.0"
     }
 }
