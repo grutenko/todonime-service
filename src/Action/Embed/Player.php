@@ -15,18 +15,27 @@ class Player extends \App\Action\Action
      */
     public function __invoke(Request $request, Response $response, array $args): Response
     {
-        $id = $args['oid'];
-        $sub = $this->mongodb->todonime->binaries->findOne([
-            '_id' => new ObjectId($id)
+        $arIds = explode('_', $args['oid'], 2);
+
+        $video = $this->mongodb->todonime->binaries->findOne([
+            '_id' => new ObjectId($arIds[0])
         ]);
 
-        if(!$sub)
+        if(!$video)
         {
             $response->getBody()->write( $this->twig->render('embed/not-found.twig') );
             return $response;
         }
 
-        $response->getBody()->write( $this->twig->render('embed/player.twig', $sub) );
+        if( count($arIds) > 1 )
+        {
+            $sub = $this->mongodb->todonime->subtitles->findOne([
+                '_id' => new ObjectId($arIds[1])
+            ]);
+            $video['sub'] = $sub;
+        }
+
+        $response->getBody()->write( $this->twig->render('embed/player.twig', $video) );
         return $response;
     }
 }

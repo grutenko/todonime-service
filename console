@@ -3,12 +3,17 @@
 require __DIR__.'/vendor/autoload.php';
 Dotenv\Dotenv::createImmutable(__DIR__)->load();
 
+use App\Console\Anime\Episode\SetNames;
 use App\Console\Anime\Episode\UpdateLastEpisode;
 use App\Console\Anime\Fix;
 use App\Console\Anime\Get;
 use App\Console\Anime\Ongoing\WhenEpisode;
 use App\Console\Anime\Status\Update;
+use App\Console\Binary\BatchDownload;
+use App\Console\Binary\Delete;
+use App\Console\Binary\Download;
 use App\Console\UpdateDatabase;
+use App\Console\User\GetUserRates;
 use App\Console\Video\Project\ProjectFindVideos;
 use App\Console\Video\Project\UpdateFullTranslate;
 use DI\Container;
@@ -25,15 +30,17 @@ $application->add( new WhenEpisode($container));
 $application->add( new \App\Console\Anime\Poster\Get($container));
 $application->add( new UpdateLastEpisode($container));
 $application->add(new Fix($container));
-$application->add(new \App\Console\Anime\Episode\SetNames($container));
+$application->add(new SetNames($container));
 
 $application->add( new \App\Console\Video\Get($container) );
 $application->add( new UpdateFullTranslate($container));
 $application->add(new ProjectFindVideos($container));
-$application->add(new \App\Console\Binary\Download($container));
-$application->add(new \App\Console\Binary\Delete($container));
-$application->add(new \App\Console\Binary\BatchDownload($container));
-$application->add( new \App\Console\User\GetUserRates($container));
+$application->add(new Download($container));
+$application->add(new Delete($container));
+$application->add(new BatchDownload($container));
+$application->add(new \App\Console\Subtitles\Download($container));
+$application->add(new \App\Console\Subtitles\BatchDownload($container));
+$application->add( new GetUserRates($container));
 
 $application->add( new UpdateDatabase($container));
 
