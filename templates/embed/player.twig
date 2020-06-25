@@ -6,7 +6,7 @@
 {% block content %}
     <div class="video-player__container">
         <div class="poster overlay"
-             style="background-image: url(http://cdn.todonime.lc{{ preview }})"
+             style="background-image: url({{ preview | cdn }})"
         ></div>
         <div class="play overlay">
             <img class="play__button"
