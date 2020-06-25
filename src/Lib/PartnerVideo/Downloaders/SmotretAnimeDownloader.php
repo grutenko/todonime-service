@@ -68,6 +68,7 @@ class SmotretAnimeDownloader implements VideoDownloaderInterface
         $params = [
             CURLOPT_HEADER              => 0,
             CURLOPT_FOLLOWLOCATION      => 1,
+            CURLOPT_HTTPHEADER          => ['Expect:'],
             CURLOPT_FILE                => $out,
             CURLOPT_PROGRESSFUNCTION    => function($resource,$download_size, $downloaded, $upload_size, $uploaded) {
                 call_user_func($this->onProgressHandler, $downloaded, $download_size);
