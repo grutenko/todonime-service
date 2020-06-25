@@ -30,7 +30,9 @@ $application->add(new \App\Console\Anime\Episode\SetNames($container));
 $application->add( new \App\Console\Video\Get($container) );
 $application->add( new UpdateFullTranslate($container));
 $application->add(new ProjectFindVideos($container));
-$application->add(new \App\Console\Video\Download($container));
+$application->add(new \App\Console\Binary\Download($container));
+$application->add(new \App\Console\Binary\Delete($container));
+$application->add(new \App\Console\Binary\BatchDownload($container));
 $application->add( new \App\Console\User\GetUserRates($container));
 
 $application->add( new UpdateDatabase($container));

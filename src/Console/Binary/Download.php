@@ -1,7 +1,7 @@
 <?php
 
 
-namespace App\Console\Video;
+namespace App\Console\Binary;
 
 
 use App\Console\TodonimeCommand;
@@ -18,7 +18,7 @@ class Download extends TodonimeCommand
     /**
      * @var string
      */
-    protected static $defaultName = 'video:download';
+    protected static $defaultName = 'binary:download';
 
     /**
      * @inheritDoc
@@ -73,7 +73,7 @@ class Download extends TodonimeCommand
         $force = $input->getOption('force') == 'y';
         $db = $this->container->get('mongodb')->todonime;
 
-        if(strlen($videoId) === 24 && strspn($oid, $videoId) === 24)
+        if(strlen($videoId) === 24 && strspn($videoId, '0123456789ABCDEFabcdef') === 24)
         {
             $video = $db->videos->findOne([ '_id' => new ObjectId($videoId) ]);
 
