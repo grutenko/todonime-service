@@ -22,7 +22,7 @@ class Player extends \App\Action\Action
 
         if(!$sub)
         {
-            $response->getBody()->write( $this->twig->load('embed/404.twig')->render() );
+            $response->getBody()->write( $this->twig->render('embed/not-found.twig') );
             return $response;
         }
 
