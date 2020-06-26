@@ -58,8 +58,7 @@ class Get extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $getters = [
-            new SmotretAnimeGetter(new SmotretAnimeApi),
-            new SovetromanticaGetter(new SovetromanticaApi)
+            new SmotretAnimeGetter(new SmotretAnimeApi)
         ];
         (new Getter($getters, $this->db, $output))
             ->run();
