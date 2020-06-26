@@ -1,5 +1,8 @@
 <?php
 
+declare(ticks = 1);
+
+
 
 namespace App\Console\Binary;
 
@@ -8,6 +11,7 @@ use App\Console\TodonimeCommand;
 use App\Lib\PartnerVideo\Downloaders\SmotretAnimeDownloader;
 use App\Lib\PartnerVideo\ScreenshotGenerator;
 use MongoDB\BSON\ObjectId;
+use Symfony\Component\Console\Input\Input;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -60,6 +64,13 @@ class Download extends TodonimeCommand
                 InputOption::VALUE_OPTIONAL,
                 'Перезаписывает файл, если он уже сущесвует.',
                 'n'
+            )
+            ->addOption(
+                'ignore-errors',
+                null,
+                InputOption::VALUE_OPTIONAL,
+                'Игнорировать ли ошибки.',
+                'n'
             );
     }
 
@@ -71,6 +82,7 @@ class Download extends TodonimeCommand
         $videoId = $input->getArgument('id');
         $cookie = $input->getOption('cookie');
         $force = $input->getOption('force') == 'y';
+        $ignoreErrors = $input->getOption('ignore-errors') == 'y';
         $db = $this->container->get('mongodb')->todonime;
 
         if(strlen($videoId) === 24 && strspn($videoId, '0123456789ABCDEFabcdef') === 24)
@@ -90,7 +102,15 @@ class Download extends TodonimeCommand
         {
             if( !$input->hasOption('anime-id') || !$input->hasOption('episode') )
             {
-                throw new \InvalidArgumentException('--anime-id и --episode обязательыне параметры при использовании URL');
+                if($ignoreErrors)
+                {
+                    $output->writeln('<error>--anime-id и --episode обязательыне параметры при использовании URL</error>');
+                    return 0;
+                }
+                else
+                {
+                    throw new \InvalidArgumentException('--anime-id и --episode обязательыне параметры при использовании URL');
+                }
             }
 
             $domain = parse_url($videoId, PHP_URL_HOST);
@@ -99,11 +119,25 @@ class Download extends TodonimeCommand
 
         if($domain != 'smotret-anime.online')
         {
-            throw new \InvalidArgumentException('Скачивание доступно только для видео с smotret-anime.online.');
+            if($ignoreErrors)
+            {
+                $output->writeln('<error>Скачивание доступно только для видео с smotret-anime.online.</error>');
+            }
+            else
+            {
+                throw new \InvalidArgumentException('Скачивание доступно только для видео с smotret-anime.online.');
+            }
         }
         if( !$cookie )
         {
-            throw new \InvalidArgumentException('Для скачивания необходимо указать cookie с валидной авторизацией.');
+            if($ignoreErrors)
+            {
+                $output->writeln('<error>Для скачивания необходимо указать cookie с валидной авторизацией.</error>');
+            }
+            else
+            {
+                throw new \InvalidArgumentException('Для скачивания необходимо указать cookie с валидной авторизацией.');
+            }
         }
 
         if($useUrl)
@@ -114,7 +148,14 @@ class Download extends TodonimeCommand
             $matches = [];
             if(!preg_match('/translations\/embed\/([0-9]+)/', $videoId, $matches))
             {
-                throw new \RuntimeException('Regex Error.');
+                if($ignoreErrors)
+                {
+                    $output->writeln('<error>Regex Error.</error>');
+                }
+                else
+                {
+                    throw new \InvalidArgumentException('Regex Error.');
+                }
             }
 
             $partnerVideoId = $matches[1];
@@ -134,6 +175,16 @@ class Download extends TodonimeCommand
             $output->writeln('<info>skipped.</info>');
             return 0;
         }
+
+        pcntl_signal(SIGINT, function() use ($src, $output)
+        {
+            if( file_exists($src) )
+            {
+                unlink( $src );
+            }
+            $output->writeln("\n". '<info>Удаляю '. $src .'</info>');
+            die();
+        });
 
         $download = new SmotretAnimeDownloader(
             $partnerVideoId,
@@ -166,13 +217,15 @@ class Download extends TodonimeCommand
             'episode' => (int)$episode
         ]);
 
+        $publicStorage = $_ENV['PUBLIC_STORAGE_DIR'] ?: '/var/www/todonime.ru/current/storage/public';
+
         $params = [
-            'video'         => str_replace(rtrim($_ENV['PUBLIC_STORAGE_DIR'] ?: '/var/www/todonime.ru/current/storage/public'), '', $src),
+            'video'         => str_replace(rtrim($publicStorage), '', $src),
             'anime_id'      => (int)$animeId,
             'episode'       => (int)$episode,
-            'preview'       => str_replace(rtrim($_ENV['PUBLIC_STORAGE_DIR'] ?: '/var/www/todonime.ru/current/storage/public'), '', $paths['preview']),
+            'preview'       => str_replace(rtrim($publicStorage), '', $paths['preview']),
             'screenshots'   => array_map(function($item) {
-                $item['path'] = str_replace(rtrim($_ENV['PUBLIC_STORAGE_DIR'] ?: '/var/www/todonime.ru/current/storage/public'), '', $item['path']);
+                $item['path'] = str_replace(rtrim($publicStorage), '', $item['path']);
                 return $item;}, $paths['screenshots'])
         ];
 
