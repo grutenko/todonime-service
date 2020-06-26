@@ -87,6 +87,7 @@ class SmotretAnimeDownloader implements VideoDownloaderInterface
 
         if(curl_errno($ch))
         {
+            unlink($path);
             throw new \RuntimeException("CURL: ". curl_error($ch));
         }
         fclose($out);
