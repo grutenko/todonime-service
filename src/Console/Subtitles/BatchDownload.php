@@ -74,21 +74,16 @@ class BatchDownload extends TodonimeCommand
             return 0;
         }
 
-        foreach($videos as $video)
+        foreach($videos as $i => $video)
         {
-            try {
-                $this
-                    ->getApplication()
-                    ->find('subtitles:download')
-                    ->run(
-                        new ArrayInput([ 'id' => $video['_id']->__toString(), '--cookie' => $cookie, '--ignore-errors' => 'y' ]),
-                        $output
-                    );
-            }
-            catch(Exception $e)
-            {
-                $output->writeln('<error>error.</error>');
-            }
+            $this
+                ->getApplication()
+                ->find('subtitles:download')
+                ->run(
+                    new ArrayInput([ 'id' => $video['_id']->__toString(), '--cookie' => $cookie, '--ignore-errors' => 'y' ]),
+                    $output
+                );
+            $output->writeln(($i+1) . ' / '. count($videos));
         }
 
         return 0;

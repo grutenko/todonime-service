@@ -172,11 +172,23 @@ class Download extends \App\Console\TodonimeCommand
             throw new \RuntimeException('Ошибка получения субититров: '. $status);
         }
 
-        $this->container->get('mongodb')->todonime->subtitles->insertOne([
-            'data' => $ass,
-            'anime_id' => $animeId,
-            'episode' => $episode
-        ]);
+        $params = [
+            'partner_video_id' => (int)$partnerVideoId,
+            'data'      => $ass,
+            'anime_id'  => $animeId,
+            'episode'   => $episode
+        ];
+        if(!$useUrl)
+        {
+            $params['author'] = $video['author'];
+            if( isset($video['project_id']) )
+            {
+                $params['project_id'] = $video['project_id'];
+            }
+            $params['language'] = $video['language'];
+        }
+
+        $this->container->get('mongodb')->todonime->subtitles->insertOne($params);
 
         $output->writeln('<info>done.</info>');
 
