@@ -87,7 +87,12 @@ class BatchDownload extends TodonimeCommand
                 ->getApplication()
                 ->find('binary:download')
                 ->run(
-                    new ArrayInput([ 'id' => $video['_id']->__toString(), '--cookie' => $cookie, '--force' => $force ]),
+                    new ArrayInput([
+                        'id' => $video['_id']->__toString(),
+                        '--cookie' => $cookie,
+                        '--force' => $force,
+                        '--ignore-errors' => 'y'
+                    ]),
                     $output
                 );
         }

@@ -186,18 +186,33 @@ class Download extends TodonimeCommand
             die();
         });
 
-        $download = new SmotretAnimeDownloader(
-            $partnerVideoId,
-            $cookie,
-            $force
-        );
-        $download->onProgress(function($downloaded, $total) use ($output) {
-            $output->write("\r{$downloaded}/{$total} (". ($total ? floor($downloaded / $total * 100) : 0) ."%)");
-        });
+        try
+        {
+            $download = new SmotretAnimeDownloader(
+                $partnerVideoId,
+                $cookie,
+                $force
+            );
+            $download->onProgress(function($downloaded, $total) use ($output) {
+                $output->write("\r{$downloaded}/{$total} (". ($total ? floor($downloaded / $total * 100) : 0) ."%)");
+            });
 
-        $output->writeln('');
-        $download->save( $src );
-        $output->writeln('');
+            $output->writeln('');
+            $download->save( $src );
+            $output->writeln('');
+        }
+        catch(\Exception $e)
+        {
+            if($ignoreErrors)
+            {
+                $output->writeln('<error>'. $e->getMessage() .'</error>');
+                return 0;
+            }
+            else
+            {
+                throw $e;
+            }
+        }
 
         if( filesize($src) < 1024*1024)
         {
@@ -232,7 +247,7 @@ class Download extends TodonimeCommand
             'anime_id'      => (int)$animeId,
             'episode'       => (int)$episode,
             'preview'       => str_replace(rtrim($publicStorage), '', $paths['preview']),
-            'screenshots'   => array_map(function($item) {
+            'screenshots'   => array_map(function($item) use($publicStorage) {
                 $item['path'] = str_replace(rtrim($publicStorage), '', $item['path']);
                 return $item;}, $paths['screenshots'])
         ];
