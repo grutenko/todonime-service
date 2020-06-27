@@ -199,6 +199,14 @@ class Download extends TodonimeCommand
         $download->save( $src );
         $output->writeln('');
 
+        if( filesize($src) < 1024*1024)
+        {
+            $output->writeln('<error>Файл слишком маленький для видео. Удаляю</error>');
+            unlink($src);
+
+            return 0;
+        }
+
         if(!file_exists("{$storage}/thumbnails/$animeId"))
         {
             mkdir("{$storage}/thumbnails/$animeId");
