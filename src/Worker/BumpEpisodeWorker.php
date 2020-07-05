@@ -65,8 +65,7 @@ class BumpEpisodeWorker implements WorkerInterface
             return false;
         }
 
-        $anime = $this->sdk->anime()->find($anime['shikimori_id']);
-        if($anime == null) {
+        if($this->sdk->anime()->find($anime['shikimori_id']) == null) {
             return false;
         }
 
