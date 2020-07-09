@@ -8,6 +8,9 @@ import Avatar from "@material-ui/core/Avatar";
 import Chip from "@material-ui/core/Chip";
 
 import WatchList from '../Anime/WatchList';
+import { IconButton } from "@material-ui/core";
+import ExitToAppIcon from '@material-ui/icons/ExitToApp';
+import VpnKeyIcon from '@material-ui/icons/VpnKey';
 
 export default class UserInfo extends React.Component {
     logout() {
@@ -29,15 +32,33 @@ export default class UserInfo extends React.Component {
             <Avatar alt={user.nickname} src={user.avatar}/>
             <span className="user-info__name">
                 {user.nickname}
+                <Scopes scopes={user.scope}/>
             </span>
-            <Scopes scopes={user.scope}/>
+            <IconButton onClick={this.logout.bind(this)}>
+                <ExitToAppIcon />
+            </IconButton>
         </div>
     }
 
     render() {
         return <div>
-            { this.renderUserData() }
-            <WatchList />
+            {this.props.user
+                ? <>
+                    { this.renderUserData() }
+                    <WatchList />
+                </>
+                : <div style={{display: "flex"}}>
+                    <Button
+                        onClick={this.login.bind(this)}
+                        startIcon={<VpnKeyIcon/>}
+                        variant="outlined"
+                        color="primary"
+                        style={{margin: 'auto'}}
+                    >
+                        Авторизация через Shikimori
+                    </Button>
+                </div>
+            }
         </div>
     }
 }

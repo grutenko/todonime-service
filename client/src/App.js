@@ -37,7 +37,9 @@ export default function App () {
             <Layout title={title} setMenu={setMenu} menuOpen={content != null}>
                 <Switch>
                     {/* eslint-disable-next-line max-len */}
-                    <Route exact path="/" render={(props) => <><h1>WATCH LIST</h1><WatchList /></>}/>
+                    <Route exact path="/" render={(props) => 
+                        <WatchList />
+                    }/>
                     <Route exact path="/v/:id" render={(props) => <VideoPlayer
                         setTitle={setTitle}
                         setMenu={setMenu}
