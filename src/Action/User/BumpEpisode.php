@@ -10,6 +10,7 @@ use App\Lib\Queue\Client;
 use MongoDB\BSON\ObjectId;
 use Slim\Psr7\Request;
 use Slim\Psr7\Response;
+use MongoDB\BSON\UTCDateTime;
 use function GuzzleHttp\Psr7\parse_query;
 
 class BumpEpisode extends Action
@@ -54,6 +55,7 @@ class BumpEpisode extends Action
                     ['$addToSet' => [
                         'watched_episodes' => [
                             'anime_id' => $animeId,
+                            'updated_at' => new UTCDateTime,
                             'episodes' => (int)$params['episode']
                         ]
                     ]]
@@ -66,8 +68,9 @@ class BumpEpisode extends Action
                         '_id' => $user['_id']
                     ],
                     ['$set' => [
-                        "watched_episodes.{$indx}.episodes" => (int)$params['episode']
-                    ]]
+                        "watched_episodes.{$indx}.episodes" => (int)$params['episode'],
+                        "watched_episodes.{$indx}.updated_at" => new UTCDateTime
+                     ]]
                 );
             }
         }

@@ -3,11 +3,11 @@
 }
 
 .anime-card__cover {
-    width: 151px;
+    min-width: 151px;
 }
 
 .anime-card__content {
-    flex: 1 0 auto;
+    width: 100%;
 }
 
 .anime-card__text {
@@ -22,4 +22,9 @@
     font-size: 12px;
     color: #898989;
     margin: 0 15px
+}
+
+.anime-card__text-header {
+    font-size: 16px;
+    display: inline-block;
 }

@@ -1,0 +1,13 @@
+.watch-list__container {
+    padding: 15px 20px;
+    background: white;
+}
+
+.watch-list__container h1 {
+    color: #404040;
+}
+
+.watch-list {
+    max-width: 650px;
+    margin: auto;
+}

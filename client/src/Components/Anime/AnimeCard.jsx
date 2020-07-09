@@ -4,10 +4,11 @@ import CardMedia from "@material-ui/core/CardMedia";
 import Typography from "@material-ui/core/Typography";
 import LinearProgress from "@material-ui/core/LinearProgress";
 import {Star, StarBorder} from "@material-ui/icons";
+import {Link} from "react-router-dom";
 
 import './AnimeCard.css'
 
-export default function AnimeCard ({anime, currentEpisode, lastEpisode, user}) {
+export default function AnimeCard ({anime, currentEpisode, lastEpisode, user, toWatch}) {
     return <Card className="anime-card">
         <CardMedia
             className   = "anime-card__cover"
@@ -16,11 +17,18 @@ export default function AnimeCard ({anime, currentEpisode, lastEpisode, user}) {
         />
         <div className="anime-card__content">
             <div className="anime-card__text">
-                <a href = {"https://shikimori.one" + anime.url}>
-                    <Typography component="h5" variant="h5">
-                        {anime.name_ru  ? anime.name_ru : anime.name_en}
-                    </Typography>
-                </a>
+                {toWatch
+                    ? <Link to={`/s/${anime.shikimori_id}/${lastEpisode + 1}`}>
+                        <Typography component="div" variant="div" className="anime-card__text-header">
+                            {anime.name_ru  ? anime.name_ru : anime.name_en}
+                        </Typography>
+                    </Link>
+                    : <a href = { "https://shikimori.one" + anime.url}>
+                        <Typography component="div" variant="div" className="anime-card__text-header">
+                            {anime.name_ru  ? anime.name_ru : anime.name_en}
+                        </Typography>
+                    </a>
+                }
                 <Rating rating={anime.rating} />
             </div>
             <span className="anime-card__progress-text">Текущий прогресс: {lastEpisode} / {anime.last_episode}</span>

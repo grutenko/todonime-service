@@ -3,6 +3,7 @@ import React, {useState} from "react";
 import Layout from "./Components/Layout";
 import {Route, Switch} from "react-router-dom";
 import VideoPlayer from "./Components/Video/VideoPlayer";
+import WatchList from "./Components/Anime/WatchList";
 import Menu from './Components/Menu';
 
 import * as Api from './lib/api';
@@ -36,6 +37,7 @@ export default function App () {
             <Layout title={title} setMenu={setMenu} menuOpen={content != null}>
                 <Switch>
                     {/* eslint-disable-next-line max-len */}
+                    <Route exact path="/" render={(props) => <><h1>WATCH LIST</h1><WatchList /></>}/>
                     <Route exact path="/v/:id" render={(props) => <VideoPlayer
                         setTitle={setTitle}
                         setMenu={setMenu}
