@@ -197,7 +197,7 @@
         });
 
         {% if sub %}
-        libjass.ASS.fromString(`{{ sub.data | raw }}`).then(ass => {
+        libjass.ASS.fromString("{{ sub.data | raw }}").then(ass => {
             new libjass.renderers.WebRenderer(
                 ass,
                 new libjass.renderers.VideoClock(player),
