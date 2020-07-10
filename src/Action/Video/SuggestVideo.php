@@ -69,9 +69,9 @@ class SuggestVideo extends Action
             return $sum($v2) - $sum($v1);
         });
 
-        $selfHostedVideos = array_filter($videos, function($video) {
+        $selfHostedVideos = array_values(array_filter($videos, function($video) {
             return $video['domain'] == 'embed.todonime.ru';
-        });
+        }));
 
         if(count($selfHostedVideos) > 0)
         {
