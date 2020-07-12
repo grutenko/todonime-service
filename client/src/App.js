@@ -140,7 +140,7 @@ function NotFound() {
     const styles = {
         root: {
             width: "100%",
-            height: "calc(100vh - 160px)",
+            height: "100vh",
             display: "flex",
             backgroundColor: "#404040"
         },
