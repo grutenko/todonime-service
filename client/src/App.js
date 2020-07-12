@@ -141,7 +141,8 @@ function NotFound() {
         root: {
             width: "100%",
             height: "calc(100vh - 160px)",
-            display: "flex"
+            display: "flex",
+            backgroundColor: "#404040"
         },
         content: {
             margin: "auto",
