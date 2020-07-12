@@ -175,8 +175,10 @@
         const player = document.getElementsByClassName('video-player')[0];
         const container = document.getElementsByClassName('video-player__container')[0];
         const progress = document.getElementsByClassName('progress')[0];
+        let thumbnail = document.getElementsByClassName('thumbnail')[0];
 
         progress.addEventListener('mousemove', onProgressMouseMove);
+        thumbnail.addEventListener('mousemove', onProgressMouseMove);
         progress.addEventListener('click', onUpdateSeek);
         document.getElementsByClassName('play__icon')[0].addEventListener('click', togglePlay);
 

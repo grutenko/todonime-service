@@ -84,7 +84,7 @@ html, body {
     position: absolute;
     width: 10px; height: 10px;
     border-radius: 50%;
-    background: #3f51b5;
+    background: #f50057;
     margin: -2px;
     display: none;
     pointer-events: none;
