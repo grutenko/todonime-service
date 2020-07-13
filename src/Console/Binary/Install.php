@@ -110,7 +110,7 @@ class Install extends TodonimeCommand
         }
 
         $screens = array_filter(scandir($path), function($screen) use ($path) {
-            return is_file("$path/$screen") && preg_match('/^screen\-d+\.(jpg|png)$/', $screen);
+            return is_file("$path/$screen") && preg_match('/^screen-[0-9]+\.(jpg|png)$/', $screen);
         });
 
         return array_map(function($screen) use ($animeId, $episode) {
