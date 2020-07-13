@@ -79,7 +79,7 @@ class Install extends TodonimeCommand
                 "end" => ($i + 1)*20
             ];
         }, $screens, array_keys($screens));
-        $preview = "{$this->thumbnails}/$animeId/$episode/preview.png";
+        $preview = "/thumbnails/$animeId/$episode/preview.png";
 
         $this->collection->insertOne([
             'anime_id' => (int)$animeId,
