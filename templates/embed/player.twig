@@ -15,6 +15,13 @@
 {% endblock %}
 {% block content %}
     <div class="video-player__container">
+        <div class="toolbar top">
+            <div class="toolbar__video-name">{{ "#{episode} episode" }}</div>
+            <div class="current-font-size" style="margin: 7px 10px">25</div>
+            <img class="toolbar__icon" src="{{ '/assets/img/format_size-24px.svg' | cdn }}">
+            <img class="toolbar__icon subtitle-font-plus" src="{{ '/assets/img/add-24px.svg' | cdn }}">
+            <img class="toolbar__icon subtitle-font-munus" src="{{ '/assets/img/remove-24px.svg' | cdn }}">
+        </div>
         <div class="poster overlay"
              style="background-image: url({{ preview | cdn }})"
         ></div>
@@ -59,6 +66,10 @@
     </div>
     <script src="{{ '/assets/js/libjass.js' | cdn }}"></script>
     <script>
+        var subFontSize = parseInt(localStorage.subFontSize) || 25;
+        document.getElementsByClassName('subtitles')[0].style.fontSize = subFontSize + 'px';
+        document.getElementsByClassName('current-font-size')[0].innerText = subFontSize;
+
         var toggleFullScreen = function () {
             if (document.fullscreenElement) {
                 document.exitFullscreen();
@@ -222,7 +233,29 @@
         const container = document.getElementsByClassName('video-player__container')[0];
         const progress = document.getElementsByClassName('progress')[0];
         const volume = document.getElementsByClassName('toolbar__volume-progress')[0];
+        const subsPlus = document.getElementsByClassName('subtitle-font-plus')[0];
+        const subsMinus = document.getElementsByClassName('subtitle-font-munus')[0];
         let thumbnail = document.getElementsByClassName('thumbnail')[0];
+
+        subsPlus.addEventListener('click', function() {
+            const subs = document.getElementsByClassName('subtitles')[0];
+            if(subFontSize <= 75) {
+                subFontSize += 2;
+                localStorage.subFontSize = subFontSize;
+                subs.style.fontSize = subFontSize + 'px';
+                document.getElementsByClassName('current-font-size')[0].innerText = subFontSize;
+            }
+        });
+        subsMinus.addEventListener('click', function() {
+            const subs = document.getElementsByClassName('subtitles')[0];
+
+            if(subFontSize >= 15) {
+                subFontSize -= 2;
+                localStorage.subFontSize = subFontSize;
+                subs.style.fontSize = subFontSize + 'px';
+                document.getElementsByClassName('current-font-size')[0].innerText = subFontSize;
+            }
+        });
 
         volume.addEventListener('click', onUpdateVolumeSeek);
         progress.addEventListener('mousemove', onProgressMouseMove);
