@@ -2,6 +2,16 @@
 {% block head %}
     {{ parent() }}
     <link rel="stylesheet" href="{{ '/assets/css/embed.css' | cdn }}">
+    <meta name="theme-color" content="#404040">
+    <meta itemprop="name" content="{{ "#{episode} episode" }}">
+    <meta name="title" content="{{ "#{episode} episode" }}">
+    <span itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <link itemprop="name" content="todonime.ru">
+    </span>
+    <meta property="og:title" content="{{ "#{episode} episode" }}">
+    <meta property="og:image" content="{{ preview | cdn }}">
+    <meta property="og:image:width" content="1820">
+    <meta property="og:image:height" content="1080">
 {% endblock %}
 {% block content %}
     <div class="video-player__container">
@@ -14,10 +24,11 @@
             >
         </div>
         <video class="video-player"
-               preload
+               poster="poster.jpg"
+               preload="{{ preview | cdn }}"
                crossorigin
         >
-            <source src="{{ video | cdn }}" type="video/webm">
+            <source src="{{ video | cdn }}" type="video/mp4">
         </video>
         <div class="subtitles"><div class="subtitles-inner"></div></div>
         <div class="thumbnail">
@@ -33,6 +44,13 @@
                 <div class="progress__watched"></div>
                 <div class="progress__cursor"></div>
             </div>
+            <div class="toolbar__volume">
+                <span class="toolbar__volume-text"></span>
+                <div class="toolbar__volume-progress">
+                    <div class="progress__active"></div>
+                </div>
+            </div>
+            <img class="toolbar__icon icon__volume" src="{{ '/assets/img/volume_up-24px.svg' | cdn }}">
             <img class="toolbar__icon"
                  onClick="toggleFullScreen()"
                  src="{{ '/assets/img/open_in_full-24px.svg' | cdn }}"
@@ -172,11 +190,41 @@
             watched.style.width = size * (player.currentTime / player.duration) + 'px';
         }
 
+        function onUpdateVolumeSeek(e) {
+            const volume = document.getElementsByClassName('toolbar__volume-progress')[0],
+                  active = document.getElementsByClassName('progress__active')[0],
+                  player = document.getElementsByClassName('video-player')[0],
+                  height = volume.clientHeight;
+
+            player.volume = Math.abs(e.clientY - volume.getBoundingClientRect().top - height) / height;
+        }
+
+        function onVolumeChange() {
+            const player = document.getElementsByClassName('video-player')[0],
+                  volume = document.getElementsByClassName('toolbar__volume-progress')[0],
+                  text = document.getElementsByClassName('toolbar__volume-text')[0],
+                  active = document.getElementsByClassName('progress__active')[0],
+                  icon = document.getElementsByClassName('icon__volume')[0];
+
+            active.style.height = (volume.clientHeight * player.volume) + 'px';
+            text.innerText = Math.round(player.volume * 100) + '%';
+
+            if(player.volume > 0.5) {
+                icon.src = "{{ '/assets/img/volume_up-24px.svg' | cdn }}"
+            } else if(player.volume <= 0.5 && player.volume > 0 ) {
+                icon.src = "{{'/assets/img/volume_down-24px.svg' | cdn }}"
+            } else {
+                icon.src = "{{ '/assets/img/volume_off-24px.svg' | cdn }}"
+            }
+        }
+
         const player = document.getElementsByClassName('video-player')[0];
         const container = document.getElementsByClassName('video-player__container')[0];
         const progress = document.getElementsByClassName('progress')[0];
+        const volume = document.getElementsByClassName('toolbar__volume-progress')[0];
         let thumbnail = document.getElementsByClassName('thumbnail')[0];
 
+        volume.addEventListener('click', onUpdateVolumeSeek);
         progress.addEventListener('mousemove', onProgressMouseMove);
         thumbnail.addEventListener('mousemove', onProgressMouseMove);
         progress.addEventListener('click', onUpdateSeek);
@@ -184,6 +232,10 @@
 
         player.addEventListener('play', hideOverlays);
         player.addEventListener('pause', showPlayButton);
+        player.addEventListener('volumechange', onVolumeChange);
+        player.addEventListener('loadeddata', function() {
+            onVolumeChange();
+        });
 
         container.addEventListener('click', function(e) {
             if(e === undefined || e.target.closest('.toolbar') === null) {
