@@ -35,17 +35,19 @@ class ScreenshotGenerator
             throw new \RuntimeException($dst . 'not found.');
         }
 
-        echo `ffmpeg -i {$this->src} -hide_banner -stats -vf "fps=1/20,scale=280:-1" {$dst}/screen-%d.png`;
+        echo `ffmpeg -i {$this->src} -hide_banner -stats -vf "fps=1/20,scale=280:-1" {$dst}/screen-%d.jpg`;
 
         $duration = (int)`ffprobe -i {$this->src} -show_format -v quiet | sed -n 's/duration=//p'`;
         $randFrame = rand(0, $duration);
-        echo `ffmpeg -i {$this->src} -hide_banner -stats -ss {$randFrame} -vframes 1 {$dst}/preview.png`;
+        echo `ffmpeg -i {$this->src} -hide_banner -stats -ss {$randFrame} -vframes 1 {$dst}/preview-plain.jpg`;
+        echo `convert {$dst}/preview-plain.jpg -interlace plane {$dst}/preview.jpg`;
+        unlink("{$dst}/preview-plain.jpg");
 
         $screenshots = [];
         for($i = 0; $i < $duration; $i += 20)
         {
             $screenshots[] = [
-                'path' => $dst . '/screen-'.($i/20+1). '.png',
+                'path' => $dst . '/screen-'.($i/20+1). '.jpg',
                 'start' => (int)($i + 1),
                 'end' => (int)($i + 20 < $duration ? $i+20 : $duration)
             ];
@@ -53,7 +55,7 @@ class ScreenshotGenerator
 
         return [
             'screenshots' => $screenshots,
-            'preview' => $dst. '/preview.png'
+            'preview' => $dst. '/preview.jpg'
         ];
     }
 }
