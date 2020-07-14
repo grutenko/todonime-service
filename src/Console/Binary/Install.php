@@ -75,7 +75,7 @@ class Install extends TodonimeCommand
         {
             return [
                 "path" => $screen,
-                "start" => $i*20,
+                "start" => ($i*20) + 1,
                 "end" => ($i + 1)*20
             ];
         }, $screens, array_keys($screens));
@@ -109,8 +109,17 @@ class Install extends TodonimeCommand
             throw new \RuntimeException("Invalid path {$this->thumbnails}/$animeId/$episode");
         }
 
-        $screens = array_filter(scandir($path), function($screen) use ($path) {
+        $screens = array_values(array_filter(scandir($path), function($screen) use ($path) {
             return is_file("$path/$screen") && preg_match('/^screen-[0-9]+\.(jpg|png)$/', $screen);
+        }));
+
+        usort($screens, function($s1, $s2) {
+            $matches1 = [];
+            $matches2 = [];
+            preg_match('/screen-([0-9]+)\./', $s1, $matches1);
+            preg_match('/screen-([0-9]+)\./', $s2, $matches2);
+
+            return (int)$matches1[1] - (int)$matches2[1];
         });
 
         return array_map(function($screen) use ($animeId, $episode) {
