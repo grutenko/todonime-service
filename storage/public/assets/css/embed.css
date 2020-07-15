@@ -55,7 +55,7 @@ html, body {
     transition: 250ms;
     background: linear-gradient(to top, rgba(0,0,0, 0.4) 0%, rgba(0,0,0, 0) 100%);
     color: white;
-    font-size: 15px;
+    font-size: 20px;
     z-index: 3;
 }
 
@@ -71,18 +71,18 @@ html, body {
 
 .toolbar__icon {
     padding: 10px;
-    width: 16px; height: 16px;
+    width: 28px; height: 28px;
     transition: 250ms;
     background-color: rgba(255,255,255, 0);
 }
 
-.toolbar__icon:hover {
+.toolbar__icon:not(.disabled__icon):hover {
     background-color: rgba(255,255,255, 0.3);
 }
 
 .progress {
     flex: 1;
-    height: 6px;
+    height: 12px;
     background: rgba(255,255,255, 0.3);
     transition: 50ms;
     margin: auto 10px;
@@ -95,10 +95,10 @@ html, body {
 
 .progress__cursor {
     position: absolute;
-    width: 10px; height: 10px;
+    width: 20px; height: 20px;
     border-radius: 50%;
     background: #f50057;
-    margin: -2px;
+    margin: -4px;
     display: none;
     pointer-events: none;
 }
@@ -109,7 +109,7 @@ html, body {
 
 .progress__loaded, .progress__watched {
     position: absolute;
-    height: 6px;
+    height: 12px;
     width: 0;
 }
 
@@ -154,12 +154,12 @@ html, body {
 .toolbar__volume {
     opacity: 0;
     position: absolute;
-    width: 36px;
+    width: 48px;
     bottom: 36px;
-    right: 36px;
+    right: 48px;
     transition: 250ms;
     color: white;
-    font-size: 12px;
+    font-size: 15px;
     text-align: center;
 }
 
@@ -167,15 +167,15 @@ html, body {
     margin:auto;
     position: relative;
     height: 90px;
-    margin: 10px auto;
-    width: 5px;
+    margin: 20px auto;
+    width: 12px;
     background: rgba(255,255,255, 0.5);
     box-sizing: border-box;
 }
 
 .toolbar__volume-progress .progress__active {
     height: 50px;
-    width: 5px;
+    width: 12px;
     position: absolute;
     bottom: 0;
     background: white;
