@@ -285,7 +285,7 @@
         });
 
         {% if sub %}
-        libjass.ASS.fromString(`{{ sub.data | replace({"\\": "\\\\"}) | raw }}`).then(ass => {
+        libjass.ASS.fromString(`{{ sub.data | replace({"\\": "\\\\", "\`": "\\\`", "\ufeff": ""}) | raw }}`).then(ass => {
             new libjass.renderers.WebRenderer(
                 ass,
                 new libjass.renderers.VideoClock(player),
