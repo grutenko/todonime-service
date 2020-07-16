@@ -6,10 +6,12 @@ import {withRouter} from "react-router-dom";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
 import Checkbox from "@material-ui/core/Checkbox";
 
+import Button from "@material-ui/core/Button";
 import {fetch} from '../../lib/api';
 import {RollbackEpisodeDialog} from "../Video/VideoPlayer";
 import Typography from "@material-ui/core/Typography";
 import Tooltip from "@material-ui/core/Tooltip";
+import SubdirectoryArrowRightIcon from '@material-ui/icons/SubdirectoryArrowRight';
 
 import './EpisodesList.css';
 
@@ -71,10 +73,13 @@ class EpisodesList extends React.Component {
     }
 
     componentDidUpdate(prevProps) {
-        if(prevProps.currentEpisode !== this.props.currentEpisode) {
-
+        if(prevProps.currentEpisode !== this.props.currentEpisode)
+        {
             this.setState({currentEpisode: this.props.currentEpisode});
-
+        }
+        if(prevProps.anime.shikimori_id !== this.props.anime.shikimori_id)
+        {
+            this.forceUpdate();
         }
     }
 
@@ -192,6 +197,24 @@ class EpisodesList extends React.Component {
         </div>
     }
 
+    renderNextSeason() {
+        const {
+            anime: {
+                next_season
+            }
+        } = this.props;
+
+        return <Button
+            variant="outlined"
+            color="secondary"
+            onClick={() => {this.props.history.push(`/s/${next_season.shikimori_id}/1`); this.props.onClick(true);}}
+            startIcon={<SubdirectoryArrowRightIcon/>}
+            style={{margin: "10px 7px 20px 7px"}}
+        >
+            Продолжение: {next_season.name_ru || next_season.name_en}
+        </Button>
+    }
+
     render() {
         const {
             canComplete
@@ -261,6 +284,10 @@ class EpisodesList extends React.Component {
                     : null
                 }
             </div>
+            {this.props.anime.next_season 
+                ? this.renderNextSeason()
+                : null
+            }
         </>
     }
 }

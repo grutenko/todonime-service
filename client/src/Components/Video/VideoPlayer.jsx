@@ -272,8 +272,8 @@ class Toolbar extends React.Component {
         />);
     }
 
-    onMobileClose() {
-        if(this.state.mobile) {
+    onMobileClose(needClose) {
+        if(this.state.mobile || needClose) {
             this.props.setMenu(null);
         }
     }

@@ -142,6 +142,11 @@ class GetVideoByIdAction extends Action
             $video['name'] = 'Эпизод без имени';
         }
 
+        if(isset($video['anime']['next_season']))
+        {
+            $video['anime']['next_season'] = $this->mongodb->todonime->animes->findOne(['shikimori_id' => $video['anime']['next_season']]);
+        }
+
         return ResponseHelper::success($response, $video);
     }
 
