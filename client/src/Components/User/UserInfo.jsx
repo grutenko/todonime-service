@@ -41,22 +41,24 @@ export default class UserInfo extends React.Component {
     }
 
     render() {
-        return <div>
+        return <div style={{maxWidth: "500px", margin: "25px auto"}}>
             {this.props.user
                 ? <>
                     { this.renderUserData() }
                     <WatchList />
                 </>
-                : <div style={{display: "flex"}}>
-                    <Button
-                        onClick={this.login.bind(this)}
-                        startIcon={<VpnKeyIcon/>}
-                        variant="outlined"
-                        color="primary"
-                        style={{margin: 'auto'}}
-                    >
-                        Авторизация через Shikimori
-                    </Button>
+                : <div style={{display: "flex", height: "calc(100vh - 75px)"}}>
+                    <div style={{margin: 'auto'}}>
+                        <Button
+                            onClick={this.login.bind(this)}
+                            startIcon={<VpnKeyIcon/>}
+                            variant="outlined"
+                            color="primary"
+                        >
+                            Авторизация через Shikimori
+                        </Button><br/>
+                        <p>Позволит сохранять прогресс просмотра<br/> импортировать списки с shikimori.</p>
+                    </div>
                 </div>
             }
         </div>

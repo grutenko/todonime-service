@@ -7,6 +7,7 @@ import WatchList from "./Components/Anime/WatchList";
 import Menu from './Components/Menu';
 
 import * as Api from './lib/api';
+import Main from "./Components/Main";
 /* eslint-enable */
 
 export default function App () {
@@ -37,9 +38,7 @@ export default function App () {
             <Layout title={title} setMenu={setMenu} menuOpen={content != null}>
                 <Switch>
                     {/* eslint-disable-next-line max-len */}
-                    <Route exact path="/" render={(props) => 
-                        <WatchList />
-                    }/>
+                    <Route exact path="/" component={Main}/>
                     <Route exact path="/v/:id" render={(props) => <VideoPlayer
                         setTitle={setTitle}
                         setMenu={setMenu}
@@ -94,11 +93,9 @@ class SuggestVideo extends React.Component {
                 episode
             }
         ).then((data) => {
-
             this.setState({
                 load: false
             })
-            history.replace(`/s/${animeId}/${episode}`);
             history.push(`/v/${data.data.video_id}`);
 
         }).catch( () => {

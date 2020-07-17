@@ -28,7 +28,7 @@ export default class WatchList extends React.Component {
             .then(data => {
                 this.setState({
                     load: false,
-                    user: data.data
+                    user: data.data.user
                 });
             })
     }
