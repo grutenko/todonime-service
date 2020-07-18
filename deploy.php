@@ -10,7 +10,7 @@ host('todonime.ru')
     ->stage('prod')
     ->user('deploy')
     ->identityFile('~/.ssh/id_rsa-deploy')
-    ->set('repository', 'https://github.com/grutenko/todonime-service.git')
+    ->set('repository', 'https://github.com/todonime/todonime-service.git')
     ->set('branch', 'master')
     ->set('deploy_path', '/var/www/todonime.ru')
     ->set('shared_files', [
