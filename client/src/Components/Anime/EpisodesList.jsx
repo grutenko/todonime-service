@@ -8,7 +8,7 @@ import Checkbox from "@material-ui/core/Checkbox";
 
 import Button from "@material-ui/core/Button";
 import {fetch} from '../../lib/api';
-import {RollbackEpisodeDialog} from "../Video/VideoPlayer";
+import {RollbackEpisodeDialog} from "../Video/TodonimePlayer";
 import Typography from "@material-ui/core/Typography";
 import Tooltip from "@material-ui/core/Tooltip";
 import SubdirectoryArrowRightIcon from '@material-ui/icons/SubdirectoryArrowRight';

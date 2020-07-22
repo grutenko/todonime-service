@@ -1,6 +1,6 @@
 import React from "react";
 
-import "./VideoPlayerIframe.css";
+import "./TodonimePlayerIframe.css";
 import {LinearProgress} from "@material-ui/core";
 
 export default class VideoPlayerIframe extends React.Component {

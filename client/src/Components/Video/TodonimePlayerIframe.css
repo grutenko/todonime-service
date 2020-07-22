@@ -7,6 +7,7 @@
     max-width: 70vw;
     margin: auto;
     display: block;
+    background-color: black;
 }
 
 @media screen and (max-width: 920px) {

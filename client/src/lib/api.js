@@ -29,12 +29,7 @@ export function fetch (url, params, method) {
             options.body = buildQuery(params);
 
         } else {
-
-            // eslint-disable-next-line no-console
-            console.log(url);
-
             options.url = `${API_PATH + url}?${buildQuery(params)}`;
-
         }
 
         xhr(

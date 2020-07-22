@@ -144,27 +144,37 @@ class Generate extends Command
             );
         }
 
-        $binaryId = $this->db->binaries->findOne(['anime_id' => $animeId, 'episode' => $episode])['_id']->__toString();
-        $subId = $this->db->subtitles->findOne(['anime_id' => $animeId, 'episode' => $episode])['_id']->__toString();
+        $binaryId = $this->db->binaries->findOne(['anime_id' => $animeId, 'episode' => $episode])['_id'];
+        $subId = $this->db->subtitles->findOne(['anime_id' => $animeId, 'episode' => $episode])['_id'];
 
         if($this->db->videos->findOne(['anime_id' => $animeId, 'episode' => $episode, 'domain' => 'embed.todonime.ru']) == null)
         {
             $this->db->videos->insertOne([
-                'url'       => "https://embed.todonime.ru/{$binaryId}_{$subId}",
                 'anime_id'  => $animeId,
                 'episode'   => $episode,
                 'kind'      => 'sub',
                 'language'  => 'ru',
                 'author'    => $author,
-                'domain'    => 'embed.todonime.ru',
+                'binary'    => $binaryId,
+                'sub'       => $subId,
+                'internal'  => true,
+                'domain'    => 'todonime.ru',
                 'uploader'  => new ObjectId('5edd18affa864db5b2a03ffa')
             ]);
         }
         else
         {
             $this->db->videos->updateOne(
-                ['anime_id' => $animeId, 'episode' => $episode, 'domain' => 'embed.todonime.ru'],
-                ['$set' => ['url' => "https://embed.todonime.ru/{$binaryId}_{$subId}"]]
+                [
+                    'anime_id' => $animeId,
+                    'episode' => $episode,
+                    'domain' => 'todonime.ru'
+                ],
+                ['$set' => [
+                    'binary'    => $binaryId,
+                    'sub'       => $subId,
+                    'internal'  => true,
+                ]]
             );
         }
 

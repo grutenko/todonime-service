@@ -2,8 +2,7 @@ import React, {useState} from "react";
 /* eslint-disable */
 import Layout from "./Components/Layout";
 import {Route, Switch} from "react-router-dom";
-import VideoPlayer from "./Components/Video/VideoPlayer";
-import WatchList from "./Components/Anime/WatchList";
+import TodonimePlayer from "./Components/Video/TodonimePlayer";
 import Menu from './Components/Menu';
 
 import * as Api from './lib/api';
@@ -39,7 +38,7 @@ export default function App () {
                 <Switch>
                     {/* eslint-disable-next-line max-len */}
                     <Route exact path="/" component={Main}/>
-                    <Route exact path="/v/:id" render={(props) => <VideoPlayer
+                    <Route exact path="/v/:id" render={(props) => <TodonimePlayer
                         setTitle={setTitle}
                         setMenu={setMenu}
                         menuOpen={content != null}

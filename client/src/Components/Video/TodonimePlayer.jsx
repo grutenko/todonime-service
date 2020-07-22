@@ -5,7 +5,7 @@ import Loader from "../Misc/Loader";
 import moment from "moment";
 import "moment/locale/ru";
 import {fetch} from "../../lib/api";
-import VideoPlayerIframe from "./VideoPlayerIframe";
+import VideoPlayerIframe from "./TodonimePlayerIframe";
 import {Button} from "@material-ui/core";
 import ViewListIcon from "@material-ui/icons/ViewList";
 import TheatersIcon from "@material-ui/icons/Theaters";
@@ -17,7 +17,9 @@ import MuiAlert from "@material-ui/lab/Alert";
 import Comments from "./Comments";
 import CheckIcon from '@material-ui/icons/Check';
 
-import "./VideoPlayer.css";
+import InternalPlayer from './InternalPlayer';
+
+import "./TodonimePlayer.css";
 import AnimeCard from "../Anime/AnimeCard";
 import Dialog from "@material-ui/core/Dialog";
 import DialogTitle from "@material-ui/core/DialogTitle";
@@ -48,7 +50,7 @@ import Chip from "@material-ui/core/Chip";
 
 moment.locale("ru");
 
-export default class VideoPlayer extends React.Component {
+export default class TodonimePlayer extends React.Component {
 
     constructor (props) {
 
@@ -141,7 +143,10 @@ export default class VideoPlayer extends React.Component {
                         onClick = {this.onShowUser.bind(this)}
                     />
                 </div>
-                <VideoPlayerIframe url={data.url}/>
+                {data.internal
+                    ? <InternalPlayer binary={data.binary} sub={data.sub}/>
+                    : <VideoPlayerIframe url={data.url}/>
+                }
             </BackgroundPoster>
             <Toolbar
                 canComplete = { data.user !== null }

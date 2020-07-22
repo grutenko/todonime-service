@@ -1,0 +1,192 @@
+.internal__video {
+    width: 100%;
+    height: 100%;
+}
+
+.video__toolbar {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    z-index: 1;
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
+.info__bar {
+    position: absolute;
+    display: flex;
+    pointer-events: none;
+    color: white;
+    font-size: 55px;
+}
+
+.info__bar-content {
+    display: flex;
+}
+
+.info__bar-content > * {
+    margin: auto 10px;
+}
+
+.info__bar > * {
+    margin: auto;
+}
+
+.video__toolbar.play {
+    background: none;
+}
+
+.play__button {
+    margin: auto;
+}
+
+.video__toolbar-item {
+    background: linear-gradient(to top, rgba(0,0,0, 0.4) 0%, rgba(0,0,0, 0) 100%);
+    box-sizing: border-box;
+    width: 100%;
+    display: flex;
+    color: white;
+    opacity: 0;
+    transition: 250ms;
+    pointer-events: none;
+}
+
+.video-player__iframe.internal.hover .video__toolbar-item {
+    opacity: 1;
+    pointer-events: all;
+}
+
+.video__toolbar-item > * {
+    margin: auto 0;
+}
+
+.video__toolbar .MuiSlider-track,
+.video__toolbar .MuiSlider-mark,
+.video__toolbar .MuiSlider-thumb {
+    background-color: white;
+}
+
+.video__toolbar .MuiSlider-rail {
+    background: #aaa;
+}
+
+.video__subtitles {
+    position: absolute;
+    pointer-events: none;
+    z-index: 0;
+    padding: 30px;
+    box-sizing: border-box;
+    text-shadow: 0 0 5px black; 
+    transition: 250ms;
+}
+
+.no-transition .video__subtitles,
+.no-transition .video__toolbar-item,
+.no-transition .video__toolbar {
+    transition: none;
+}
+
+.video-player__iframe.internal.hover .video__subtitles {
+    padding: 50px;
+}
+
+/**
+ * libjass
+ *
+ * https://github.com/Arnavion/libjass
+ *
+ * Copyright 2013 Arnav Singh
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+ .libjass-wrapper {
+    overflow: hidden;
+    width: 100%; height: 100%;
+}
+
+.libjass-subs {
+    overflow: hidden;
+    height: 100%;
+}
+
+.an {
+    flex: 1;
+}
+
+.libjass-subs, .libjass-subs * {
+    pointer-events: none;
+    -webkit-animation-fill-mode: both !important;
+    animation-fill-mode: both !important;
+}
+
+.libjass-subs.paused * {
+    -webkit-animation-play-state: paused !important;
+    animation-play-state: paused !important;
+}
+
+.libjass-subs .an1, .libjass-subs .an2, .libjass-subs .an3 {
+    margin-top: auto;
+}
+
+.libjass-subs .an4, .libjass-subs .an5, .libjass-subs .an6 {
+    display: table;
+    width: 100%;
+    height: 100%;
+}
+
+.libjass-subs .an4 > *, .libjass-subs .an5 > *, .libjass-subs .an6 > * {
+    margin: auto;
+}
+
+.libjass-subs .an7, .libjass-subs .an8, .libjass-subs .an9 {
+    margin-bottom: auto;
+}
+
+.libjass-subs .an1, .libjass-subs .an4, .libjass-subs .an7 {
+    text-align: left;
+}
+
+.libjass-subs .an2, .libjass-subs .an5, .libjass-subs .an8 {
+    text-align: center;
+}
+
+.libjass-subs .an3, .libjass-subs .an6, .libjass-subs .an9 {
+    text-align: right;
+}
+
+/* Filter wrapper span */
+.libjass-subs div[data-dialogue-id] > span {
+    -webkit-perspective-origin: center;
+    -webkit-perspective: 400px;
+    perspective-origin: center;
+    perspective: 400px;
+}
+
+.libjass-font-measure {
+    visibility: hidden;
+    border: 0;
+    margin: 0;
+    padding: 0;
+    line-height: normal;
+    display: none;
+}
+
+.layer {
+    height: 100%;
+    display: flex;
+}
+
+.libjass-filters {
+    display: block;
+}

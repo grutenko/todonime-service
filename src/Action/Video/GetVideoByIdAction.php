@@ -21,7 +21,9 @@ class GetVideoByIdAction extends Action
      */
     public function __invoke(Request $request, Response $response, array $args): Response
     {
-        $videos = $this->mongodb->todonime->videos->aggregate([
+        $db = $this->mongodb->todonime;
+
+        $videos = $db->videos->aggregate([
             [
                 '$match' => ['_id' => new ObjectId($args['id'])]
             ],
@@ -111,7 +113,7 @@ class GetVideoByIdAction extends Action
         });
 
         if( isset($video['project_id']) ) {
-            $video['project'] = $this->mongodb->todonime->projects->findOne(
+            $video['project'] = $db->projects->findOne(
                 ['_id' => $video['project_id']],
                 [
                     'completed' => 0
@@ -122,7 +124,7 @@ class GetVideoByIdAction extends Action
 
         if( isset($video['uploader']) )
         {
-            $uploader = $this->mongodb->todonime->users->findOne(
+            $uploader = $db->users->findOne(
                 ['_id' => $video['uploader']]
             );
             unset(
@@ -139,12 +141,18 @@ class GetVideoByIdAction extends Action
         }
         else
         {
-            $video['name'] = 'Эпизод без имени';
+            $video['name'] = '';
         }
 
         if(isset($video['anime']['next_season']))
         {
-            $video['anime']['next_season'] = $this->mongodb->todonime->animes->findOne(['shikimori_id' => $video['anime']['next_season']]);
+            $video['anime']['next_season'] = $db->animes->findOne(['shikimori_id' => $video['anime']['next_season']]);
+        }
+
+        if(isset($video['internal']) && $video['internal'])
+        {
+            $video['binary'] = $db->binaries->findOne(['_id' => $video['binary']]);
+            $video['sub'] = $db->subtitles->findOne(['_id' => $video['sub']]);
         }
 
         return ResponseHelper::success($response, $video);
