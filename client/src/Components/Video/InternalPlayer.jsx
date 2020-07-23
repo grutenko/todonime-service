@@ -93,23 +93,24 @@ export default class InternalPlayer extends React.Component {
             if(this.props.binary.op
                 && this.props.binary.op.start
                 && this.props.binary.op.end
+                && currentTime >= this.props.binary.op.start
+                && currentTime <= this.props.binary.op.end
             ) {
-                if(currentTime >= this.props.binary.op.start
-                    && currentTime <= this.props.binary.op.end
-                ) {
-                    if(!this.state.showSkipButton || this.state.skipType !== 'op') {
-                        this.setState({showSkipButton: true, skipType: 'op'});
-                    }
-                } else if(currentTime >= this.props.binary.ed.start
-                    && currentTime <= this.props.binary.ed.end
-                ) {
-                    if(!this.state.showSkipButton || this.state.skipType !== 'ed') {
-                        this.setState({showSkipButton: true, skipType: 'ed'});
-                    }
-                } else {
-                    if(this.state.showSkipButton) {
-                        this.setState({showSkipButton: false, skipType: 'op'});
-                    }
+                if(!this.state.showSkipButton || this.state.skipType !== 'op') {
+                    this.setState({showSkipButton: true, skipType: 'op'});
+                }
+            } else if(this.props.binary.ed
+                && this.props.binary.ed.start
+                && this.props.binary.ed.end
+                && currentTime >= this.props.binary.ed.start
+                && currentTime <= this.props.binary.ed.end
+            ) {
+                if(!this.state.showSkipButton || this.state.skipType !== 'ed') {
+                    this.setState({showSkipButton: true, skipType: 'ed'});
+                }
+            } else {
+                if(this.state.showSkipButton) {
+                    this.setState({showSkipButton: false, skipType: 'op'});
                 }
             }
         }
