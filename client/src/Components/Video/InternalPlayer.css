@@ -126,7 +126,7 @@
     box-sizing: border-box;
     text-shadow: 0 0 5px black; 
     transition: 250ms;
-    -webkit-text-stroke: 2px #404040;
+    -webkit-text-stroke: 2px black;
 }
 
 .skip-button {
