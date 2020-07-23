@@ -14,6 +14,7 @@ import VolumeOffIcon from '@material-ui/icons/VolumeOff';
 import PauseIcon from '@material-ui/icons/Pause';
 import FastForwardIcon from '@material-ui/icons/FastForward';
 import FastRewindIcon from '@material-ui/icons/FastRewind';
+import CircularProgress from '@material-ui/core/CircularProgress';
 
 import libjass from 'libjass';
 import moment from 'moment';
@@ -23,6 +24,7 @@ export default class InternalPlayer extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            ready: false,
             fullscreen: false,
             played: false,
             loaded: false,
@@ -45,6 +47,8 @@ export default class InternalPlayer extends React.Component {
         this.unsetHover = this.unsetHover.bind(this);
         this.fullscreenSetHover = this.fullscreenSetHover.bind(this);
         this.toggleFullscreen = this.toggleFullscreen.bind(this);
+        this.onCanplay = this.onCanplay.bind(this);
+        this.onWaiting = this.onWaiting.bind(this);
 
         this.unhoverTimeout = null;
         this.hideTimeout = null;
@@ -54,13 +58,19 @@ export default class InternalPlayer extends React.Component {
         this.onResize();
         this.setProgressHandler = setInterval(this.setProgress, 250);
         window.addEventListener('resize', this.onResize);
-        this.ref.current.addEventListener('keyup', this.onKey, {passive: false})
+        this.ref.current.addEventListener('keyup', this.onKey, {passive: false});
+        this.videoRef.current.onwaiting = this.onWaiting;
+        this.videoRef.current.oncanplay = this.onCanplay;
+
+        this.setState({ready: true});
     }
 
     componentWillUnmount() {
         clearInterval(this.setProgressHandler);
         window.removeEventListener('resize', this.onResize);
         this.ref.current.removeEventListener('keyup', this.onKey);
+        this.videoRef.current.onwaiting = ()=>{};
+        this.videoRef.current.oncanplay = ()=>{};
     }
 
     componentDidUpdate(prevProps, prevState) {
@@ -140,7 +150,7 @@ export default class InternalPlayer extends React.Component {
 
     onTogglePlay(e) {
         if(e === undefined || e.target.closest('.video__toolbar-item') === null) {
-            this.setState({played: !this.state.played, loaded: true});
+            this.setState({played: !this.state.played});
         }
     }
 
@@ -188,6 +198,14 @@ export default class InternalPlayer extends React.Component {
         this.setState({fullscreen: !this.state.fullscreen})
     }
 
+    onWaiting() {
+        this.setState({loaded: false});
+    }
+
+    onCanplay() {
+        this.setState({loaded: true});
+    }
+
     render() {
         const {
             binary,
@@ -204,7 +222,8 @@ export default class InternalPlayer extends React.Component {
             off,
             hover,
             statusIcon,
-            statusValue
+            statusValue,
+            ready
         } = this.state;
 
         return <div
@@ -229,7 +248,7 @@ export default class InternalPlayer extends React.Component {
                     </InfoBar>
                     : null
                 }
-                {loaded
+                {ready
                     ? <Subtitles
                         video       = {this.videoRef.current}
                         subtitles   = {sub.data}
@@ -239,8 +258,11 @@ export default class InternalPlayer extends React.Component {
                     />
                     : null
                 }
-                <PlayButton show={!played} />
-                <Toolbar show={loaded}>
+                <div style={{flex: 1, display: 'flex', width: "100%"}}>
+                    <PlayButton show={!played} />
+                    <Loader show={!loaded && played}/>
+                </div>
+                <Toolbar>
                     <IconButton onClick={() => this.onTogglePlay(undefined)}>
                     {played
                         ? <PauseIcon style={{ color: '#ffffff' }} />
@@ -407,13 +429,17 @@ const CurrentTime = ({currentTime, duration}) =>
     <span style={{margin: 'auto', marginRight: "15px"}}>
         {moment.utc(currentTime * 1000).format(duration < 3600 ? 'mm:ss' : 'H:mm:ss')}
     </span>
-const Toolbar = ({show, children}) => <div className="video__toolbar-item" style={!show ? {display: 'none'} : {}}>{children}</div>
+const Toolbar = ({children}) => <div className="video__toolbar-item">{children}</div>
+
+const Loader = ({show}) => <CircularProgress
+    className="internal__loader"
+    style={{color: "white",display: show ? 'block' : 'none'}}
+/>
 const PlayButton = ({show}) => <PlayArrowIcon
     className="play__button"
     style={{
         color: '#ffffff',
         fontSize: 60,
-        opacity: show ? 1 : 0,
-        pointerEvents: show
+        display: show ? 'block' : 'none'
     }}
 />
