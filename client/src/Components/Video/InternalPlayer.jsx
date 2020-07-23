@@ -15,13 +15,13 @@ import PauseIcon from '@material-ui/icons/Pause';
 import FastForwardIcon from '@material-ui/icons/FastForward';
 import FastRewindIcon from '@material-ui/icons/FastRewind';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import ToggleButton from '@material-ui/lab/ToggleButton';
-import Tooltip from '@material-ui/core/Tooltip';
 import AnnouncementIcon from '@material-ui/icons/Announcement';
+import Button from '@material-ui/core/Button';
 
 import libjass from 'libjass';
 import moment from 'moment';
 import { IconButton } from '@material-ui/core';
+import { CollectionsOutlined } from '@material-ui/icons';
 
 export default class InternalPlayer extends React.Component {
     constructor(props) {
@@ -36,6 +36,8 @@ export default class InternalPlayer extends React.Component {
             progress: 0,
             volume: 100,
             off: false,
+            showSkipButton: false,
+            skipType: 'op',
             statusIcon: null,
             statusValue: null
         }
@@ -52,6 +54,7 @@ export default class InternalPlayer extends React.Component {
         this.toggleFullscreen = this.toggleFullscreen.bind(this);
         this.onCanplay = this.onCanplay.bind(this);
         this.onWaiting = this.onWaiting.bind(this);
+        this.skip = this.skip.bind(this);
 
         this.unhoverTimeout = null;
         this.hideTimeout = null;
@@ -83,6 +86,32 @@ export default class InternalPlayer extends React.Component {
         if(prevProps.binary !== this.props.binary
             || prevProps.subtitles !== this.props.subtitles) {
                 this.forceUpdate();
+        }
+
+        if(this.state.ready) {
+            const currentTime = this.videoRef.current.currentTime;
+            if(this.props.binary.op
+                && this.props.binary.op.start
+                && this.props.binary.op.end
+            ) {
+                if(currentTime >= this.props.binary.op.start
+                    && currentTime <= this.props.binary.op.end
+                ) {
+                    if(!this.state.showSkipButton || this.state.skipType !== 'op') {
+                        this.setState({showSkipButton: true, skipType: 'op'});
+                    }
+                } else if(currentTime >= this.props.binary.ed.start
+                    && currentTime <= this.props.binary.ed.end
+                ) {
+                    if(!this.state.showSkipButton || this.state.skipType !== 'ed') {
+                        this.setState({showSkipButton: true, skipType: 'ed'});
+                    }
+                } else {
+                    if(this.state.showSkipButton) {
+                        this.setState({showSkipButton: false, skipType: 'op'});
+                    }
+                }
+            }
         }
 
         if(prevState.played !== this.state.played) {
@@ -251,6 +280,14 @@ export default class InternalPlayer extends React.Component {
         this.setState({loaded: true});
     }
 
+    skip() {
+        if(this.state.skipType == 'op') {
+            this.onChangeProgress(undefined, this.props.binary.op.end / this.videoRef.current.duration * 100);
+        } else {
+            this.onChangeProgress(undefined, this.props.binary.ed.end / this.videoRef.current.duration * 100);
+        }
+    }
+
     render() {
         const {
             binary,
@@ -268,7 +305,9 @@ export default class InternalPlayer extends React.Component {
             hover,
             statusIcon,
             statusValue,
-            ready
+            ready,
+            showSkipButton,
+            skipType
         } = this.state;
 
         return <div
@@ -331,6 +370,7 @@ export default class InternalPlayer extends React.Component {
                             onChange = {(e, v) => this.setState({volume: v})}
                             onOff = {() => this.setState({off: !this.state.off})}
                         />
+                        <SkipButton show={showSkipButton} type={skipType} onClick={this.skip}/>
                         <IconButton onClick={this.toggleFullscreen}>
                         {fullscreen
                             ? <FullscreenExitIcon style={{ color: '#ffffff' }} />
@@ -352,6 +392,12 @@ export default class InternalPlayer extends React.Component {
             </video>
         </div>
     }
+}
+
+function SkipButton({show, type, onClick}) {
+    return <Button className="skip-button" onClick={onClick} style={!show ? {display: 'none'} : {}}>
+        {type == 'op' ? 'Пропустить опенинг' : 'Пропустить эндинг'}
+    </Button>
 }
 
 function InfoBar({width, height, children}) {
