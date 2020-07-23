@@ -144,7 +144,7 @@ export default class TodonimePlayer extends React.Component {
                     />
                 </div>
                 {data.internal
-                    ? <InternalPlayer binary={data.binary} sub={data.sub}/>
+                    ? <InternalPlayer key={data.episode} binary={data.binary} sub={data.sub}/>
                     : <VideoPlayerIframe url={data.url}/>
                 }
             </BackgroundPoster>
