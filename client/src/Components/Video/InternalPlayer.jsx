@@ -205,8 +205,6 @@ export default class InternalPlayer extends React.Component {
             });
         }
 
-        console.log(marks);
-
         return marks;
     }
 
