@@ -15,6 +15,9 @@ import PauseIcon from '@material-ui/icons/Pause';
 import FastForwardIcon from '@material-ui/icons/FastForward';
 import FastRewindIcon from '@material-ui/icons/FastRewind';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import ToggleButton from '@material-ui/lab/ToggleButton';
+import Tooltip from '@material-ui/core/Tooltip';
+import AnnouncementIcon from '@material-ui/icons/Announcement';
 
 import libjass from 'libjass';
 import moment from 'moment';
@@ -61,8 +64,10 @@ export default class InternalPlayer extends React.Component {
         this.ref.current.addEventListener('keyup', this.onKey, {passive: false});
         this.videoRef.current.onwaiting = this.onWaiting;
         this.videoRef.current.oncanplay = this.onCanplay;
+        this.videoRef.current.onloadedmetadata = () => {
+            this.setState({ready: true});
+        }
 
-        this.setState({ready: true});
     }
 
     componentWillUnmount() {
@@ -71,6 +76,7 @@ export default class InternalPlayer extends React.Component {
         this.ref.current.removeEventListener('keyup', this.onKey);
         this.videoRef.current.onwaiting = ()=>{};
         this.videoRef.current.oncanplay = ()=>{};
+        this.videoRef.current.onloadedmetadata = ()=>{}
     }
 
     componentDidUpdate(prevProps, prevState) {
@@ -134,6 +140,45 @@ export default class InternalPlayer extends React.Component {
             clearTimeout(this.hideTimeout);
             this.hideTimeout = setTimeout(() => this.setState({statusIcon: null, statusValue: null}), 800);
         }
+
+        if(prevState.opSelected !== this.state.opSelected) {
+            const duration = this.videoRef.current.currentTime;
+            this.setState({
+                statusIcon: 'alert',
+                statusValue: (this.state.opSelected ? 'OP START ' : 'OP END ') 
+                    + moment.utc(duration * 1000).format(duration < 3600 ? 'mm:ss' : 'H:mm:ss')
+            });
+        }
+    }
+
+    getMarks() {
+        const {
+            binary
+        } = this.props;
+
+        var marks = [];
+        if(binary.op && binary.op.start && binary.op.end) {
+            marks.push({
+                value: binary.op.start / this.videoRef.current.duration * 100,
+                label: 'Опенинг'
+            });
+            marks.push({
+                value:  binary.op.end / this.videoRef.current.duration * 100
+            });
+        }
+        if(binary.ed && binary.ed.start && binary.ed.end) {
+            marks.push({
+                value: binary.ed.start / this.videoRef.current.duration * 100,
+                label: 'Эндинг'
+            });
+            marks.push({
+                value:  binary.ed.end / this.videoRef.current.duration * 100
+            });
+        }
+
+        console.log(marks);
+
+        return marks;
     }
 
     setProgress() {
@@ -244,7 +289,7 @@ export default class InternalPlayer extends React.Component {
                             'volumeMuted': <VolumeOffIcon style={{ color: '#ffffff', fontSize: '60px' }}/>,
                             'forward': <FastForwardIcon style={{ color: '#ffffff', fontSize: '60px' }}/>,
                             'rewind': <FastRewindIcon style={{ color: '#ffffff', fontSize: '60px' }}/>
-                        }[statusIcon]}
+                        }[statusIcon] || <AnnouncementIcon style={{ color: '#ffffff', fontSize: '60px' }}/>}
                     </InfoBar>
                     : null
                 }
@@ -262,35 +307,39 @@ export default class InternalPlayer extends React.Component {
                     <PlayButton show={!played} />
                     <Loader show={!loaded && played}/>
                 </div>
-                <Toolbar>
-                    <IconButton onClick={() => this.onTogglePlay(undefined)}>
-                    {played
-                        ? <PauseIcon style={{ color: '#ffffff' }} />
-                        : <PlayArrowIcon  style={{ color: '#ffffff' }} />
-                    }
-                    </IconButton>
-                    <CurrentTime
-                        currentTime={this.videoRef.current ? this.videoRef.current.currentTime : 0}
-                        duration={this.videoRef.duration ? this.videoRef.current.duration : 0}
-                    />
-                    <Slider
-                        value={progress}
-                        onChange={this.onChangeProgress}
-                        style={{flex: 1}}
-                    />
-                    <Volume
-                        value = {volume}
-                        off = {off}
-                        onChange = {(e, v) => this.setState({volume: v})}
-                        onOff = {() => this.setState({off: !this.state.off})}
-                    />
-                    <IconButton onClick={this.toggleFullscreen}>
-                    {fullscreen
-                        ? <FullscreenExitIcon style={{ color: '#ffffff' }} />
-                        : <FullscreenIcon style={{ color: '#ffffff' }} />
-                    }
-                    </IconButton>
-                </Toolbar>
+                {ready
+                    ?  <Toolbar>
+                        <IconButton onClick={() => this.onTogglePlay(undefined)}>
+                        {played
+                            ? <PauseIcon style={{ color: '#ffffff' }} />
+                            : <PlayArrowIcon  style={{ color: '#ffffff' }} />
+                        }
+                        </IconButton>
+                        <CurrentTime
+                            currentTime={this.videoRef.current ? this.videoRef.current.currentTime : 0}
+                            duration={this.videoRef.duration ? this.videoRef.current.duration : 0}
+                        />
+                        <Slider
+                            value={progress}
+                            onChange={this.onChangeProgress}
+                            style={{flex: 1}}
+                            marks={this.getMarks()}
+                        />
+                        <Volume
+                            value = {volume}
+                            off = {off}
+                            onChange = {(e, v) => this.setState({volume: v})}
+                            onOff = {() => this.setState({off: !this.state.off})}
+                        />
+                        <IconButton onClick={this.toggleFullscreen}>
+                        {fullscreen
+                            ? <FullscreenExitIcon style={{ color: '#ffffff' }} />
+                            : <FullscreenIcon style={{ color: '#ffffff' }} />
+                        }
+                        </IconButton>
+                    </Toolbar>
+                    : null
+                }
             </div>
             <video
                 ref         = {this.videoRef}
@@ -368,6 +417,7 @@ class Volume extends React.Component {
         const {hover} = this.state;
 
         return <span
+            style={{marginTop: '-10px'}}
             ref={this.ref}
             onMouseOver = {() => this.setState({hover: true})}
             onMouseLeave = {() => this.setState({hover: false})}
@@ -380,7 +430,7 @@ class Volume extends React.Component {
                     height: "100px",
                     position: 'absolute',
                     right: '60px',
-                    bottom: '50px',
+                    bottom: '60px',
                     opacity: hover ? 1 : 0
                 }}
             />
@@ -426,7 +476,7 @@ class Subtitles extends React.Component {
 }
 
 const CurrentTime = ({currentTime, duration}) => 
-    <span style={{margin: 'auto', marginRight: "15px"}}>
+    <span style={{marginTop: "3px", marginRight: "15px"}}>
         {moment.utc(currentTime * 1000).format(duration < 3600 ? 'mm:ss' : 'H:mm:ss')}
     </span>
 const Toolbar = ({children}) => <div className="video__toolbar-item">{children}</div>
