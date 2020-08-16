@@ -87,6 +87,11 @@ class GetUserRates extends Command
 
         foreach($users as $user)
         {
+            if(!isset($user['token']))
+            {
+                continue;
+            }
+
             $output->write($user['nickname']);
 
             $this->sdk->useOauthToken($user['token'], function($newToken) use($user) {
